@@ -7,7 +7,7 @@
 */
 #include <iostream>
 #include "Grid.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <GL/glu.h>
 
 #define GRIDMAGICNUMBER		"begin grid 1.0"

@@ -22,7 +22,7 @@
 #include "engine/Interactor.h"
 #include <gz4d/socket/TCPSocket.h>
 #include <gz4d/socket/UDPSocket.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <gz4d/ogr.h>
 #include <memory>
 //#include <gz4d/util/Xml.h>

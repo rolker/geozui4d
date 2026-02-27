@@ -1,5 +1,5 @@
 #include "Srtm.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "engine/Window3D.h"
 #include "engine/ViewManager.h"
 #include <gz4d/geo/Projection.h>

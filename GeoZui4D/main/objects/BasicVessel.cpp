@@ -24,7 +24,7 @@
 #include "engine/PosableStateRelationships/PosableStateLock.h"
 #include <string.h>
 #include <stdlib.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "utilities/Utilities.h"
 #include "engine/gzCommandInterface.h"
 #include "engine/ViewManager.h"

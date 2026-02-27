@@ -41,7 +41,7 @@
 #include "objects/Flow.h"
 #include "interactors/PointHandle.h"
 #include "objects/TimeVaryingObject.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "objects/Chart.h"
 //#include "TVGutm.h"
 #include "objects/Current.h"
@@ -632,7 +632,7 @@ Object * Scene3D::LoadObject(std::string const &filename, Tcl_Interp *interp, ch
 
     object = NULL;
 
-    ext = extension(bfs::path(filename));
+    ext = fs::path(filename).extension().string();
 
     if (!ext.empty()) //Load the appropriate object based on extension
     {
@@ -735,7 +735,7 @@ bool Scene3D::LoadXML(std::string const & filename, Tcl_Interp *interp, ObjectCo
         bool wasEmpty = ((objects.get() == parentCollection) && objects->IsEmpty());
         ProcessGZ(n);
         //n.FirstNode();
-        Object * o = parentCollection->LoadXML(n,bfs::path(filename).parent_path().string(),ncfile);
+        Object * o = parentCollection->LoadXML(n,fs::path(filename).parent_path().string(),ncfile);
         if (!o)
             return false;
         PostAddObject(o);
@@ -774,7 +774,7 @@ void Scene3D::LoadXMLTexture(bpt::ptree const &xml, std::string const &path, gz4
 
     if(attribute = xml.get_optional<std::string>("<xmlattr>.filename"))
     {
-        texture = LoadTexture((bfs::path(path)/(*attribute)).string(),ToglWindow::interp);
+        texture = LoadTexture((fs::path(path)/(*attribute)).string(),ToglWindow::interp);
         if (texture)
         {
             if(attribute = xml.get_optional<std::string>("<xmlattr>.label"))
@@ -819,7 +819,7 @@ bool Scene3D::LoadXMLScript(bpt::ptree const &xml, std::string const &path, gz4d
     
     if(attribute = xml.get_optional<std::string>("<xmlattr>.filename"))
     {
-        std::string src = (bfs::path(path)/(*attribute)).string();
+        std::string src = (fs::path(path)/(*attribute)).string();
         tclstr << "set gzSourceFile {" << src << "}";
         mainWindow->Tcl_Eval(tclstr.str().c_str());
         tclstr.str("");

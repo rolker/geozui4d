@@ -9,7 +9,7 @@
 #include <gz4d/Pixel.h>
 #include <gz4d/image/Info.h>
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <memory>
 
 #ifdef BOOST_MSVC
@@ -34,7 +34,7 @@ namespace gz4d
             JPEG_ReadContext(std::string const &fname, bool decomp)
             :decompress(decomp)
             {
-                if (!exists(boost::filesystem::path(fname)))
+                if (!exists(std::filesystem::path(fname)))
                     throw Exception("File not found");
                 
                 file = std::shared_ptr<FILE>(fopen(fname.c_str(),"rb"),fclose);

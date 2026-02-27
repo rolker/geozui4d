@@ -133,7 +133,7 @@ class DataLines : public GeoData, public InterpolationSupport
 
 
         enum DataTypes {Unknown = 0, Remus};
-        bfs::path datafilename;
+        fs::path datafilename;
         int datatype;
         FILE * datafile;
 

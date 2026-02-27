@@ -31,7 +31,7 @@
 #include "utilities/DottedAddress.h"
 #include "engine/gzCommandInterface.h"
 #include <stdio.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 extern MainWindow *mainWindow;
 

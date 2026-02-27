@@ -34,7 +34,7 @@ if(NOT CMAKE_CROSSCOMPILING)
     endif()
 endif()
 
-set(boost_components system filesystem program_options iostreams)
+set(boost_components system program_options iostreams)
 if(CMAKE_CROSSCOMPILING)
     set(boost_components ${boost_components} thread_win32)
 else()

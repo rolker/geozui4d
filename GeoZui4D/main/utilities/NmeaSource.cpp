@@ -10,7 +10,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <math.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "MainWindow.h"
 #include "engine/Scene3D.h"
 #include "engine/TimeControl.h"
@@ -110,7 +110,7 @@ void NmeaSource::openPort(string a, int s, bool udp_flag)
  *	socket.  If a log_filename is specified, all the incoming data is logged
  *	into a file of the specified name.
  */
-NmeaSource::NmeaSource(string a, int s, bool udp_flag, bfs::path log_filename)
+NmeaSource::NmeaSource(string a, int s, bool udp_flag, fs::path log_filename)
 {
 	init();
 	openPort(a, s, udp_flag);
@@ -298,7 +298,7 @@ void NmeaSource::printString(char * s)
  *  \author Matt Plumlee (mdp)
  *  \date 8/15/2005
  */
-void NmeaSource::changeLogfile(bfs::path new_filename)
+void NmeaSource::changeLogfile(fs::path new_filename)
 {
 	if (log)
 	{

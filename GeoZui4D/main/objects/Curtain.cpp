@@ -21,7 +21,7 @@
 #include "engine/TextureMaps/TextureMap.h"
 #include "engine/TextureMaps/Clut.h"
 #include "widgets/Sv_Standards.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 using namespace std;
 

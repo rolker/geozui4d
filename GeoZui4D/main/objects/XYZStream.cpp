@@ -16,7 +16,7 @@
 #include "objects/nodeTypes/XYZPointWA.h"
 #include "objects/nodeTypes/XYZPointMin.h"
 #include "engine/InputMediator.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "engine/ViewManager.h"
 #include "FishSchool.h"
 #include "engine/TimeControl.h"
@@ -220,7 +220,7 @@ int XYZStream::readFrom(FILE * infile)
 	}
 	if(strlen(fname))
 	{
-		InitFile(bfs::path(GetFilenameAsPath().parent_path()/fname).string(),type,res,rad);
+		InitFile(fs::path(GetFilenameAsPath().parent_path()/fname).string(),type,res,rad);
 	}
 	return 0;
 }
@@ -422,7 +422,7 @@ Object * XYZStream::LoadXML(bpt::ptree const &xml, std::string const &path, gz4d
     double res = 1.0;
     double rad = 0.0;
     Point3d p;
-    bfs::path fn;
+    fs::path fn;
 
     Object::LoadXML(xml,path,ncfile);
 
@@ -475,12 +475,12 @@ Object * XYZStream::LoadXML(bpt::ptree const &xml, std::string const &path, gz4d
                 if (*attribute == "netcdf")
                 {
                     //same format as FishSchool's netcdf point data
-                    bfs::path ncfilename;
+                    fs::path ncfilename;
                     if(attribute = xml.get_optional<std::string>("<xmlattr>.filename"))
                     {
                         ncfilename = *attribute;
                         std::stringstream progCaption;
-                        progCaption << "Loading " << ncfilename.leaf();
+                        progCaption << "Loading " << ncfilename.filename();
                         createProgress(progCaption.str());
                         FishSchool school((path/ncfilename).string());
                         double e = school.GetBaseEasting();

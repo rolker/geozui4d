@@ -110,7 +110,7 @@ void QuadTreeObject::copyObjectComponents(QuadTreeObject *other, float xOffset, 
 /*---------------------------------------------------------------------------*/
 bool QuadTreeObject::setXMLattribute(std::string const &name, std::string const &value, std::string const &path)
 {
-    bfs::path fn;
+    fs::path fn;
 
     if (name == "label")
     {
@@ -122,7 +122,7 @@ bool QuadTreeObject::setXMLattribute(std::string const &name, std::string const 
         if(value[0] == '/')
             fn = value;
         else
-            fn = bfs::path(path)/value;
+            fn = fs::path(path)/value;
         SetFilename(fn.string());
         return true;
     }

@@ -29,7 +29,7 @@
 #include "GZincludes.h"
 #include "interactors/DoubleClickInteractor.h"
 #include "tclLinkage.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "objects/gutm.h"
 #include "objects/NetCDF.h"
 #include "engine/TextureMaps/ImageMap.h"
@@ -202,7 +202,7 @@ int TextureScreen::readFrom(FILE *infile)
     if(	fgets(filename, 255, infile))
     {
         
-        bfs::path fname(GetFilenameAsPath().parent_path()/boost::algorithm::trim_copy(std::string(filename)));
+        fs::path fname(GetFilenameAsPath().parent_path()/boost::algorithm::trim_copy(std::string(filename)));
         if (!setTextureFile(fname, leftTexture))
             return 1;
         adjustSize(leftTexture);
@@ -220,7 +220,7 @@ int TextureScreen::readFrom(FILE *infile)
 
     if(fgets(filename, 255, infile) && strlen(filename) > 3) //strlen check there in case of spurious \n's at end of file
     {
-        bfs::path fname(GetFilenameAsPath().parent_path()/filename);
+        fs::path fname(GetFilenameAsPath().parent_path()/filename);
         if (!setTextureFile(fname, rightTexture))
             return 1;
         if(load)
@@ -235,9 +235,9 @@ int TextureScreen::readFrom(FILE *infile)
 }
 
 /*---------------------------------------------------------------------------*/
-bool TextureScreen::setTextureFile(bfs::path fname, std::shared_ptr<TextureMap> &texture)
+bool TextureScreen::setTextureFile(fs::path fname, std::shared_ptr<TextureMap> &texture)
 {
-    std::string suffix = extension(fname);
+    std::string suffix = fname.extension().string();
 
     for (int j = 0; j <= 3; j++)
         suffix[j] = tolower(suffix[j]);
@@ -340,12 +340,12 @@ void TextureScreen::adjustSize(std::shared_ptr<TextureMap> &texture)
 }
 
 /*---------------------------------------------------------------------------*/
-bool TextureScreen::readWorldFile(std::shared_ptr<TextureMap> &texture, bfs::path fname)
+bool TextureScreen::readWorldFile(std::shared_ptr<TextureMap> &texture, fs::path fname)
 {
     float rot1, rot2;
     int i;
     FILE * hfile;
-    std::string suffix = extension(fname);
+    std::string suffix = fname.extension().string();
     double position[3] = {0.0, 0.0, 0.0};
 
     for (int j = 0; j <= 3; j++)
@@ -383,7 +383,7 @@ bool TextureScreen::readWorldFile(std::shared_ptr<TextureMap> &texture, bfs::pat
 }
 
 /*---------------------------------------------------------------------------*/
-bool TextureScreen::loadTexture(bfs::path fname)
+bool TextureScreen::loadTexture(fs::path fname)
 {
     leftTextureName = fname;
     if (!setTextureFile(leftTextureName, leftTexture))
@@ -1063,7 +1063,7 @@ Object * TextureScreen::LoadXML(bpt::ptree const &xml, std::string const &path, 
 
     Object::LoadXML(xml, path, ncfile);
 
-    bfs::path fspath(path);
+    fs::path fspath(path);
 
     // read values from XML
     boost::optional<std::string> attribute;
@@ -1288,7 +1288,7 @@ bool TextureScreen::setXMLattribute(std::string const &name, std::string const &
         if(value[0] == '/')
             leftTextureName = value;
         else
-            leftTextureName = bfs::path(path)/value;
+            leftTextureName = fs::path(path)/value;
         return true;
     }
     return QuadTreeObject::setXMLattribute(name, value, path);
@@ -1450,7 +1450,7 @@ void TextureScreen::initDistortionGrid()
 {
     if (!dgFilename.empty())
     {
-        if (extension(dgFilename) == ".nc")
+        if (dgFilename.extension().string() == ".nc")
         {
             // Create and check the netCDF file object.
             dgNcFile = gz4d::netcdf::File(dgFilename.string());

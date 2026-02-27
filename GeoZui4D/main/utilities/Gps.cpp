@@ -21,7 +21,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <math.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 //#include <time.h>
 #include "utilities/TimePieces.h"
 #include "engine/Scene3D.h"
@@ -79,7 +79,7 @@ void Gps::resetStates()
 }
 
 /*---------------------------------------------------------------------------*/
-Gps::Gps(string a, int s, bool udp_flag, bfs::path log_filename)
+Gps::Gps(string a, int s, bool udp_flag, fs::path log_filename)
     : NmeaSource(a, s, udp_flag, log_filename)
 {
     init();

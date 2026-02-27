@@ -19,8 +19,8 @@
 
 #include <gz4d/Point.h>
 
-#include <boost/filesystem.hpp>
-namespace bfs = boost::filesystem;
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #include <list>
 #include <memory>
@@ -147,7 +147,7 @@ public:
     void ShowWatermark(bool s = true){showWatermark = s;};
     void ShowCompass(bool s = true){showCompass = s;};
 
-    void ScreenShot(int w, int h, bfs::path fname);
+    void ScreenShot(int w, int h, fs::path fname);
 
     Notes * GetNotes(){return notes;};
     

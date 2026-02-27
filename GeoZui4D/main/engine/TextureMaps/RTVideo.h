@@ -27,7 +27,7 @@ public:
 	void Init();
 	
 	virtual int Load(){return 0;};
-	virtual int Save(std::string const &fn = bfs::path()){return 0;};
+	virtual int Save(std::string const &fn = fs::path()){return 0;};
   
 	virtual bool Enable(const Point3d offset); // turn texture on
   virtual bool Enable(); // turn texture on, but without auto tex coord gen

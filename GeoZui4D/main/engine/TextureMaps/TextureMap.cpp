@@ -11,7 +11,7 @@
 #include "engine/InputMediator.h"
 //#include "MovieScreen.h"
 //#include "MovieMap.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "engine/TextureMaps/TextureMap.h"
 #include "engine/TextureMaps/Clut.h"
 #include "engine/TextureMaps/ImageMap.h"
@@ -85,7 +85,7 @@ std::shared_ptr<TextureMap> CreateTexture(std::string const &fname)
     j = 0;
     while(!tag[j].empty())
     {
-        if(extension(bfs::path(fname)) == '.'+tag[j])
+        if(fs::path(fname).extension().string() == '.'+tag[j])
             switch(j)
             {
                 case 0:
@@ -151,7 +151,7 @@ void TextureMap::SaveXML(FILE * out, std::string path)
 {
 	fprintf(out,"<Object ");
     if(!GetFilename().empty())
-		fprintf(out,"filename=\"%s\" ",(bfs::path(path)/GetFilenameAsPath()).string().c_str());
+		fprintf(out,"filename=\"%s\" ",(fs::path(path)/GetFilenameAsPath()).string().c_str());
 	if(!GetLabel().empty())
 		fprintf(out,"label=\"%s\" ",GetLabel().c_str());
 	fprintf(out,"/>\n");

@@ -83,7 +83,7 @@ protected:
 
     void bumpIndex(int &x, int &y);
     int currentX, currentY, currentI, currentL;
-    bfs::path currentPath;
+    fs::path currentPath;
     std::string patternSubstitution(std::string pattern);
     QuadTreeObject *createPatternedObject(bpt::ptree const &elem, float xOffset, float yOffset,
                                       bool potentialEdge = true, float scaleFactor = 1.0,

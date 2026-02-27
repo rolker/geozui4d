@@ -13,7 +13,7 @@ namespace gz4d
     {
         inline std::string filetype(std::string const &fname)
         {
-            std::string e = boost::algorithm::to_lower_copy(boost::filesystem::extension(fname));
+            std::string e = boost::algorithm::to_lower_copy(std::filesystem::path(fname).extension().string());
             if(e == ".png")
                 return "png";
             if (e == ".tif" || e == ".tiff")

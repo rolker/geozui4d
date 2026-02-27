@@ -10,8 +10,8 @@
 
 #include "SDV_types.h"
 #include <string>
-#include <boost/filesystem.hpp>
-namespace bfs = boost::filesystem;
+#include <filesystem>
+namespace fs = std::filesystem;
 
 class Persistence
 {
@@ -24,13 +24,13 @@ public:
 	std::string const &GetFilename() const;
         std::string GetExtension() const
         {
-            return extension(bfs::path(filename));
+            return fs::path(filename).extension().string();
         }
-        
-        /// Returns filename as boost::filysystem::path
-        bfs::path GetFilenameAsPath() const
+
+        /// Returns filename as std::filesystem::path
+        fs::path GetFilenameAsPath() const
         {
-            return bfs::path(filename);
+            return fs::path(filename);
         }
 
 	//ID

@@ -23,7 +23,7 @@
 #include "objects/DynamicTides.h"
 #include <string.h>
 #include <iostream>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <stdio.h>
 #include "engine/PosableStateBase.h"
 #include "utilities/DottedAddress.h"
@@ -73,7 +73,7 @@ DynamicTides::~DynamicTides()
 /*---------------------------------------------------------------------------*/
 Object * DynamicTides::LoadXML(bpt::ptree const &xml, std::string const &path, gz4d::netcdf::File ncfile)
 {
-    bfs::path fspath(path);
+    fs::path fspath(path);
     char filename[256];
 
     Object::LoadXML(xml,path, ncfile);
@@ -429,7 +429,7 @@ int DynamicTides::perform(int argc, const char **argv, Tcl_Interp *interp)
 				{
 					if (argc >= 3)
 					{
-						predictedFilename = bfs::path(predictedFilename.branch_path()/argv[2]);
+						predictedFilename = fs::path(predictedFilename.parent_path()/argv[2]);
 					}
 					Tcl_SetResult(interp, (char *)predictedFilename.string().c_str(), TCL_VOLATILE);
 					return TCL_OK;
@@ -438,7 +438,7 @@ int DynamicTides::perform(int argc, const char **argv, Tcl_Interp *interp)
 				{
 					if (argc >= 3)
 					{
-						rawFilename = bfs::path(rawFilename.branch_path()/argv[2]);
+						rawFilename = fs::path(rawFilename.parent_path()/argv[2]);
 					}
 					Tcl_SetResult(interp, (char *)rawFilename.string().c_str(), TCL_VOLATILE);
 					return TCL_OK;

@@ -267,7 +267,7 @@ bool VideoRecorder::setParameter(int argc, const char * argv[])
         }
         else if (parameter == "filename")
         {
-            filename = bfs::path(argv[2]);
+            filename = fs::path(argv[2]);
             return true;
         }
 //         else if (parameter == "codec")

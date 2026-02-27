@@ -1,6 +1,6 @@
 #include "GZincludes.h"
 #include"S57.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "S57_object.h"
 
 
@@ -39,7 +39,7 @@ Object * S57::LoadXML(bpt::ptree const &xml, std::string const &path, gz4d::netc
         publishObjects = gz4d::IsTrue(*attribute);
 
     if(attribute = xml.get_optional<std::string>("<xmlattr>.encfile"))
-        LoadS57((bfs::path(path)/(*attribute)).string());
+        LoadS57((fs::path(path)/(*attribute)).string());
 
     dim = xml.get("<xmlattr>.dim",dim);
 
@@ -67,7 +67,7 @@ int S57::LoadS57(std::string const &s57file)
     enc = OGRSFDriverRegistrar::Open(s57file.string().c_str());*/
     gz4d::ogr::DataSource enc(s57file);
     
-    std::string fn = bfs::path(s57file).filename().string();
+    std::string fn = fs::path(s57file).filename().string();
     if(!enc)
     {
         std::cerr << "Error opening: " << fn << std::endl;
@@ -91,7 +91,7 @@ int S57::LoadS57(std::string const &s57file)
 
     for (LnamTable::iterator obIter = lnam_table.begin(); obIter != lnam_table.end(); obIter++ )
         if(obIter->second)
-            obIter->second->resolveReferences(lnam_table, bfs::path(s57file).parent_path().string());
+            obIter->second->resolveReferences(lnam_table, fs::path(s57file).parent_path().string());
 
     return 0;
 }

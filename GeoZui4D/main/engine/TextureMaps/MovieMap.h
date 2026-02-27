@@ -29,7 +29,7 @@ public:
 
   void Init();			// load deflt or named file
   int Load();
-  int Save(std::string const &fn = bfs::path());
+  int Save(std::string const &fn = fs::path());
 
   bool Enable(const Point3d offset);	// turn texture map on
   bool Enable();										// turn texture map on

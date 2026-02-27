@@ -25,7 +25,7 @@
 #include "engine/ClutEditor.h"
 //#include <iostream.h>
 #include <stdlib.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <string.h>
 
 int ClutEditor::clutToglInitialized = 0;

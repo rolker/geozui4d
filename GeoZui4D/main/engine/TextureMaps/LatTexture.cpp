@@ -14,7 +14,7 @@
 #include "utilities/random.h"
 #include "LatTexture.h"
 #include "utilities/gauss.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <GL/glu.h>
 
 #define LATMAGICNUMBER  "LATTICE"

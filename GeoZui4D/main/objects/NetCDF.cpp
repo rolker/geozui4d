@@ -2,7 +2,7 @@
 #include"NetCDF.h"
 #include<string.h>
 #include"Flow.h"
-#include<boost/filesystem.hpp>
+#include <filesystem>
 #include"Current.h"
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -58,7 +58,7 @@ Object * NetCDF::LoadXML(bpt::ptree const &xml, std::string const &path, gz4d::n
     {
         // first, get the NetCDF filename
         if(attribute = xml.get_optional<std::string>("<xmlattr>.ncfile"))
-            ncf = gz4d::netcdf::File((bfs::path(path)/(*attribute)).string());
+            ncf = gz4d::netcdf::File((fs::path(path)/(*attribute)).string());
         else
         {
             cerr << "Problems getting the netCDF filename\n";

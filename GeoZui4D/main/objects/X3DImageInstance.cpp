@@ -88,7 +88,7 @@ void X3DImageInstance::LoadField( gz4d::SFString name, bpt::ptree const &x3d, gz
         LoadArray( x3d, "value", url);
 
         //std::string fn(url[0].substr(1,url[0].size()-2));
-        image->loadTexture(bfs::path(root->getFilename()).parent_path()/url[0]); //&&&we need to loop through until we find one, rather than only try first one
+        image->loadTexture(fs::path(root->getFilename()).parent_path()/url[0]); //&&&we need to loop through until we find one, rather than only try first one
         //image->buildTexture();
     }
 }

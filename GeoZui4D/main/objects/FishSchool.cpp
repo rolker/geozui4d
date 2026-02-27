@@ -27,7 +27,7 @@
 #include<gz4d/glo.h>
 #include <GL/glut.h>
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "objects/gutm.h"
 #include "engine/InputMediator.h"
 #include "engine/Scene3D.h"
@@ -114,7 +114,7 @@ Object * FishSchool::LoadXML(bpt::ptree const &xml, std::string const &path, gz4
 
     boost::optional<std::string> attribute;
     if(attribute = xml.get_optional<std::string>("<xmlattr>.targetfile"))
-        fishFilename = bfs::path(path)/(*attribute);
+        fishFilename = fs::path(path)/(*attribute);
 
     timeWindow = xml.get("<xmlattr>.timewindow",timeWindow);
 
@@ -389,7 +389,7 @@ void FishSchool::Idle(double time)
  */
 void FishSchool::initFishData()
 {
-    if (extension(fishFilename) == ".nc")
+    if (fishFilename.extension().string() == ".nc")
     {
         // Create and check the netCDF file object.
         gz4d::netcdf::File fishNcFile(fishFilename.string());

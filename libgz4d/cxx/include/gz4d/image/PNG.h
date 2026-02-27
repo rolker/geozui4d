@@ -10,7 +10,7 @@
 #include <gz4d/Pixel.h>
 #include <gz4d/image/Info.h>
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <memory>
 
 #include <png.h>
@@ -39,7 +39,7 @@ namespace gz4d
             
             PNG_ReadHandle(std::string const &fname)
             {
-                if (!exists(boost::filesystem::path(fname)))
+                if (!exists(std::filesystem::path(fname)))
                     throw Exception("File not found");
                 
                 file = std::shared_ptr<FILE>(fopen(fname.c_str(),"rb"),fclose);

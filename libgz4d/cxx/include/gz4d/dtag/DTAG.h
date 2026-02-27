@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 
 namespace gz4d
@@ -105,11 +105,11 @@ namespace gz4d
                 DTAG(std::string const &dir)
                 :utcOffset(0.0)
                 {
-                    boost::filesystem::path directory(dir);
+                    std::filesystem::path directory(dir);
                     if (is_directory(directory))
                     {
-                        boost::filesystem::directory_iterator end_iter;
-                        for (boost::filesystem::directory_iterator dir_itr(directory); dir_itr != end_iter; ++dir_itr)
+                        std::filesystem::directory_iterator end_iter;
+                        for (std::filesystem::directory_iterator dir_itr(directory); dir_itr != end_iter; ++dir_itr)
                         {
                             if(dir_itr->path().extension()==".dtg" || dir_itr->path().extension()==".DTG")
                                 AddFile(dir_itr->path().string());

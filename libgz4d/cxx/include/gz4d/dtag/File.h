@@ -14,7 +14,7 @@
 #include <memory>
 #include <boost/crc.hpp>
 #include <boost/thread/mutex.hpp>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 namespace gz4d
 {
@@ -27,7 +27,7 @@ namespace gz4d
                 File(std::string const &fileName)
                 :file(fileName.c_str(),std::ios::in|std::ios::binary),fileName(fileName)
                 {
-                    std::cerr << "Initializing " << boost::filesystem::path(fileName).leaf() << "...";
+                    std::cerr << "Initializing " << std::filesystem::path(fileName).filename() << "...";
                     // read the last two bytes at the end of the file, the term.
                     file.seekg(-2,std::ios::end);
                     uint16_t term;
@@ -87,7 +87,7 @@ namespace gz4d
                 std::string GetInfo(bool blockInfo = false, bool chunkInfo = false)
                 {
                     std::stringstream s;
-                    s << "  File: " << boost::filesystem::path(fileName).leaf() << std::endl;
+                    s << "  File: " << std::filesystem::path(fileName).filename() << std::endl;
                     
                     s << "    " << GetVersion() << " ID: " << (int)GetID();
                     s << "    Uploaded: " << GetUploadTime() << "\tChip: " << (int)GetChip() << std::endl;

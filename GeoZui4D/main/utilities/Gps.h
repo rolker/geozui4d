@@ -31,7 +31,7 @@ class Gps: public NmeaSource
 {
     public:
         void init();
-        Gps(std::string a, int s, bool udp_flag = false, bfs::path log_filename = "");
+        Gps(std::string a, int s, bool udp_flag = false, fs::path log_filename = "");
         Gps(std::string a, int s, bool udp_flag, NmeaSource *logfileSource);
         Gps(std::string const &fn);
         ~Gps();

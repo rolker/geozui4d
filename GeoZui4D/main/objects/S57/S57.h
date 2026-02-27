@@ -29,7 +29,7 @@ class S57 : public ObjectCollection
     private:
         void extractLayer(gz4d::ogr::Layer layer);
 
-        bfs::path encfile;
+        fs::path encfile;
 
         typedef std::map<std::string, S57_object *> LnamTable;
         LnamTable lnam_table;

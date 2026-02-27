@@ -13,7 +13,7 @@
 #include "utilities/DottedAddress.h"
 #include <iostream>
 #include "engine/Scene3D.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "engine/ObjectPoseState.h"
 #include "TextureScreen.h"
 #include "engine/ViewManager.h"

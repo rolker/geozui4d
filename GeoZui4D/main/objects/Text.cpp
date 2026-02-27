@@ -6,7 +6,7 @@
 // Contact:  colinw@cisunix.unh.edu or roland@ccom.unh.edu
 */
 #include"Text.h"
-#include<boost/filesystem.hpp>
+#include <filesystem>
 #include"objects/dxf/DXF.h"
 #include "engine/ObjectPoseState.h"
 #include "GZincludes.h"
@@ -163,7 +163,7 @@ void Text::loadLetter(char * fname,char i)
 {
     FILE * file;
     
-    bfs::path fpath(mainWindow->GetAppdir(),fname);
+    fs::path fpath(mainWindow->GetAppdir(),fname);
     file = fopen(fpath.string().c_str(),"r");
     if(file)
     {

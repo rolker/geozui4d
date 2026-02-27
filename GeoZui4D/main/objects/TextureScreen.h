@@ -57,7 +57,7 @@ class TextureScreen : public QuadTreeObject
         void setColorDepth(int nybblesPerColor = 2, bool transparency = true);
         void Fuse(Object *other);
         void applyChanges();
-        bool loadTexture(bfs::path fname);
+        bool loadTexture(fs::path fname);
         void buildTexture();
 
     //Commands that require a call to applyChanges()
@@ -93,9 +93,9 @@ class TextureScreen : public QuadTreeObject
         void Pause();
         void Loop(GLboolean repeat = GL_TRUE);
 
-        bool setTextureFile(bfs::path fname, std::shared_ptr<TextureMap> &texture);
+        bool setTextureFile(fs::path fname, std::shared_ptr<TextureMap> &texture);
         void adjustSize(std::shared_ptr<TextureMap> &texture);
-        bool readWorldFile(std::shared_ptr<TextureMap> &texture, bfs::path fname);
+        bool readWorldFile(std::shared_ptr<TextureMap> &texture, fs::path fname);
         bool loadLeftTexture();
         void generatePanelCoordinates();
 
@@ -109,7 +109,7 @@ class TextureScreen : public QuadTreeObject
 
         std::shared_ptr<TextureMap> leftTexture;
         std::shared_ptr<TextureMap> rightTexture;
-        bfs::path leftTextureName;
+        fs::path leftTextureName;
         int numNybblesPerColor;
         bool useTransparency;
         bool generatedInternally;
@@ -117,7 +117,7 @@ class TextureScreen : public QuadTreeObject
 	/**
          * This is the filename of the distortion grid netCDF file.
          */
-        bfs::path dgFilename;
+        fs::path dgFilename;
 
 	/**
          * This is the distortion grid netCDF file.

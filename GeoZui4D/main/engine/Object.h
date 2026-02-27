@@ -33,8 +33,8 @@
 
 namespace bpt = boost::property_tree;
 
-#include <boost/filesystem.hpp>
-namespace bfs = boost::filesystem;
+#include <filesystem>
+namespace fs = std::filesystem;
 
 
 class Window3D;
@@ -464,7 +464,7 @@ private:
     //Garbage collection
     int garbageFlag;  //is it time to clean us up?
     
-    std::queue<bfs::path> fileQueue;
+    std::queue<fs::path> fileQueue;
     std::shared_ptr<std::ifstream> currentFile;
 };
 

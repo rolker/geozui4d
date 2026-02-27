@@ -1,7 +1,7 @@
 #define GZ4D_INTERNAL
 #include <gz4d/x3d/X3DImageTexture.h>
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <gz4d/X3D.h>
 #include <gz4d/image/io.h>
 #include <iostream>
@@ -17,17 +17,17 @@ void gz4d::X3DImageTexture::Load(const boost::property_tree::ptree& x3d, gz4d::X
     X3DTexture2DNode::Load( x3d, root);
 
     
-    boost::filesystem::path fn(root->getFilename());
-    
-    gz4d::image::Info i = gz4d::image::info((fn.branch_path()/url[0]).string());
+    std::filesystem::path fn(root->getFilename());
+
+    gz4d::image::Info i = gz4d::image::info((fn.parent_path()/url[0]).string());
     if(L8()(i.format)||L16()(i.format))
-        image_l.Load((fn.branch_path()/url[0]).string());
+        image_l.Load((fn.parent_path()/url[0]).string());
     else if(LA8()(i.format)||LA16()(i.format))
-             image_la.Load((fn.branch_path()/url[0]).string());
+             image_la.Load((fn.parent_path()/url[0]).string());
     else if(RGB8()(i.format)||RGB16()(i.format))
-        image_rgb.Load((fn.branch_path()/url[0]).string());
+        image_rgb.Load((fn.parent_path()/url[0]).string());
     else if(RGBA8()(i.format)||RGBA16()(i.format))
-        image_rgba.Load((fn.branch_path()/url[0]).string());
+        image_rgba.Load((fn.parent_path()/url[0]).string());
     
     //std::string fn(url[0].substr(1,url[0].size()-2));
     //image.Load(root->getFilename().branch_path()/url[0]); //&&&we need to loop through until we find one, rather than only try first one

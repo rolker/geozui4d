@@ -591,7 +591,7 @@ int Object::save(std::string const &path)
     int uniqueLen = 4;
     //struct stat info;
     
-    bfs::path fullFilename;
+    fs::path fullFilename;
 
     if (!GetFilename().empty())
         fullFilename = GetFilename();
@@ -626,7 +626,7 @@ int Object::save(std::string const &path)
         {
             std::stringstream uniqueStr;
             uniqueStr << std::setw(uniqueLen) << unique;
-            fullFilename = bfs::current_path();
+            fullFilename = fs::current_path();
             fullFilename/= (typeName+uniqueStr.str()+labelPortion+GetSuffix());
             unique++;
         }
@@ -2038,7 +2038,7 @@ void Object::SaveXML(FILE * out, std::string const &path)
 {
     fprintf(out,"<Object ");
     if(!GetFilename().empty())
-        fprintf(out,"filename=\"%s\" ",(bfs::path(path)/GetFilename()).string().c_str());
+        fprintf(out,"filename=\"%s\" ",(fs::path(path)/GetFilename()).string().c_str());
     SaveXMLattributes(out);
     fprintf(out,"/>\n");
 }
@@ -2249,7 +2249,7 @@ Object * Object::LoadXML(bpt::ptree const &xml, std::string const &path, gz4d::n
 
     for(bpt::ptree::const_iterator f = xml.begin(); f != xml.end(); ++f)
         if(f->first == "File")
-            fileQueue.push(bfs::path(path)/f->second.data());
+            fileQueue.push(fs::path(path)/f->second.data());
     
     // seems to be some methods not yet commited to libgz4d!!!
 /*    if(xml.getFloatTuple(min, max, "headingRange"))

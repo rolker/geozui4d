@@ -22,7 +22,7 @@
 #define DYNAMICTIDES_H
 
 #include "engine/Object.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 class DynamicTides: public Object
 {
@@ -56,7 +56,7 @@ protected:
 	double rawStartTime, rawInterval, rawEndTime;
 	double predictedStartTime, predictedInterval, predictedEndTime;
 
-	bfs::path rawFilename, predictedFilename;
+	fs::path rawFilename, predictedFilename;
 
 	double currentGzTime;
 	int currentTimeIndex, currentTimeSerial;

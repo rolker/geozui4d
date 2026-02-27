@@ -1,6 +1,6 @@
 #include "GZincludes.h"
 #include "Chart.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <gz4d/Image.h>
 #include<string.h>
 #include"objects/gutm.h"
@@ -32,8 +32,8 @@ Object * Chart::LoadXML(bpt::ptree const &xml, std::string const &path, gz4d::ne
 	
 	Object::LoadXML(xml,path, ncfile);
 	
-	bfs::path ifname;
-	bfs::path wfname;
+	fs::path ifname;
+	fs::path wfname;
 	
 	FILE * wfile;
 	float eastscale, northscale, rot1, rot2;
@@ -48,7 +48,7 @@ Object * Chart::LoadXML(bpt::ptree const &xml, std::string const &path, gz4d::ne
 	// get world file info
 	if(!wfname.empty())
 	{
-		wfile = fopen((bfs::path(path)/wfname).string().c_str(),"r");
+		wfile = fopen((fs::path(path)/wfname).string().c_str(),"r");
 		if(wfile)
 		{
 			int i = fscanf(wfile, "%f %f %f %f %lf %lf", &eastscale, &rot1, &rot2, &northscale, &eastref, &northref);

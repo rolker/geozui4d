@@ -10,7 +10,7 @@
 #include <gz4d/Pixel.h>
 #include <gz4d/image/Info.h>
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <memory>
 
 #include <tiffio.h>
@@ -177,7 +177,7 @@ namespace gz4d
             public:
                 TIFF_ReadContext(std::string const &fname)
                 {
-                    if (!exists(boost::filesystem::path(fname)))
+                    if (!exists(std::filesystem::path(fname)))
                         throw Exception("File not found");
                 
                     TIFF* tiff = TIFFOpen(fname.c_str(),"r");

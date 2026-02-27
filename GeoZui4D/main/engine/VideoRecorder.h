@@ -8,8 +8,8 @@
 // #endif
 
 #include <gz4d/glo.h>
-#include <boost/filesystem.hpp>
-namespace bfs = boost::filesystem;
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #ifdef GZ4D_AV
 #include <gz4d/av/AVWriter.h>
@@ -47,7 +47,7 @@ private:
     gz4d::ImageRGBA8 frame;
     GLfloat * multiFrameBuffer;
 
-    bfs::path filename;
+    fs::path filename;
     unsigned int videoBitrate;
     unsigned int audioBitrate;
     double spatialAA;

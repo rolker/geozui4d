@@ -11,7 +11,7 @@
 #include <iostream>
 #include "engine/ToglWindow.h"
 #include "engine/Scene3D.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "MainWindow.h"
 #include "utilities/Utilities.h"
 #include "engine/TimeControl.h"
@@ -209,8 +209,8 @@ void Notes::Save(std::string const &fname)
     {
         if(!fname.empty())
         {
-            bfs::path fn(fname);
-            if((extension(fn) == ".txt") || (extension(fn) == ".csv"))
+            fs::path fn(fname);
+            if((fn.extension().string() == ".txt") || (fn.extension().string() == ".csv"))
             {
                 o = fopen(fname.c_str(),"w");
                 if(o)

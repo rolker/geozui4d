@@ -73,7 +73,7 @@ protected:
         bool udp;
         bool preload;
         Point3f offset;
-        bfs::path logfile;
+        fs::path logfile;
         std::string prefix;
         bool filterIn;
         DataSource():port(0),udp(false),preload(false),filterIn(true){offset[X] = offset[Y] = offset[Z] = 0.0;}

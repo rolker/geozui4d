@@ -23,7 +23,7 @@
 #include "GZincludes.h"
 #include "objects/GeoData/DataLines.h"
 #include "widgets/Sv_Standards.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "interactors/PointHandle.h"
 #include "engine/PosableStateWrapper.h"
 #include "engine/TextureMaps/TextureMap.h"
@@ -2367,7 +2367,7 @@ Object * DataLines::LoadXML(bpt::ptree const &xml, std::string const &path, gz4d
 
     if(!datafilename.empty())
     {
-        datafile = fopen((bfs::path(path)/datafilename).string().c_str(),"r");
+        datafile = fopen((fs::path(path)/datafilename).string().c_str(),"r");
         if(!datafile)
         {
             cerr << "DataLines: error opening datafile: " << datafilename.string() << endl;

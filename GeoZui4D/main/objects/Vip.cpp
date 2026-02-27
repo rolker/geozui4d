@@ -16,7 +16,7 @@
  */
 /*---------------------------------------------------------------------------*/
 #include "GZincludes.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "engine/ObjectPoseState.h"
 #include "Vip.h"
 #include "widgets/Sv_Standards.h"
@@ -939,7 +939,7 @@ Object * Vip::LoadXML(bpt::ptree const &xml, std::string const &path, gz4d::netc
 
     if(!datafilename.empty())
     {
-        datafile = std::fopen((bfs::path(path)/datafilename).string().c_str(),"r");
+        datafile = std::fopen((fs::path(path)/datafilename).string().c_str(),"r");
         if(!datafile)
         {
             std::cerr << "Vip: error opening datafile: " << datafilename << std::endl;

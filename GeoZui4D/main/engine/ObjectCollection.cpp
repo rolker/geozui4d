@@ -12,7 +12,7 @@
 #include "utilities/DottedAddress.h"
 #include <iostream>
 #include "engine/Scene3D.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "interactors/PointHandle.h"
 #include "engine/ObjectPoseState.h"
 #include "engine/Notes.h"
@@ -494,7 +494,7 @@ int ObjectCollection::ReloadObject(Object* object)
 Object * ObjectCollection::LoadObject(const string& fn)
 {
     Object* object = NULL;
-    string ext = extension(bfs::path(fn));
+    string ext = fs::path(fn).extension().string();
 
     if (!ext.empty()) //Load the appropriate object based on extension
     {
@@ -871,7 +871,7 @@ void ObjectCollection::WriteToScene(string scenepath)
 			transparency << " transparency=\\\"" << obj->getTransparencyLevel()<< "\\\"";
 
 		stringstream tclstr;
-		tclstr << "puts $outfile \"\t<Object filename=\\\"" << bfs::path(scenepath)/obj->GetFilename() << "\\\" label=\\\"" <<  obj->GetLabel() << "\\\" texture=\\\"" << customTextureLabel << "\\\"" << transparency.str() << "/>\"";
+		tclstr << "puts $outfile \"\t<Object filename=\\\"" << fs::path(scenepath)/obj->GetFilename() << "\\\" label=\\\"" <<  obj->GetLabel() << "\\\" texture=\\\"" << customTextureLabel << "\\\"" << transparency.str() << "/>\"";
 
 		mainWindow->Tcl_Eval(tclstr.str().c_str());
 	}
@@ -925,7 +925,7 @@ string ObjectCollection::GetExtension(int id)
 Object *ObjectCollection::LoadXML(std::string const &fname)
 {
     Object * object = NULL;
-    bfs::path newpath = bfs::path(fname).parent_path();
+    fs::path newpath = fs::path(fname).parent_path();
 
     bpt::ptree doc;
     read_xml(fname,doc);
@@ -1017,7 +1017,7 @@ Object * ObjectCollection::LoadXML(bpt::ptree const &xml, std::string const &pat
 Object * ObjectCollection::LoadXMLObject(bpt::ptree const &xml, std::string const &path, gz4d::netcdf::File ncfile)
 {
     Object * object = NULL;
-    bfs::path fn;
+    fs::path fn;
     string ext;
     bool recursionFlag = false;
     
@@ -1038,8 +1038,8 @@ Object * ObjectCollection::LoadXMLObject(bpt::ptree const &xml, std::string cons
             if((*attribute)[0] == '/')
                 fn = *attribute;
             else
-                fn = bfs::path(path)/(*attribute);
-            ext = extension(fn);
+                fn = fs::path(path)/(*attribute);
+            ext = fn.extension().string();
             if (!ext.empty()) //Load the appropriate object based on extension
             {
                 if(ext == ".gzx")
@@ -1153,8 +1153,8 @@ int ObjectCollection::perform(int argc, const char **argv, Tcl_Interp *interp)
         {
             if (argc == 2)
             {
-                bfs::path fn(argv[1]);
-                string ext = extension(fn);
+                fs::path fn(argv[1]);
+                string ext = fn.extension().string();
                 if (!ext.empty()) //Load the appropriate object based on extension
                 {
                     if(ext == ".gzx")

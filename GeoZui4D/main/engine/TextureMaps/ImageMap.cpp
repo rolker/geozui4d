@@ -11,7 +11,7 @@
 #include <math.h>
 #include <iostream>
 #include <string.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "objects/gutm.h"
 #include "objects/NetCDF.h"
 #include "engine/Scene3D.h"
@@ -89,7 +89,7 @@ void ImageMap::Init()
 
 void ImageMap::InitDims()
 {
-    if (extension(bfs::path(GetFilename())) == ".nc")
+    if (fs::path(GetFilename()).extension().string() == ".nc")
     {
         ncfile = gz4d::netcdf::File(GetFilename());
         if(ncfile)
@@ -116,7 +116,7 @@ void ImageMap::InitDims()
     canBeCached = true;
 
     std::string imfilename = GetFilename();   // get file name, including path
-    std::string ext = extension(bfs::path(imfilename));
+    std::string ext = fs::path(imfilename).extension().string();
 
     if(ext == ".jgw")
         imfilename = imfilename.substr(0,imfilename.size()-3)+"jpg";

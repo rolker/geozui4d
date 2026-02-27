@@ -13,7 +13,7 @@
 #include <ctype.h>
 #include "engine/Persistence.h"
 #include "widgets/Sv_Standards.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "utilities/Utilities.h"
 
 //using namespace std;
@@ -364,7 +364,7 @@ int Persistence::SetFilename(std::string const &fn)
         return 1;
 
     if (label.empty())
-        label = bfs::path(filename).filename().string();
+        label = fs::path(filename).filename().string();
 
   return 0;
 }
@@ -579,7 +579,7 @@ int Persistence::Lookup(const char *name, GLboolean reportError, GLboolean disre
 		i = -1;
 		if (reportError)
 		{
-			std::cerr << "Invalid keyword " << name << " in " << GetFilenameAsPath().branch_path().string() <<
+			std::cerr << "Invalid keyword " << name << " in " << GetFilenameAsPath().parent_path().string() <<
 				"!" << std::endl;
 		}
     }
@@ -803,7 +803,7 @@ void Persistence::createProgress(std::string const &title)
 			tclstr << "ProgressDlg .objProgress -maximum 100 -variable objProg -title \"" << title << "\" -parent .";
 		else
 			if(!GetFilename().empty())
-				tclstr << "ProgressDlg .objProgress -maximum 100 -variable objProg -title \"Loading " << GetFilenameAsPath().branch_path() << "...\" -parent .";
+				tclstr << "ProgressDlg .objProgress -maximum 100 -variable objProg -title \"Loading " << GetFilenameAsPath().parent_path() << "...\" -parent .";
 			else
 				tclstr << "ProgressDlg .objProgress -maximum 100 -variable objProg -title \"Loading...\" -parent .";
 		mainWindow->Tcl_Eval(tclstr.str().c_str());
@@ -822,7 +822,7 @@ void Persistence::updateTitle(std::string const &title)
 		tclstr << "Dialog::configure .objProgress -title \"" << title << "\"";
 	else
 		if(!GetFilename().empty())
-			tclstr << "Dialog::configure .objProgress -title \"Loading " << GetFilenameAsPath().branch_path() << "...\"";
+			tclstr << "Dialog::configure .objProgress -title \"Loading " << GetFilenameAsPath().parent_path() << "...\"";
 		else
 			tclstr << "Dialog::configure .objProgress -title \"Loading...\"";
 	mainWindow->Tcl_Eval(tclstr.str().c_str());

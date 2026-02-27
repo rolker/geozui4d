@@ -27,7 +27,7 @@
 #include <iostream>
 #include "engine/InputMediator.h"
 #include "engine/TranslatableState.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 
 extern MainWindow *mainWindow;
@@ -144,9 +144,9 @@ Object * TimeVaryingObject::LoadXML(bpt::ptree const &xml, std::string const &pa
                 boost::optional<std::string> attribute;
                 if(attribute = xml.get_optional<std::string>("<xmlattr>.filename"))
                 {
-                    if (!bfs::extension(*attribute).empty()) //Load the appropriate object based on extension
+                    if (!fs::path(*attribute).extension().string().empty()) //Load the appropriate object based on extension
                     {
-                        object = Object::createFromExtension(bfs::extension(*attribute));
+                        object = Object::createFromExtension(fs::path(*attribute).extension().string());
                         if (object)
                         {
                             object->ignore(PICK_CLICK1);
@@ -157,7 +157,7 @@ Object * TimeVaryingObject::LoadXML(bpt::ptree const &xml, std::string const &pa
 
                     if (object != NULL)  // if an object did manage to get created, add it to the list
                     {
-                        ret = object->SetFilename((bfs::path(path)/(*attribute)).string());
+                        ret = object->SetFilename((fs::path(path)/(*attribute)).string());
                         if (ret==0)
                         {
                             if (treatAsTide)

@@ -15,7 +15,7 @@
 #include "engine/ViewManager.h"
 #include "engine/Scene3D.h"
 #include "engine/gzCommandInterface.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <queue>
 #include <gz4d/vector/ios.h>
 

@@ -7,7 +7,7 @@
 */
 
 #include "SoundFlac.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 //#include <Xml.h>
 
 REGISTER_OBJECT(SoundFlac, "flac");
@@ -33,7 +33,7 @@ int SoundFlac::Load()
                         std::string s;
                         if (xml.getString(s,"type") && s == "Sound")
                         {
-                            LoadXML(xml,GetFilename().branch_path().directory_string(),NULL);
+                            LoadXML(xml,GetFilename().parent_path().string(),NULL);
                             flac.process_single(); // this is to initialize the stream so sample_rate gets initialized.
                             flac.seek_absolute(0);
                             if(startTime && !endTime)

@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 //#include <time.h>
 #include "objects/BasicAisVessel.h"
 #include "MainWindow.h"
@@ -87,7 +87,7 @@ void Ais::resetStates()
 }
 
 /*---------------------------------------------------------------------------*/
-Ais::Ais(string a, int s, bool udp_flag, bfs::path log_filename)
+Ais::Ais(string a, int s, bool udp_flag, fs::path log_filename)
     : NmeaSource(a, s, udp_flag, log_filename)
 {
     init();

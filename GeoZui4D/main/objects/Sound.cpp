@@ -9,7 +9,7 @@
 #include "Sound.h"
 #include <iostream>
 #include <GL/glut.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include "MainWindow.h"
 #include "engine/Scene3D.h"

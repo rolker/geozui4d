@@ -5,7 +5,7 @@
 #include <gz4d/time.h>
 #include <gz4d/TimeSequence.h>
 #include <string>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <gz4d/time/ios.h>
 
 namespace gz4d
@@ -23,7 +23,7 @@ namespace gz4d
             
             Image(std::string const &fn):_filename(fn)
             {
-                boost::filesystem::path ip(_filename);
+                std::filesystem::path ip(_filename);
                 std::string fname = ip.filename().string();
                 std::string tstamp = fname.substr(0,fname.find('_'));
                 _timestamp = boost::lexical_cast<gz4d::Time>(tstamp);
@@ -62,16 +62,16 @@ namespace gz4d
             
             void add(std::string const &dir, std::string const &pattern, std::string const &ext=std::string(".jpg"))
             {
-                boost::filesystem::path dir_path(dir);
+                std::filesystem::path dir_path(dir);
                 if(exists(dir_path) && is_directory(dir_path))
                 {
-                    for(boost::filesystem::directory_iterator e(dir_path); e != boost::filesystem::directory_iterator(); ++e)
+                    for(std::filesystem::directory_iterator e(dir_path); e != std::filesystem::directory_iterator(); ++e)
                     {
                         if(is_directory(*e))
-                            add(boost::filesystem::path(*e).string(),pattern,ext);
+                            add(std::filesystem::path(*e).string(),pattern,ext);
                         if(is_regular_file(*e))
                         {
-                            boost::filesystem::path f(*e);
+                            std::filesystem::path f(*e);
                             if(pattern.empty() || f.filename().string().find(pattern) != std::string::npos)
                             {
                                 if(ext.empty() || f.extension() == ext)

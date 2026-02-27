@@ -111,7 +111,7 @@ private:
     //bool Resize(unsigned long size);
 
     /// Name of the NetCDF file where the fish data are stored.
-    bfs::path fishFilename;
+    fs::path fishFilename;
 
     /// The array of fish.
     std::vector<Fish> fish;

@@ -10,7 +10,7 @@
 #include <string.h>
 #include "engine/InputMediator.h"
 #include "engine/TextureMaps/Clut.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <GL/glu.h>
 
 const EventType *Clut::clutChangedInputType =

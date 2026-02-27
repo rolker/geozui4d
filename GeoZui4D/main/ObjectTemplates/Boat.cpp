@@ -27,7 +27,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "engine/Scene3D.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #ifndef WIN32
 #include <unistd.h>
 #endif

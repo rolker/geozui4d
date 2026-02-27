@@ -15,8 +15,8 @@
 #include<stdio.h>
 #include "engine/RTSource.h"
 #include "utilities/Addressable.h"
-#include <boost/filesystem.hpp>
-namespace bfs = boost::filesystem;
+#include <filesystem>
+namespace fs = std::filesystem;
 #include <gz4d/socket/Socket.h>
 
 class Window3D;
@@ -37,7 +37,7 @@ class NmeaSource: public RTSource, public Addressable
 public:
     void init();
     void openPort(std::string a, int s, bool udp_flag);
-    NmeaSource(std::string a, int s, bool udp_flag = 0, bfs::path log_filename = "");
+    NmeaSource(std::string a, int s, bool udp_flag = 0, fs::path log_filename = "");
     NmeaSource(std::string a, int s, bool udp_flag, NmeaSource *logfileSource);
     NmeaSource(std::string const &fn);
     ~NmeaSource();
@@ -56,7 +56,7 @@ public:
     enum {NOT_PROCESSED = -1, DONE_PROCESSING, GZTIME, GZTOFFSET, GENERIC_DATA};
     int lookup(char *s);
 
-    void changeLogfile(bfs::path new_filename = "");
+    void changeLogfile(fs::path new_filename = "");
     void shareLogfileWith(NmeaSource *otherSource = NULL) {logfileController = otherSource ? otherSource : this;}
 
     void changeInputFile(std::string const &new_filename = "");

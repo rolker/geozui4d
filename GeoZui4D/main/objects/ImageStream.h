@@ -22,7 +22,7 @@ class ImageStream: public RasterStream<gz4d::Raster<gz4d::Pixel> >, public Objec
 
         int Load(){return 1;}
         void Init(){}
-        int Save(std::string const &fn = bfs::path()){return 1;}
+        int Save(std::string const &fn = fs::path()){return 1;}
         void Enable(const Point3d offset){Enable();}
         void Build(){}
         void Destroy(){};

@@ -10,7 +10,7 @@
 #include <iostream>
 #include <string.h>
 #include "MovieMap.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <GL/glu.h>
 
 #define DEFAULTSIZE	1000
@@ -53,7 +53,7 @@ void MovieMap::Init()
 
   if (GetFilename().empty())
     {
-      SetFilename(bfs::path("default.mgw"));
+      SetFilename(fs::path("default.mgw"));
     }
 	
   if (Load() != 0)
@@ -66,7 +66,7 @@ void MovieMap::Init()
 void MovieMap::InitDims()
 {
 	string imfilename = GetFilename().string();	// get file name, including path
-	string ext = extension(GetFilename());
+	string ext = GetFilename().extension().string();
 
 	if(ext == ".mgw")
 		imfilename = imfilename.substr(0,imfilename.size()-3) + "mpg";
@@ -88,7 +88,7 @@ int MovieMap::Load()
 	char line[256];
 
 	string imfilename = GetFilename().string();	// get file name, including path
-	string ext = extension(GetFilename());
+	string ext = GetFilename().extension().string();
 
 	if(ext == ".mgw")
 	{

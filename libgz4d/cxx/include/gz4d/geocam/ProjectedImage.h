@@ -154,7 +154,7 @@ namespace gz4d
                         }                            
                     }
                 }
-                //gdal::saveGeotiff((boost::filesystem::path("debug")/boost::filesystem::path(_filename).filename().replace_extension(".tif")).string(),outImage);
+                //gdal::saveGeotiff((std::filesystem::path("debug")/std::filesystem::path(_filename).filename().replace_extension(".tif")).string(),outImage);
                 outImage = outImage.strip(gz4d::Pixel<gz4d::RGBA8>(gz4d::Color(0,0,0,0)));
                 
                 

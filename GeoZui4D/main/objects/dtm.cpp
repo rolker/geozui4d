@@ -12,7 +12,7 @@
 #include <math.h>
 #include <iostream>
 #include "dtm.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #define EARTH_RAD	6371000.0
 #define PI 3.1415926536
@@ -232,7 +232,7 @@ int Dtm::readFrom(FILE *infile)
 
 	float gridcell; // the dimensions of a cell
 
-	cout << "Loading " << GetFilename().leaf() << " ... \n";
+	cout << "Loading " << GetFilename().filename() << " ... \n";
 	cout.flush();
 	
 	// area  description

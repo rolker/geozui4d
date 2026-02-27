@@ -39,7 +39,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/include/
 
 SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} CACHE STRING "You may add additional search paths here. Use ; to separate multiple paths.")
 
-set(boost_components date_time system filesystem program_options) # iostreams)
+set(boost_components date_time system program_options) # iostreams)
 if(CMAKE_CROSSCOMPILING)
     set(boost_components ${boost_components} thread_win32)
 else()
@@ -48,7 +48,7 @@ else()
 endif()
 
 find_package(Boost 1.46.0 COMPONENTS ${boost_components} REQUIRED)
-set(DEB_DEPS ${DEB_DEPS} libboost-system1.40.0 libboost-filesystem1.40.0 libboost-program-options1.40.0 libboost-iostreams1.40.0)
+set(DEB_DEPS ${DEB_DEPS} libboost-system1.40.0 libboost-program-options1.40.0 libboost-iostreams1.40.0)
 if(NOT MSVC)
     set(LIBS ${LIBS} ${Boost_LIBRARIES})
 endif()

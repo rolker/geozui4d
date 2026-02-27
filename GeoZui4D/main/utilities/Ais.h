@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include "AisVhf_specs.h"
 #include "NmeaSource.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <gz4d/geo/Projection.h>
 
 class Socket;
@@ -42,7 +42,7 @@ class BasicAisVessel;
 class Ais: public NmeaSource
 {
     public:
-        Ais(std::string a, int s, bool udp_flag = 0, bfs::path log_filename = "");
+        Ais(std::string a, int s, bool udp_flag = 0, fs::path log_filename = "");
         Ais(std::string a, int s, bool udp_flag, NmeaSource *logfileSource);
         Ais(std::string const &fn);
         ~Ais();

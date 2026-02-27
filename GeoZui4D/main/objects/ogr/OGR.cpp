@@ -30,7 +30,7 @@ Object * OGR::LoadXML(bpt::ptree const &xml, std::string const &path, gz4d::netc
     boost::optional<std::string> attribute;
     if(attribute = xml.get_optional<std::string>("<xmlattr>.filename"))
     {
-        bfs::path fn = bfs::path(path)/(*attribute);
+        fs::path fn = fs::path(path)/(*attribute);
         if((*attribute)[0] == '/')
             fn = *attribute;
         gz4d::ogr::DataSource dataSource(fn.string());

@@ -41,7 +41,7 @@ inline gz4d::s57::S57::S57(std::string const &catalog_filename)
     {
         if(cn->first == "cell")
         {
-            Cell::Ptr c(new Cell(cn->second, boost::filesystem::path(catalog_filename).parent_path().string()));
+            Cell::Ptr c(new Cell(cn->second, std::filesystem::path(catalog_filename).parent_path().string()));
             bbox.expand(c->getBBox());
             cells.push_back(c);
         }

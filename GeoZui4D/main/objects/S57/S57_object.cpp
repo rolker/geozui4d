@@ -988,7 +988,7 @@ void S57_object::resolveReferences(LnamTable &lnam_table, std::string const &s57
     if (textDescription.empty())
         return;
 
-    bfs::path textPath = bfs::path(s57file)/textDescription;
+    fs::path textPath = fs::path(s57file)/textDescription;
 
     std::ifstream contents(textPath.string().c_str());
     if (!contents)

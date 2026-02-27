@@ -7,7 +7,7 @@
 */
 
 #include "SoundOgg.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -23,7 +23,7 @@ SoundOgg::SoundOgg()
 int SoundOgg::Load()
 {
 
-    bfs::path fn(GetFilename());
+    fs::path fn(GetFilename());
     if(!fn.empty())
     {
         in = fopen(fn.string().c_str(), "rb");

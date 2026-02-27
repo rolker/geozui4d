@@ -2,7 +2,7 @@
 #define GZ4D_S57_CELL_H
 
 #include <gz4d/gz4d.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <boost/property_tree/ptree.hpp>
 
 #include <gz4d/ogr/DataSource.h>
@@ -125,7 +125,7 @@ inline gz4d::s57::Cell::Cell(const boost::property_tree::ptree &node, std::strin
 :topLevel(false)
 {
     name = node.get("name",name);
-    dataSourcePath = (boost::filesystem::path(path)/name/std::string(name+".000")).string();
+    dataSourcePath = (std::filesystem::path(path)/name/std::string(name+".000")).string();
 
     cscale = node.get("cscale",cscale);
     

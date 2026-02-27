@@ -31,7 +31,7 @@
 #include <stdlib.h>
 #include "utilities/Gps.h"
 #include "utilities/Ais.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "utilities/TimePieces.h"
 #include "engine/TimeControl.h"
 #include "VesselPredictor.h"
@@ -156,7 +156,7 @@ Object * Vessel::LoadXML(bpt::ptree const &xml, std::string const &path, gz4d::n
             sources[type].port = node->second.get("<xmlattr>.port",sources[type].port);
 
             if(attribute = node->second.get_optional<std::string>("<xmlattr>.logfile"))
-                sources[type].logfile = bfs::path(path)/(*attribute);
+                sources[type].logfile = fs::path(path)/(*attribute);
 
             if(attribute = node->second.get_optional<std::string>("<xmlattr>.offset"))
             {
@@ -229,15 +229,15 @@ Object * Vessel::LoadXML(bpt::ptree const &xml, std::string const &path, gz4d::n
         {
             if(s->first == "gps")
             {
-                s->second.nmea = new Gps((bfs::path(path)/s->second.filename).string());
+                s->second.nmea = new Gps((fs::path(path)/s->second.filename).string());
                 generatingCMG = 0;
             }
             else if(s->first == "ais")
             {
-                s->second.nmea = new Ais((bfs::path(path)/s->second.filename).string());
+                s->second.nmea = new Ais((fs::path(path)/s->second.filename).string());
             }
             else
-                s->second.nmea = new NmeaSource((bfs::path(path)/s->second.filename).string());
+                s->second.nmea = new NmeaSource((fs::path(path)/s->second.filename).string());
 
             if(s->first == "sounder")
                 s->second.nmea->watchFor('$', "DBS", NmeaSource::GENERIC_DATA, 2, NmeaSource::Float, &sounder_depth);
@@ -364,7 +364,7 @@ int Vessel::readFrom(FILE *infile)
 /*    }
     else if(!gps_filename.empty())
     {
-        gps=new Gps(bfs::path(GetFilename().branch_path()/gps_filename));
+        gps=new Gps(fs::path(GetFilename().parent_path()/gps_filename));
         if(gps)
             generatingCMG = 0;
         for(int i=0;i<5;i++)

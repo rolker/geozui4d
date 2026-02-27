@@ -309,7 +309,7 @@ void Window3D::Init(int argc, char *argv[])
 
     if (!watermark)
     {
-        bfs::path fname(appdir);
+        fs::path fname(appdir);
         fname/="watermark.tif";
         watermark = CreateTexture(fname.string());
         if (watermark)
@@ -323,7 +323,7 @@ void Window3D::Init(int argc, char *argv[])
     }
     if (!compass)
     {
-        bfs::path fname(appdir);
+        fs::path fname(appdir);
         fname/="Compass_rose_pale.tif";
         compass = CreateTexture(fname.string());
         if (compass)
@@ -344,7 +344,7 @@ void Window3D::Init(int argc, char *argv[])
     }
     if (!compassPoints)
     {
-        bfs::path fname(appdir);
+        fs::path fname(appdir);
         fname/="CompassPoints.tif";
         compassPoints = CreateTexture(fname.string());
         if (compassPoints)
@@ -417,7 +417,7 @@ int Window3D::SubCommand(int argc, char *argv[])
         }
         int w = atoi(argv[2]);
         int h = atoi(argv[3]);
-        bfs::path fname = argv[4];
+        fs::path fname = argv[4];
         ScreenShot(w,h,fname);
         return TCL_OK;
     }
@@ -2730,7 +2730,7 @@ bool Window3D::isRecording()
     return (vrec->isRecordedFrame());
 }
 
-void Window3D::ScreenShot(int w, int h, bfs::path fname)
+void Window3D::ScreenShot(int w, int h, fs::path fname)
 {
     establishValidContext();
     gz4d::glo::Framebuffer osb(context);
