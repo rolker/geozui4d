@@ -106,7 +106,27 @@ sudo apt install \
   libspnav-dev
 ```
 
-### Build libgz4d
+### Build
+
+```sh
+mkdir -p build && cd build
+cmake ..
+make -j$(nproc)
+```
+
+### Install and Run
+
+```sh
+cd build
+cmake --install . --prefix ../install
+../install/bin/GeoZui4D [files...]
+```
+
+### Alternative: Building Sub-Projects Separately
+
+The sub-projects can still be built independently if needed.
+
+#### Build libgz4d
 
 ```sh
 mkdir -p /tmp/gz4d-libgz4d-build && cd /tmp/gz4d-libgz4d-build
@@ -117,7 +137,7 @@ make -j$(nproc)
 
 The AIS module is disabled above because the current libais API has diverged.
 
-### Build GeoZui4D
+#### Build GeoZui4D
 
 ```sh
 mkdir -p /tmp/gz4d-app-build && cd /tmp/gz4d-app-build
@@ -127,7 +147,7 @@ cmake /path/to/gz4d/GeoZui4D/main \
 make -j$(nproc)
 ```
 
-### Install and Run
+#### Install and Run
 
 ```sh
 cd /tmp/gz4d-app-build

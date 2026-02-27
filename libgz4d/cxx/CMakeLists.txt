@@ -28,7 +28,7 @@ option(GZ4D_PYTHON "Build boost.python bindings" ON)
 option(GZ4D_OPENCV "Build OpenCV components" OFF)
 
 include_directories(
-${CMAKE_SOURCE_DIR}/include/
+${CMAKE_CURRENT_SOURCE_DIR}/include/
 )
 
 SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} CACHE STRING "You may add additional search paths here. Use ; to separate multiple paths.")
@@ -485,7 +485,9 @@ else(MSVC OR CMAKE_CROSSCOMPILING)
         endif(DEB_DEPS_FIXED)
     endforeach(arg)
     set(CPACK_DEBIAN_PACKAGE_DEPENDS ${DEB_DEPS_FIXED})
-    add_custom_target(deb fakeroot make package)
+    if(NOT TARGET deb)
+        add_custom_target(deb fakeroot make package)
+    endif()
 endif(MSVC OR CMAKE_CROSSCOMPILING)
 include(CPack)
 
