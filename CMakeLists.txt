@@ -1,5 +1,9 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.14)
 project(gz4d)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Disable AIS (libais API has diverged)
 set(ais_INCLUDE_DIR "" CACHE STRING "" FORCE)
