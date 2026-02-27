@@ -1,0 +1,10 @@
+libgz4d.kdevelop.pcs
+libgz4d.kdevses
+build/
+.sconf_temp/
+.sconsign.dblite
+config.log
+libgz4d.conf
+*~
+*.pyc
+

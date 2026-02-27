@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<mission_profile positiveDepths="yes" top="auv" true="1" false="0">
+
+    <type name="hotelConfig">
+        <item name="mains" type="bool" element="yes" attribute="yes"/>
+        <item name="latVert" type="bool" element="yes" attribute="yes"/>
+        <item name="doppler" type="bool" element="yes" attribute="yes"/>
+        <item name="sidescan" type="bool" element="yes" attribute="yes"/>
+        <item name="camera" type="bool" element="yes" attribute="yes"/>
+        <item name="modem" type="bool" element="yes" attribute="yes"/>
+    </type>
+
+    <type name="trackBySensorType">
+        <item name="sensor" type="text" element="yes" attribute="yes" required="yes" restricted="yes">
+            <possibleValue>Altitude</possibleValue>
+            <possibleValue>Magic</possibleValue>
+        </item>
+        <item name="value" type="float" element="yes" attribute="yes" required="yes"/>
+    </type>
+
+    <type name="controlType">
+        <item name="mode" type="text" element="yes" attribute="yes" required="yes"/>
+        <item name="navSource" type="text" element="yes" attribute="yes" required="yes">
+            <possibleValue>Inertial</possibleValue>
+            <possibleValue>Doppler</possibleValue>
+            <possibleValue>GPS</possibleValue>
+        </item>
+        <item name="dopplerReset" type="bool" element="yes" attribute="yes" required="yes"/>
+    </type>
+
+    <section name="georef" label="Georeference"  path="georeference" gz="georef">
+        <item gz="projtype" name="projection" element="yes" attribute="yes" restricted="yes">
+            <possibleValue gz="utmlabel">UTM</possibleValue>
+            <possibleValue gz="geographiclabel">Geographic</possibleValue>
+        </item>
+        <item gz="locallat" name="originLat" type="float" element="yes" attribute="yes"/>
+        <item gz="locallon" name="originLon" type="float" element="yes" attribute="yes"/>
+        <item gz="utmzone" name="originZone" type="integer" element="yes" attribute="yes"/>
+        <item gz="localn" name="originNorth" type="float" element="yes" attribute="yes"/>
+        <item gz="locale" name="originEast" type="float" element="yes" attribute="yes"/>
+    </section>
+
+    <section name="toplevels" label="General" path="mission">
+        <item name="title" type="text" element="yes"/>
+        <item name="description" type="text" element="yes"/>
+    </section>
+
+    <section name="globals" label="Global values" path="mission/global">
+        <item name="xyVelocity" type="float" element="yes"/>
+        <item name="zVelocity" type="float" element="yes"/>
+        <item name="heading" type="float" element="yes"/>
+        <item name="hotelSettings" type="hotelConfig"/>
+        <item name="shutdownSettings" type="hotelConfig"/>
+        <item name="commandTimeout" type="time" element="yes"/>
+        <item name="missionTimeout" type="time" element="yes"/>
+        <item name="abortTimeout" type="time" element="yes"/>
+        <item name="trackBySensor" type="trackBySensorType"/>
+        <item name="control" type="controlType"/>
+    </section>
+
+    <command name="wait" path="mission/wait" help="Wait specified amount of time">
+        <item name="amount" type="time" element="yes" attribute="yes" required="yes"/>
+        <item name="hotelSettings" type="hotelConfig"/>
+        <item name="sendMessage" type="text" element="yes"/>
+        <display type="wait"/>
+    </command>
+
+    <command name="goto" path="mission/goto" help="Go to position">
+        <item name="xPos" gz="x" type="float" element="yes" attribute="yes" required="yes"/>
+        <item name="yPos" gz="y" type="float" element="yes" attribute="yes" required="yes"/>
+        <item name="zPos" gz="z" type="float" element="yes" attribute="yes" required="yes"/>
+        <item name="xyVelocity" type="float" element="yes"/>
+        <item name="zVelocity" type="float" element="yes"/>
+        <item name="heading" type="float" element="yes"/>
+        <item name="hotelSettings" type="hotelConfig"/>
+        <item name="cmdTimeout" type="time" element="yes"/>
+        <item name="sendMessage" type="text" element="yes"/>
+        <item name="trackBySensor" type="trackBySensorType"/>
+        <display type="goto"/>
+    </command>
+
+    <command name="leg" path="mission/leg" help="Go to end position following strait path from start position">
+        <item name="xStartPos" gz="x" type="float" element="yes" attribute="yes" required="yes"/>
+        <item name="yStartPos" gz="y" type="float" element="yes" attribute="yes" required="yes"/>
+        <item name="zStartPos" gz="z" type="float" element="yes" attribute="yes" required="yes"/>
+        <item name="xEndPos" gz="ex" type="float" element="yes" attribute="yes" required="yes"/>
+        <item name="yEndPos" gz="ey" type="float" element="yes" attribute="yes" required="yes"/>
+        <item name="zEndPos" gz="ez" type="float" element="yes" attribute="yes" required="yes"/>
+        <item name="xyVelocity" type="float" element="yes"/>
+        <item name="zVelocity" type="float" element="yes"/>
+        <item name="heading" type="float" element="yes"/>
+        <item name="hotelSettings" type="hotelConfig"/>
+        <item name="cmdTimeout" type="time" element="yes"/>
+        <item name="sendMessage" type="text" element="yes"/>
+        <item name="trackBySensor" type="trackBySensorType"/>
+        <display type="leg"/>
+    </command>
+
+    <command name="home" path="mission/home">
+        <item name="xPos" gz="x" type="float" element="yes" attribute="yes" required="yes"/>
+        <item name="yPos" gz="y" type="float" element="yes" attribute="yes" required="yes"/>
+        <item name="zPos" gz="z" type="float" element="yes" attribute="yes" required="yes"/>
+        <item name="xyVelocity" type="float" element="yes"/>
+        <item name="zVelocity" type="float" element="yes"/>
+        <item name="heading" type="float" element="yes"/>
+        <item name="hotelSettings" type="hotelConfig"/>
+        <item name="sendMessage" type="text" element="yes"/>
+        <item name="trackBySensor" type="trackBySensorType"/>
+        <display type="home"/>
+    </command>
+
+    <command name="grid" path="mission/grid" help="Run a survey grid of equally spaced legs of equal lengths.">
+        <item name="xStartPos" gz="x" type="float" element="yes" attribute="yes" required="yes"/>
+        <item name="yStartPos" gz="y" type="float" element="yes" attribute="yes" required="yes"/>
+        <item name="zStartPos" gz="z" type="float" element="yes" attribute="yes" required="yes"/>
+        <item name="length" gz="l" type="float" element="yes" required="yes" default="10"/>
+        <item name="width" gz="w" type="float" element="yes" required="yes" default="5"/>
+        <item name="orientation" gz="o" type="float" element="yes" required="yes"/>
+        <item name="numLines" gz="lcount" type="int" element="yes" required="yes" default="2"/>
+        <item name="xyVelocity" type="float" element="yes"/>
+        <item name="zVelocity" type="float" element="yes"/>
+        <item name="heading" type="float" element="yes"/>
+        <item name="hotelSettings" type="hotelConfig"/>
+        <item name="cmdTimeout" type="time" element="yes"/>
+        <item name="sendMessage" type="text" element="yes"/>
+        <item name="trackBySensor" type="trackBySensorType"/>
+        <display type="grid"/>
+    </command>
+
+</mission_profile>

@@ -1,0 +1,18 @@
+set(GEOZUI4D_SRC
+    ${GEOZUI4D_SRC}
+    ${CMAKE_CURRENT_SOURCE_DIR}/S57_area.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/S57_beacon.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/S57_bridge.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/S57_building.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/S57_buoy.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/S57.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/S57_land.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/S57_landmark.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/S57Layer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/S57_object.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/S57_sounding.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/S57_supplemental.cpp
+    PARENT_SCOPE
+)
+
+#add_library(gz_objects_s57 ${GEOZUI4D_OBJECTS_S57_SRC})

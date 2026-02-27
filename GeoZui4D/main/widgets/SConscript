@@ -1,0 +1,18 @@
+Import('env')
+
+sources = '''
+LightDirector.cpp
+Sv_Matrix4.cpp
+Sv_Pointer.cpp
+Sv_Quaternion.cpp
+Sv_Raster.cpp
+Sv_Slider3.cpp
+Sv_Widgets.cpp
+'''
+
+objs = []
+
+for s in Split(sources):
+    objs.append(env.Object(s))
+
+Return('objs')

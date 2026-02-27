@@ -1,0 +1,10 @@
+Import('env')
+import glob
+import os
+
+bitmaps = glob.glob('*.bmp')
+bitmaps += glob.glob('*.gif')
+bitmaps += glob.glob('*.jpg')
+bitmaps += glob.glob('*.ppm')
+
+env.Install(os.path.join(env['lib_dir'],'GeoZui4D/bitmaps'),bitmaps)

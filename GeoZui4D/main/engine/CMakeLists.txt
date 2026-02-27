@@ -1,0 +1,50 @@
+add_subdirectory(PosableStateRelationships)
+add_subdirectory(TextureMaps)
+
+set(GEOZUI4D_SRC
+    ${GEOZUI4D_SRC}
+    ${CMAKE_CURRENT_SOURCE_DIR}/ClutEditor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ExaggeratableState.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gzCommandInterface.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/HackInteractor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/InputInfo.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/InputMediator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Interactor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/InterpolationSupport.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Isotrack.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Notes.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ObjectCollection.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Object.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ObjectPoseState.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Persistence.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PosableStateBase.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PosableStateUser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PosableStateWrapper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PosableWrapperSupport.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PoseState.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/QuadTreeCollection.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/QuadTreeObject.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/QuadTreeTile.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/RTSource.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Scene3D.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SDV_Light.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SessionRecorder.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SimpleObjectCollection.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SimpleObject.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Spaceball.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Tail.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TimeControl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ToglWindow.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TranslatableState.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TranslatableWrapper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/VideoRecorder.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ViewManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Wiimote.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Window3D.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/WindowMediator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/WindowPoseState.cpp
+    PARENT_SCOPE
+)
+
+#add_library(gz_engine STATIC ${GEOZUI4D_ENGINE_SRC})
+

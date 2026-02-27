@@ -1,0 +1,203 @@
+/*!\file bluetooth.cpp
+ *
+ * This generates a socket connection to a bluetooth device, including device discovery.
+ */
+
+/* (c) University of New Hampshire, Center for Coastal and Ocean Mapping and NOAA/UNH
+ * Joint Hydrographic Center, 2007.  All rights reserved.
+ */
+
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+#include "winsock2.h"
+#include "ws2bth.h"			// This gets the Bluetooth supplementary information
+
+/*!\brief Find a particular bluetooth service, if it exists on the current device
+ *
+ * This enumerates all of the services available on the device address provided,
+ * and checks whether any of them match the name given.  The name has to be an
+ * exact match for this to return successfully.
+ *
+ * \param	device		Socket address for the target bluetooth radio.
+ * \param	*service	String containing the name of the service sought.
+ * \param	display		Flag: true => print info on the services as they're found.
+ * \param	*addr		[OUT] Contains address of the service, if found, or zeros if not.
+ * \return	True if service was found on the device, or false if something went wrong.
+ */
+
+bool enumerate_services(LPSOCKADDR device, char *service, bool display, SOCKADDR_BTH *addr)
+{
+	CHAR			address[4096];
+	WSAQUERYSET		query;
+	HANDLE			search;
+	DWORD			addr_length = sizeof(address);
+	CHAR			buffer[4096];
+	DWORD			result_length = sizeof(buffer);
+	LPWSAQUERYSET	result = (LPWSAQUERYSET)buffer;
+	bool			rc = false;
+
+	memset(addr, 0, sizeof(SOCKADDR_BTH));	// Ensure nothing returned unless we find it
+
+	// Configure query for all services on the device
+	memset(&query, 0, sizeof(query));
+	query.dwNameSpace = NS_BTH;
+	query.dwSize = sizeof(WSAQUERYSET);
+	query.lpServiceClassId = (LPGUID)&L2CAP_PROTOCOL_UUID;	// This enumerates all services
+
+	// We have to supply the string version of the address that we want to talk to for
+	// further name services.  Because this is used for a number of different types of
+	// naming service, the only common technique is an ASCII string ...
+	if (WSAAddressToString(device, sizeof(SOCKADDR_BTH), NULL, address, &addr_length) != ERROR_SUCCESS) {
+		cout << "error: failed to make address string for bluetooth device (" << GetLastError() << ")." << endl;
+		return(false);
+	}
+	query.lpszContext = address;
+
+	if (WSALookupServiceBegin(&query, LUP_FLUSHCACHE, &search) != ERROR_SUCCESS) {
+		cout << "error: failed to query services on device." << endl;
+		return(false);
+	}
+	memset(result, 0, sizeof(WSAQUERYSET));
+	result->dwSize = sizeof(WSAQUERYSET);
+	result->dwNameSpace = NS_BTH;
+	while (!rc &&
+		WSALookupServiceNext(search, LUP_RETURN_NAME | LUP_RETURN_ADDR, &result_length, result) == ERROR_SUCCESS) {
+		bool haveName = result->lpszServiceInstanceName && *(result->lpszServiceInstanceName);
+		SOCKADDR_BTH *serv_addr = (SOCKADDR_BTH*)result->lpcsaBuffer->RemoteAddr.lpSockaddr;
+		if (display) {
+			printf("\tService: [address %04X%08X, port 0x%02X]: %s.\n",
+				GET_NAP(serv_addr->btAddr), GET_SAP(serv_addr->btAddr), serv_addr->port,
+				haveName ? result->lpszServiceInstanceName : "unknown");
+		}
+		if (haveName && strcmp(result->lpszServiceInstanceName, service) == 0) {
+			// Matched the name, make a copy of the address and then mark it for return
+			memcpy(addr, serv_addr, sizeof(SOCKADDR_BTH));
+			rc = true;
+		}
+	}
+	WSALookupServiceEnd(search);
+	return(rc);
+}
+
+/*!\brief Find a particular service on any Bluetooth radio
+ *
+ * This searches all of the reachable Bluetooth radios, and determines if one of them has
+ * the name specified by the user, and the service required.  The user can use NULL
+ * for <device> to indicate that any Bluetooth device that provides the service is
+ * acceptable.  This will take a little longer, since all services on all devices have to
+ * be enumerated until an appropriate service is located.  Note that the first matching
+ * service is returned.
+ *
+ * \param	*device		Name of the Bluetooth device to search for (or NULL for any)
+ * \param	*service	Name of the service to search for
+ * \param	display		Flag: true => print information on devices found
+ * \param	*addr		[OUT] Location for address of service (with port), zeros if none found
+ * \return	True if the device and service were matched, or false if something went wrong
+ */
+
+bool find_service(char *device, char *service, bool display, SOCKADDR_BTH *addr)
+{
+	WSAQUERYSET		query;
+	HANDLE			search;
+	CHAR			buffer[4096];
+	DWORD			length = sizeof(buffer);
+	LPWSAQUERYSET	result = (LPWSAQUERYSET)buffer;
+	bool			rc = false;
+
+	// We configure the search for containers, so that we get remote radios, not services
+	memset(&query, 0, sizeof(query));
+	query.dwSize = sizeof(query);
+	query.dwNameSpace = NS_BTH;
+	if (WSALookupServiceBegin(&query, LUP_CONTAINERS, &search) != ERROR_SUCCESS) {
+		cout << "error: failed to start Bluetooth device search (" << GetLastError() << ")" << endl;
+		return(false);
+	}
+
+	memset(result, 0, sizeof(WSAQUERYSET));
+	result->dwSize = sizeof(WSAQUERYSET);
+	result->dwNameSpace = NS_BTH;
+	while (!rc &&
+			WSALookupServiceNext(search, LUP_RETURN_NAME | LUP_RETURN_ADDR, &length, result) == ERROR_SUCCESS) {
+		bool	 bHaveName = result->lpszServiceInstanceName && *(result->lpszServiceInstanceName);
+		if (display) {
+			BTH_ADDR b = ((SOCKADDR_BTH*)result->lpcsaBuffer->RemoteAddr.lpSockaddr)->btAddr;
+
+			printf("Found: %s%s%04X%08X%s\n", bHaveName ? result->lpszServiceInstanceName : "",
+				bHaveName ? "(" : "", GET_NAP(b), GET_SAP(b), bHaveName ? ")" : "");
+		}
+
+		/* We now need to enumerate all of the services that are provided by the device */
+		if (device == NULL || (bHaveName && strcmp(result->lpszServiceInstanceName, device) == 0)) {
+			rc = enumerate_services(result->lpcsaBuffer->RemoteAddr.lpSockaddr, service, display, addr);
+		}
+	}
+	WSALookupServiceEnd(search);
+	return(rc);
+}
+
+/*!\brief Opens a bluetooth socket to the specified address, and binds it locally
+ *
+ * This creates a socket in the Bluetooth address space, and binds it to the appropriate
+ * remote address as a client.  The socket returned is already connect()ed to the remote
+ * end, and is ready to pass data.  The <addr> that is passed in should either have a
+ * port specified (the default if find_service() is used) and no service class ID, or
+ * a service class ID and no port.  The underlying library will scan the device specified
+ * in the btAddr component until it finds the first match for the service ID and then
+ * open the socket.  This might result in you connecting to the wrong thing, however,
+ * so care should be taken with this approach.
+ *
+ * \param	*addr	Bluetooth address that the socket should connect to
+ * \return	a SOCKET if successful, or INVALID_SOCKET if not.
+ */
+
+SOCKET open_bluetooth_socket(SOCKADDR_BTH *addr)
+{
+	SOCKET			sock;
+	SOCKADDR_BTH	local_address;
+
+	if ((sock = socket(AF_BTH, SOCK_STREAM, BTHPROTO_RFCOMM)) == INVALID_SOCKET)
+		return(INVALID_SOCKET);
+	memset(&local_address, 0, sizeof(SOCKADDR_BTH));
+	local_address.addressFamily = AF_BTH;
+		// The remainder of the address is zero to automatically generate local components
+	if (bind(sock, (SOCKADDR*)&local_address, sizeof(SOCKADDR_BTH)) == SOCKET_ERROR) {
+		closesocket(sock);
+		return(INVALID_SOCKET);
+	}
+	if (connect(sock, (SOCKADDR*)addr, sizeof(SOCKADDR_BTH)) == SOCKET_ERROR) {
+		closesocket(sock);
+		return(INVALID_SOCKET);
+	}
+	return(sock);
+}
+
+int main(int argc, char **argv)
+{
+	WORD			version;
+	WSADATA			wsaData;
+	SOCKADDR_BTH	address;
+
+	/* Start the windows networking DLL, with version check */
+	version = MAKEWORD(2, 2);
+	if (WSAStartup(version, &wsaData) != 0) {
+		cout << "error: couldn't start networking." << endl;
+		return(1);
+	}
+	if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 2) {
+		cout << "error: couldn't find a V2.2 version of networking." << endl;
+		WSACleanup();
+		return(1);
+	}
+
+	/* Next, we need to find an appropriate Bluetooth remote device, and find out what it provides */
+	if (find_service(NULL, "Any", true, &address))
+		printf("info: found device at 0x%04X%08X port 0x%02X.\n",
+			GET_NAP(address.btAddr), GET_SAP(address.btAddr), address.port);
+	else
+		printf("info: device not found.\n");
+
+	WSACleanup();
+	return(0);
+}

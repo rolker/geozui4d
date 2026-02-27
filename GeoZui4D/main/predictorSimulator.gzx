@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+ <GZ>
+ 	<Script>puts [pwd]</Script>
+ 	<Texture filename="C:/GeoZui3D_data/portsmouth/portsmouth.clut" label="portsmouth.clut"></Texture>
+	<Texture filename="C:/GeoZui3D_data/portsmouth/RYG.clut" label="RYG"></Texture>
+	<Texture filename="C:/GeoZui3D_data/portsmouth/ExpMid.clut" label="mid" default="1"></Texture>
+
+	<Collection label="land_objects">
+		<Object filename="C:/GeoZui3D_data/portsmouth/area/Contiguous_LittleBay_5m.gutm" label="LittleBay"  ></Object>
+	  	<Object filename="C:/GeoZui3D_data/portsmouth/area/Contiguous_DoverPoint_5m.gutm" label="DoverPoint"  ></Object>
+		<Object filename="C:/GeoZui3D_data/portsmouth/area/Contiguous_GreatBay_5m.gutm" label="GreatBay"  ></Object>
+		<Object filename="C:/GeoZui3D_data/portsmouth/area/Contiguous_PiscNorth_5m.gutm" label="PiscNorth"  ></Object>
+    	</Collection>
+
+	<Collection label="tide_objects">
+ 		<Object filename="C:/GeoZui3D_data/Portsmouth/Nov12tides/nov12tides.gzx"> </Object>
+	</Collection>
+	
+	<Script>
+		  foreach object "[gz address list .Posable.Object.bathymetry_objects] [gz address list .Posable.Object.land_objects]" {
+			  catch "gz tellObject $object shadeExaggeration 5"
+			  catch "gz tellObject $object tides tide_objects.tides"
+		  }
+		  gz tellObject tide_objects hide
+		  gz posable set Window.main xyzs 1000 1000 0 0.0001
+		  global interactivityHint
+		  set interactivityHint 0.0
+		  global mainWindow
+		  $mainWindow keyboard -1 -1 0 w 0 w
+
+		  foreach object "[gz address list .Posable.Object.bathymetry_objects]" {
+		 	  gz tellObject $object fuse
+			  gz tellObject $object highres extendZone 8
+		  }
+	</Script>
+	<Object type="Vessel" path="on" label="vessel" bow_size="1.0 1.0 1.0" hull_size="3.0 9.2 3.0"
+		   stern_size="3.0 3.0 2.5" bridge_size="2.8 4.8 1.4" bridge_offset="0.0 8.0 4.0"> 
+		<Object filename="C:/GeoZui3D_data/GeoNav3D/Autocam/CoastalSurveyor.dxf"></Object>
+	</Object>
+	<Script>after idle {gnAttachToVessel Object.vessel}</Script>   
+</GZ>

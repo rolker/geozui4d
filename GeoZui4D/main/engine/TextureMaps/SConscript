@@ -1,0 +1,18 @@
+Import('env')
+
+sources = '''
+Clut.cpp
+Grid.cpp
+ImageMap.cpp
+LatTexture.cpp
+RTVideo.cpp
+TextureMap.cpp
+'''
+#MovieMap.cpp
+
+objs = []
+
+for s in Split(sources):
+    objs.append(env.Object(s))
+
+Return('objs')

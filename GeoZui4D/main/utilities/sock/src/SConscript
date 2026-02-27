@@ -1,0 +1,21 @@
+Import('env')
+Import('debugFlag')
+
+headers = '''
+sock.h
+UDPSocket.h
+'''
+
+sources = '''
+UDPSocket.cpp
+'''
+
+if debugFlag:
+    libName = 'sock_d'
+else:
+    libName = 'sock'
+
+
+libsock = env.Library(libName,Split(sources))
+
+Return('libsock')

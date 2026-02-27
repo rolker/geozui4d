@@ -1,0 +1,230 @@
+# -*- coding: utf-8 -*-
+import os
+import glob
+import datetime
+import platform
+
+# Get our configuration options:
+optsFilename = 'GeoZui4D.'+platform.system()+'.conf'
+opts = Variables(optsFilename)
+opts.Add(PathVariable('install', 'Target Directory', '../',PathVariable.PathIsDirCreate))
+opts.Add(BoolVariable('release', 'Build an optimized version without debug symbols', default=False))
+opts.Add(EnumVariable('variant', 'Flavor to build', default='GeoZui4D', allowed_values=['GeoZui4D','GeoNav4D','GeoCoastPilot']))
+
+opts.Add(PackageVariable('libgz4d', 'Local libgz4d headers', False))
+
+if platform.system() == 'Windows':
+    opts.Add(EnumVariable('MSVC_VERSION', 'MS Visual C++ version', '7.1', allowed_values=('7.1', '8.0', '9.0')))
+    opts.Add(PathVariable('mt_exe', "Path to MSVC's mt.exe tool", 'mt.exe', PathVariable.PathAccept))
+else:
+    opts.Add(BoolVariable('win32_cross', 'Enable cross compiling to win32.', default=False))
+    opts.Add('win32_incdirs', 'Additional include directories (comma separated)', '')
+    opts.Add('win32_libdirs', 'Additional library directories (comma separated)', '')
+    opts.Add(PathVariable('win32_install', 'Target Directory', '.',PathVariable.PathIsDirCreate))
+
+opts.Add('incdirs', 'Additional include directories (comma separated)', '')
+opts.Add('libdirs', 'Additional library directories (comma separated)', '')
+
+
+env = Environment(variables=opts)
+
+opts.Save(optsFilename, env) # Save, so user doesn't have to specify PREFIX every time
+
+# setup help
+
+Help(opts.GenerateHelpText(env))
+
+if env['win32_cross']:
+    print '\n*** win32 cross-compilation ***\n'
+    env.Tool('crossmingw', toolpath = ['tools'])
+    for v in ('install','incdirs','libdirs'):
+        env[v] = env['win32_'+v]
+
+
+if env['libgz4d']:
+    env.Append(CPPPATH=[env['libgz4d']])
+
+if env['incdirs'] is not None:
+    env.Append(CPPPATH=env['incdirs'].split(','))
+
+if env['libdirs'] is not None:
+    env.Append(LIBPATH=env['libdirs'].split(','))
+
+
+if env['release']:
+    env['modifier'] = ''
+    env['config'] = 'release'
+else:
+    env['modifier'] = '_d'
+    env['config'] = 'debug'
+
+if env['win32_cross']:
+    env['config'] += '-mingw32'
+
+# generate name for distribution (zip or tar.gz packages)
+today = datetime.date.today()
+gz_version = 4.0
+gz_distname = 'GeoZui4D'+env['modifier']+'_v'+'_'.join(str(gz_version).split('.'))+'a-'+today.isoformat()
+
+
+if 'dist' in COMMAND_LINE_TARGETS:
+#env['install'] = '#'+gz_distname
+    env['dist'] = True
+else:
+    env['dist'] = False
+
+env['inc_dir'] = os.path.join(env['install'],'include')
+env['lib_dir'] = os.path.join(env['install'],'lib')
+env['bin_dir'] = os.path.join(env['install'],'bin')
+
+version_h = file('gzVersion.h','w')
+version_h.write('#include <string>\n')
+version_h.write('double GeoZuiVersion = '+str(gz_version)+';\n')
+version_h.write('char const *GeoZuiDescriptor ="GeoZui4D V'+str(gz_version)+'alpha (')
+version_h.write(today.isoformat())
+version_h.write(')";\n')
+version_h.write('\n')
+version_h.close()
+
+
+# setup various tool flags
+
+env.Append(CPPPATH=['#'])
+
+if env['PLATFORM'] == 'win32':
+    env.Append(CPPDEFINES=['WIN32'])
+    env.Append(CPPPATH=['#win32/include','#win32/include/SDL'],LIBPATH=['#win32/lib'])
+
+# gcc or visual studio?
+if env['CC'] == 'cl': #visual studio
+    if env['release']:
+        env.Append(CCFLAGS=['/O2','/MD'])
+        env.Append(LINKFLAGS=['/NODEFAULTLIB:LIBCMT','/NODEFAULTLIB:LIBCMTD'])
+    else:
+        env.Append(CCFLAGS=['/Z7','/MDd','/RTC1'],LINKFLAGS=['/DEBUG'])
+        env.Append(LINKFLAGS=['/NODEFAULTLIB:LIBCMT','/NODEFAULTLIB:LIBCMTD'])
+    env.Append(CCFLAGS=['/EHsc','/GR'],LINKFLAGS=['/SUBSYSTEM:CONSOLE'])
+    env.Append(CPPDEFINES=['BUILD_Tktable'])
+    env.Append(LIBS=['tktable','tclstub84','tkstub84','ws2_32','SDLmain','OpenGL32','GLU32'])
+    env.Append(LIBS=['kernel32','user32','gdi32','advapi32','GLEW'])
+    if env['MSVS_VERSION'] in ('8.0','9.0'):
+        env['LINKCOM'] = [env['LINKCOM'], env['mt_exe']+' -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1']
+        env['SHLINKCOM'] = [env['SHLINKCOM'], env['mt_exe']+' -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;2']
+    
+else:
+    env.Append(CXXFLAGS=['-Wall'])
+    if not env['win32_cross']:
+        env.Append(CXXFLAGS=['-Werror','-Wno-deprecated-declarations'])
+    if env['release']:
+        env.Append(CCFLAGS=['-O3'])
+    else:
+        env.Append(CCFLAGS=['-ggdb'])
+
+if env['CC'] == 'gcc':
+    env.Append(LIBS=['asound'])
+    env.Append(LIBS=['FLAC++','netcdf','netcdf_c++'])
+
+    env.Append(LINKFLAGS=['-Wl,-rpath-link,'+os.path.join(env['install'],'lib')])
+    env.Append( LINKFLAGS = Split('-z origin') )
+    env.Append( RPATH = env.Literal(os.path.join('\\$$ORIGIN', os.pardir, 'lib')))
+
+if env['win32_cross']:
+    env.Append(CPPDEFINES=['STATIC_BUILD'],LINKFLAGS=['-mconsole'])
+
+conf = Configure(env)
+ok = True
+
+if not env['release']:
+    ok &= (conf.CheckLib('gz4d-d',language='c++') or conf.CheckLib('gz4d',language='c++'))
+else:
+    ok &= conf.CheckLib('gz4d',language='c++')
+
+
+tk85 = conf.CheckLibWithHeader(['tk8.5','tk85','tk85s'],'tk.h','c++') and conf.CheckLibWithHeader(['tcl8.5','tcl85','tcl85s'],'tcl.h','c++')
+
+if env['win32_cross']:
+    conf.CheckLibWithHeader(['tkstub85'],'tk.h','c++') and conf.CheckLibWithHeader(['tclstub85'],'tcl.h','c++')
+
+if not tk85:
+    ok &= conf.CheckLibWithHeader(['tk8.4','tk84'],'tk.h','c++')
+    ok &= conf.CheckLibWithHeader(['tcl8.4','tcl84'],'tcl.h','c++')
+
+ok &= conf.CheckLib('tiff')
+ok &= conf.CheckLib('jpeg')
+ok &= conf.CheckLib('png')
+ok &= conf.CheckLib('netcdf_c++')
+ok &= conf.CheckLib(['netcdf','netcdfs'])
+
+if env['CC'] == 'gcc' or env['win32_cross']:
+    boost_postfix = '-gcc' + ''.join(env['CCVERSION'].split('.')[:2]) + '-mt'
+
+    blibs = ['system','filesystem','program_options']
+    if env['win32_cross']:
+        blibs.append('thread_win32')
+    else:
+        blibs.append('thread')
+    for blib in blibs:
+        ok &= conf.CheckLib('boost_'+blib+boost_postfix,language='c++') or conf.CheckLib('boost_'+blib+'-mt',language='c++') or conf.CheckLib('libboost_'+blib+'-mt',language='c++')
+
+    if not env['release']:
+        ok &= (conf.CheckLib('gz4d-d',language='c++') or conf.CheckLib('gz4d',language='c++'))
+    else:
+        ok &= conf.CheckLib('gz4d',language='c++')
+
+    if not env['win32_cross']:
+        ok &= conf.CheckLib('Xi',language='c++')
+        ok &= conf.CheckLib('Xmu',language='c++')
+    ok &= conf.CheckLibWithHeader('glut','GL/glut.h','c++') or conf.CheckLib('glut32',language='c++')
+    ok &= conf.CheckLib('vorbisfile',language='c++')
+    ok &= conf.CheckLib('vorbis',language='c++')
+    ok &= conf.CheckLib('ogg',language='c++')
+
+if env['win32_cross']:
+    ok &= conf.CheckLib('avformat',language='c++') and conf.CheckLib('avcodec',language='c++') and conf.CheckLib('avutil',language='c++')
+    ok &= conf.CheckLib('kiss_fft',language='c++')
+    ok &= conf.CheckLib('GLEW', language='c++')
+    ok &= conf.CheckLibWithHeader('GL','GL/gl.h','c++') or conf.CheckLibWithHeader('opengl32',['windows.h','GL/gl.h'],'c++')
+    ok &= conf.CheckLibWithHeader('GLU','GL/glu.h','c++') or conf.CheckLibWithHeader('glu32',['windows.h','GL/glu.h'],'c++')
+    ok &= conf.CheckLibWithHeader(['gdal','gdal1.5.0','gdal_i','gdal_i-vc9'],'ogr_spatialref.h','c++')
+    ok &= conf.CheckLib('z',language='c++')
+    ok &= conf.CheckLib('portaudio',language='c++')
+
+    ok &= conf.CheckLib('winmm',language='c++')
+    ok &= conf.CheckLib('user32',language='c++')
+    ok &= conf.CheckLib('advapi32',language='c++')
+    ok &= conf.CheckLib('gdi32',language='c++')
+    ok &= conf.CheckLib('ws2_32',language='c++')
+    ok &= conf.CheckLib('comdlg32',language='c++')
+    ok &= conf.CheckLib('comctl32',language='c++')
+    ok &= conf.CheckLib('ole32',language='c++')
+    ok &= conf.CheckLib('oleaut32',language='c++')
+    ok &= conf.CheckLib('imm32',language='c++')
+    ok &= conf.CheckLib('uuid',language='c++')
+
+env = conf.Finish()
+
+if not ok:
+    print '*** ERROR ***\nProblems finding necessary dependencies. Review above results and make sure all necessary paths are specified with incdirs and libdirs.'
+    Exit(1)
+
+objects = []
+
+Export('env')
+
+SConscript('SConscript')
+
+
+Default(os.path.join(env['install'],'bin'))
+Default(os.path.join(env['install'],'lib','GeoZui4D'))
+
+
+if env['PLATFORM'] == 'win32':
+    #env.Install(env['bin_dir'],os.path.join(env['extern_bin_dir'],'libgz4d'+env['modifier']+'.dll'))
+    Alias('dist',env.Zip(os.path.join(env['install'],gz_distname+'.zip'),env['gzbin']))
+else:
+    env.Append(TARFLAGS = '-z -C '+env['install'], TARSUFFIX = '.gz')
+    Alias('dist',os.path.join(env['install'],'bin'))
+    Alias('dist',os.path.join(env['install'],'lib','GeoZui4D'))
+    Alias('dist',env.Tar(os.path.join(env['install'],gz_distname),os.path.join('bin','GeoZui4D'+env['modifier'])))
+    Alias('dist',env.Tar(os.path.join(env['install'],gz_distname),os.path.join('lib','GeoZui4D')))
+

@@ -1,0 +1,12 @@
+# KDevelop Custom Project File List
+Makefile
+sock.h
+UDPSocket.cpp
+UDPSocket.h
+SConstruct
+SConscript
+src/UDPSocket.h
+src/UDPSocket.cpp
+src/sock.h
+src/test/test.cpp
+src/test/SConscript

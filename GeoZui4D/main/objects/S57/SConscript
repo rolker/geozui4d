@@ -1,0 +1,25 @@
+Import('env')
+
+sources = '''
+S57_area.cpp
+S57_beacon.cpp
+S57_bridge.cpp
+S57_building.cpp
+S57_buoy.cpp
+S57.cpp
+S57_land.cpp
+S57_landmark.cpp
+S57Layer.cpp
+S57_object.cpp
+
+S57_sounding.cpp
+S57_supplemental.cpp
+'''
+#S57_pipe.cpp
+
+objs = []
+
+for s in Split(sources):
+    objs.append(env.Object(s))
+
+Return('objs')

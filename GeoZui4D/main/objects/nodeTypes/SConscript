@@ -1,0 +1,21 @@
+Import('env')
+
+sources = '''
+SDV_Data.cpp
+SDV_DataHandler.cpp
+XYZPointAvg.cpp
+XYZPointAvgHandler.cpp
+XYZPoint.cpp
+XYZPointHandler.cpp
+XYZPointMin.cpp
+XYZPointMinHandler.cpp
+XYZPointWA.cpp
+XYZPointWAHandler.cpp
+'''
+
+objs = []
+
+for s in Split(sources):
+    objs.append(env.Object(s))
+
+Return('objs')

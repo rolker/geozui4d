@@ -1,0 +1,17 @@
+Import('env')
+
+sources = '''
+OGR.cpp
+OGR_Feature.cpp
+OGR_Layer.cpp
+OGR_Limits.cpp
+OGR_LineString.cpp
+OGR_Polygon.cpp
+'''
+
+objs = []
+
+for s in Split(sources):
+    objs.append(env.Object(s))
+
+Return('objs')

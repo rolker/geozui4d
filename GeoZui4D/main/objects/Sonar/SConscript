@@ -1,0 +1,17 @@
+Import('env')
+
+sources = '''
+BeamPattern.cpp
+DeltaT.cpp
+EK500.cpp
+EK60.cpp
+EK60_Channel.cpp
+Sonar.cpp
+'''
+
+objs = []
+
+for s in Split(sources):
+    objs.append(env.Object(s))
+
+Return('objs')

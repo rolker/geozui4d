@@ -1,0 +1,12 @@
+set(GEOZUI4D_SRC
+    ${GEOZUI4D_SRC}
+    ${CMAKE_CURRENT_SOURCE_DIR}/BeamPattern.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/DeltaT.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/EK500.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/EK60.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/EK60_Channel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Sonar.cpp
+    PARENT_SCOPE
+)
+
+#add_library(gz_objects_sonar ${GZ4D_OBJECTS_SONAR_SRC})

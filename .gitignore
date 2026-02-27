@@ -1,0 +1,59 @@
+# Build directories
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Compiled objects and libraries
+*.o
+*.so
+*.a
+*.dylib
+
+# Editor backup files
+*~
+*.swp
+*.swo
+
+# SVN
+.svn/
+
+# Profiling output
+gmon.out
+gmon.txt
+
+# Python bytecode
+*.pyc
+
+# Generated docs
+libgz4d/cxx/doc/
+
+# Dead/unused directories (for now)
+GeoZui4D/main_refactor/
+GeoZui4D/ng/
+libgz4d/android/
+libgz4d/cxx/specs/
+
+# Large test/data files
+libgz4d/python/iso8211/test.xml
+libgz4d/python/iso8211/catalog.xml
+
+# Misc artifacts
+*.tag
+svn-commit.tmp
+libgz4d/.kdev4/
+libgz4d/.vscode/
+libgz4d/2008-05-22-Note-17-04.xoj
+libgz4d/nais_bbm.csv
+libgz4d/warnings.dox
+libgz4d/x3d.xml
+libgz4d/xsd2x3d.txt
+libgz4d/cxx/deb/
+libgz4d/cxx/.cproject
+libgz4d/cxx/.project
+libgz4d/cxx/applications/grib2image/examples/
+
+# Documentation
+GeoZui4D/main/documentation/
+libgz4d/cxx/docs/

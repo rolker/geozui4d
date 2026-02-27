@@ -1,0 +1,16 @@
+set(GEOZUI4D_SRC
+    ${GEOZUI4D_SRC}
+    ${CMAKE_CURRENT_SOURCE_DIR}/SDV_Data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SDV_DataHandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/XYZPointAvg.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/XYZPointAvgHandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/XYZPoint.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/XYZPointHandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/XYZPointMin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/XYZPointMinHandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/XYZPointWA.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/XYZPointWAHandler.cpp
+    PARENT_SCOPE
+)
+
+#add_library(gz_objects_nodetypes ${GEOZUI4D_OBJECTS_NODETYPES_SRC})

@@ -1,0 +1,8 @@
+Import('env')
+import os
+
+modules = '''
+__init__.py
+'''
+
+env.Install(os.path.join(env['lib_dir'],'GeoZui4D/gzmod/gz4d'),Split(modules))

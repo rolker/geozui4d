@@ -1,0 +1,379 @@
+<BinaryFormat>
+    <Type name="uint8" size="1">
+        <Cxx type="uint8_t"/>
+        <Python structFormat="B"/>
+    </Type>
+
+    <Type name="uint16" size="2">
+        <Cxx type="uint16_t"/>
+        <Python structFormat="H"/>
+    </Type>
+
+    <Type name="int16" size="2">
+        <Cxx type="int16_t"/>
+        <Python structFormat="h"/>
+    </Type>
+
+    <Type name="uint32" size="4">
+        <Cxx type="uint32_t"/>
+        <Python structFormat="I"/>
+    </Type>
+
+    <Type name="uint64" size="8">
+        <Cxx type="uint64_t"/>
+        <!--<Python structFormat="I"/>-->
+    </Type>
+
+    <Type name="float" size="4">
+        <Cxx type="float"/>
+        <Python structFormat="f"/>
+    </Type>
+
+    <Type name="double" size="8">
+        <Cxx type="double"/>
+        <Python structFormat="d"/>
+    </Type>
+
+    <Type name="char" size="1">
+        <Cxx type="char"/>
+        <Python structFormat="c"/>
+    </Type>
+
+    <Block name="String">
+        <Field name="size" type="uint16"/>
+        <Field name="string" type="char" count="size"/>
+    </Block>
+
+    <Block name="FloatArray">
+        <Field name="size" type="uint16"/>
+        <Field name="values" type="float" count="size"/>
+    </Block>
+
+    <Type name="time" size="8">
+        <Units>s</Units>
+        <Documentation>Seconds since 1970</Documentation>
+        <Cxx type="double"/>
+    </Type>
+
+    <Type name="degrees" base="double">
+        <Units>degrees</Units>
+    </Type>
+
+    <Type name="degrees_f" base="float">
+        <Units>degrees</Units>
+    </Type>
+
+    <Block name="Degrees2D_f">
+        <Field name = "x" type="degrees_f"/>
+        <Field name = "y" type="degrees_f"/>
+    </Block>
+
+    <Block name="BeamGeometry">
+        <Field name="width" type="Degrees2D_f">
+            <Documentation>Across track width is x and along track is y</Documentation>
+        </Field>
+        <Field name="direction" type="Degrees2D_f">
+            <Documentation>Positive x is starboard and positive y is towards the bow</Documentation>
+        </Field>
+    </Block>
+
+    <Block name="Pulse">
+        <Field name="length" type="float"><Documentation>Pulse length in seconds</Documentation></Field>
+        <Field name="frequency" type="float"><Documentation>Pulse frequency in Hz</Documentation></Field>
+    </Block>
+
+    <Type name="heading" base="degrees_f">
+        <Documentation>Clockwise relative to north</Documentation>
+    </Type>
+
+    <Type name="altitude" base="float">
+        <Units>meters</Units>
+        <Documentation>Positive is up</Documentation>
+    </Type>
+
+    <Block name="CompressedValuesBase">
+        <Field name="scale" type="float"/>
+        <Field name="offset" type="float"/>
+        <Field name="count" type="uint16"/>
+    </Block>
+
+    <Block name="CompressedValues8">
+        <Inline type="CompressedValuesBase"/>
+        <Field name="values" type="uint8" count="count"/>
+    </Block>
+
+    <Block name="CompressedValues16">
+        <Inline type="CompressedValuesBase"/>
+        <Field name="values" type="uint16" count="count"/>
+    </Block>
+
+    <Block name="GeographicPosition">
+        <Field name = "latitude" type="degrees"/>
+        <Field name = "longitude" type="degrees"/>
+    </Block>
+
+    <Block name="GeographicPosition3D">
+        <Inline type="GeographicPosition"/>
+        <Field name = "z" type="altitude"/>
+    </Block>
+
+    <Block name="UTMPosition">
+        <Field name="easting" type="double"/>
+        <Field name="northing" type="double"/>
+        <Field name="zone" type="uint8"><Default>0</Default></Field>
+        <Field name="latitudeZone" type="uint8"><Default>0</Default></Field>
+    </Block>
+
+    <Block name="UTMPosition3D">
+        <Inline type="UTMPosition"/>
+        <Field name = "z" type="altitude"/>
+    </Block>
+
+    <Block name="PitchRoll">
+        <Field name="pitch" type="degrees_f">
+            <Documentation>Positive pitch is nose down</Documentation>
+        </Field>
+        <Field name="roll" type="degrees_f">
+            <Documentation>Positive roll is towards starboard (right)</Documentation>
+        </Field>
+    </Block>
+
+    <Block name="Attitude">
+        <Field name="heading" type="heading"/>
+        <Inline type="PitchRoll"/>
+    </Block>
+
+    
+    <Block name="Float3D">
+        <Field name = "x" type="float"/>
+        <Field name = "y" type="float"/>
+        <Field name = "z" type="float"/>
+    </Block>
+
+    <Block name="RelativePosition3D">
+        <Inline type="Float3D"/>
+    </Block>
+
+    <Block name="Variance3D">
+        <Inline type="Float3D"/>
+    </Block>
+
+    <Block name="SampleSnippet">
+        <Inline type="GeographicPosition"/>
+        <Field name="heading" type="heading"/>
+        <Inline type="RelativePosition3D"/>
+        <Field name="variance" type="Variance3D"/>
+        <Field name="samples" type="FloatArray"/>
+    </Block>
+
+    <Block name="CurrentVector">
+        <Field name="depth" type="float"/>
+        <Field name="error" type="float"/>
+        <Field name="vector" type="Float3D"/>
+    </Block>
+
+    <Block name="FourCC">
+        <Union>
+            <Field name="value" type="uint32"/>
+            <Field name="string" type="char" count="4"/>
+        </Union>
+    </Block>
+
+    <Block name="Fraction">
+        <Field name="numerator" type="uint32"/>
+        <Field name="denominator" type="uint32"/>
+    </Block>
+
+    <Block name="Packet" sizeField="size">
+        <Field name="header" type="char" count="4">
+            <Default>'g','z','4','d'</Default>
+            <Validation>
+                <Equals>'g','z','4','d'</Equals>
+            </Validation>
+        </Field>
+        <Union>
+            <Field name="version">
+                <Block>
+                    <Field name="major" type="uint8"><Default>1</Default></Field>
+                    <Field name="minor" type="uint8"><Default>0</Default></Field>
+                </Block>
+            </Field>
+            <Field name="fullVersion" type="uint16"/>
+        </Union>
+        <Field name="size" type="uint64"/>
+        <Field name="timestamp" type="time"/>
+        <Union>
+            <Field name="fullType" type="uint32"><Default>0</Default></Field>
+            <Field name="subType">
+                <Block>
+                    <Field name="a" type="uint8"/>
+                    <Field name="b" type="uint8"/>
+                    <Field name="c" type="uint8"/>
+                    <Field name="d" type="uint8"/>
+                </Block>
+            </Field>
+        </Union>
+        <Switch indexField="subType.a">
+
+            <Block name="Metadata" id="1">
+                <Switch indexField="subType.b">
+                    <Block name="Text" id="1">
+                        <Inline type="String"/>
+                    </Block>
+                </Switch>
+            </Block>
+
+            <Block name="Navigation" id="2">
+                <Field name="navChannel" type="uint16"><Default>0</Default></Field>
+                <Switch indexField="subType.b">
+
+                    <Block name="Position" base="Navigation" id="1">
+                        <Switch indexField="subType.c">
+                            <Block name="Geographic" id="1">
+                                <Inline type="GeographicPosition"/>
+                            </Block>
+                            <Block name="UTM" id="2">
+                                <Inline type="UTMPosition"/>
+                            </Block>
+                        </Switch>
+                    </Block>
+
+                    <Block name="Position3D" id="2">
+                        <Switch indexField="subType.c">
+                            <Block name="Geographic" id="1">
+                                <Inline type="GeographicPosition3D"/>
+                            </Block>
+                        </Switch>
+                    </Block>
+
+                    <Block name="Attitude" id="3">
+                        <Inline type="Attitude"/>
+                    </Block>
+
+                    <Block name="Heading" id="4">
+                        <Field name="heading" type="heading"/>
+                    </Block>
+
+                    <Block name="Position6DOF" id="5">
+                        <Field name="positionType" type="uint16"/>
+                        <Switch indexField="subType.c">
+                            <Block name="Geographic" id="1">
+                                <Inline type="GeographicPosition3D"/>
+                                <Inline type="Attitude"/>
+                            </Block>
+                        </Switch>
+                    </Block>
+
+                </Switch>
+            </Block>
+            <Block name="Sonar" id="3">
+                <Field name="sonarSource" type="uint16"><Default>0</Default></Field>
+                <Switch indexField="subType.b">
+                    <Block name="Channel" id="1">
+                        <Field name="channelID" type="uint32"><Default>0</Default></Field>
+                        <Switch indexField="subType.c">
+
+                            <Block name="BottomDetection" id="1">
+                                <Inline type="SampleSnippet"/>
+                            </Block>
+
+                            <Block name="TargetDetection" id="2">
+                                <Inline type="SampleSnippet"/>
+                            </Block>
+
+                            <Block name="Samples" id="4">
+                                <Field name="geometry" type="BeamGeometry"/>
+                                <Field name="pulse" type="Pulse"/>
+                                <Field name="sampleInterval" type="float"/>
+                                <Field name="offset" type="float"><Default>0.0</Default></Field>
+                                <Field name="samples" type="FloatArray"/>
+                            </Block>
+
+                            <Block name="SamplesCompressed" id="5">
+                                <Field name="geometry" type="BeamGeometry"/>
+                                <Field name="pulse" type="Pulse"/>
+                                <Field name="sampleInterval" type="float"/>
+                                <Field name="offset" type="float"><Default>0.0</Default></Field>
+                                <Field name="samples" type="CompressedValues8"/>
+                            </Block>
+
+                        </Switch>
+                    </Block>
+
+                    <Block name="SoundSpeed" id="2">
+                        <Field name="soundSpeed" type="float"/>
+                    </Block>
+
+                    <Block name="SoundSpeedProfile" id="3">
+                        <Inline type="GeographicPosition"/>
+                        <Field name="startDepth" type="float"/>
+                        <Field name="interval" type="float"/>
+                        <Field name="count" type="uint16"/>
+                        <Field name="speeds" type="float" count="count"/>
+                    </Block>
+
+                    <Block name="CurrentProfile" id="4">
+                        <Field name="count" type="uint16"/>
+                        <Field name="vectors" type="CurrentVector" count="count"/>
+                    </Block>
+
+                </Switch>
+            </Block>
+            <Block name="Device" id="4">
+                <Switch indexField="subType.b">
+                    <Block name="Polhemus" id="1">
+                        <Inline type="Float3D"/>
+                        <Field name = "q1" type="float"/>
+                        <Field name = "q2" type="float"/>
+                        <Field name = "q3" type="float"/>
+                        <Field name = "q4" type="float"/>
+                    </Block>
+                </Switch>
+            </Block>
+            <Block name="Image" id="5">
+                <Switch indexField="subType.b">
+                    <Block name="Frame" id="1">
+                        <Field name = "width" type="uint16"/>
+                        <Field name = "height" type="uint16"/>
+                        <Field name = "fourcc" type="FourCC"/>
+                        <Field name = "frameNumber" type="uint32"/>
+                        <Field name = "dataSize" type="uint32"/>
+                        <Field name = "data" type="uint8" count="dataSize"/>
+                    </Block>
+                    <Block name="Stream" id="2">
+                        <Field name="streamID" type="uint16"/>
+                        <Switch indexField="subType.c">
+                            <Block name="Header" id="1">
+                                <Field name = "width" type="uint16"/>
+                                <Field name = "height" type="uint16"/>
+                                <Field name = "framePeriod" type="Fraction"/>
+                                <Field name = "fourcc" type="FourCC"/>
+                            </Block>
+                            <Block name="Frame" id="2">
+                                <Field name = "frameNumber" type="uint32"/>
+                                <Field name = "dataSize" type="uint32"/>
+                                <Field name = "data" type="uint8" count="dataSize"/>
+                            </Block>
+                        </Switch>
+                    </Block>
+                </Switch>
+            </Block>
+        </Switch>
+    </Block>
+
+    <Implement>String</Implement>
+    <Implement>CompressedValues8</Implement>
+    <Implement>Variance3D</Implement>
+    <Implement>FloatArray</Implement>
+    <Implement>Degrees2D_f</Implement>
+    <Implement>BeamGeometry</Implement>
+    <Implement>Pulse</Implement>
+    <Implement>RelativePosition3D</Implement>
+    <Implement>Float3D</Implement>
+    <Implement>CurrentVector</Implement>
+    <Implement>FourCC</Implement>
+    <Implement>Fraction</Implement>
+    <Implement>Packet</Implement>
+
+
+</BinaryFormat>

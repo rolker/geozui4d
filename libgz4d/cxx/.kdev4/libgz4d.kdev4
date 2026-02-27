@@ -1,0 +1,56 @@
+[Buildset]
+BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\x0e\x00l\x00i\x00b\x00g\x00z\x004\x00d)
+
+[CMake]
+Build Directory Count=2
+CMakeDir=/usr/share/cmake-2.8/Modules
+Current Build Directory Index=0
+ProjectRootRelative=./
+
+[CMake][CMake Build Directory 0]
+Build Directory Path=file:///home/roland/work/libgz4d/cxx/build/release/
+Build Type=
+CMake Binary=file:///usr/bin/cmake
+Environment Profile=
+Extra Arguments=
+Install Directory=file:///home/roland
+
+[CMake][CMake Build Directory 1]
+Build Directory Path=file:///home/roland/work/libgz4d/cxx/build/debug/
+Build Type=
+CMake Binary=file:///usr/bin/cmake
+Environment Profile=
+Extra Arguments=
+Install Directory=file:///home/roland
+
+[Defines And Includes][Compiler]
+Name=GCC
+Path=gcc
+Type=GCC
+
+[Launch]
+Launch Configurations=Launch Configuration 0
+
+[Launch][Launch Configuration 0]
+Configured Launch Modes=execute
+Configured Launchers=nativeAppLauncher
+Name=geocam_mapper
+Type=Native Application
+
+[Launch][Launch Configuration 0][Data]
+Arguments=calibration.xml data/2014-05-01/22/2014-05-01T22_nav.dat data/2014-05-01/22/ aloftCon 1000 2 test.tiff
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x03\x00\x00\x00\x0e\x00l\x00i\x00b\x00g\x00z\x004\x00d\x00\x00\x00\x08\x00t\x00e\x00s\x00t\x00\x00\x00\x1a\x00g\x00e\x00o\x00c\x00a\x00m\x00_\x00m\x00a\x00p\x00p\x00e\x00r)
+Dependency Action=Build
+EnvironmentGroup=default
+Executable=
+External Terminal=konsole --noclose --workdir %workdir -e %exe
+Project Target=libgz4d,test,geocam_mapper
+Use External Terminal=false
+Working Directory=file:///home/roland/work/geoCamera/2014/healy/
+isExecutable=false
+
+[MakeBuilder]
+Default Target=install
+
+[Project]
+VersionControlSupport=kdevsubversion

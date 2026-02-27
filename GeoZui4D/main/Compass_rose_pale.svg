@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="440" height="440" viewBox="-220 -220 440 440">
+<g opacity=".25">
+<g id="r5"><g id="r4"><g id="r3"><g id="r2">
+<path d="M0 h94 m9 h49 m12 h49" stroke-width="1" stroke="#444" fill="none" id="r1"/>
+<use xlink:href="#r1" transform="rotate(11.25)"/>
+</g>
+<use xlink:href="#r2" transform="rotate(22.5)"/>
+</g>
+<use xlink:href="#r3" transform="rotate(45)"/>
+</g>
+<use xlink:href="#r4" transform="rotate(90)"/>
+</g>
+<use xlink:href="#r5" transform="scale(-1)"/>
+<circle r="7" fill="#1b1b1b"/>
+<g fill="none" stroke="#494949" stroke-width="8">
+<circle r="75"/>
+<circle r="211"/>
+</g>
+<g stroke="#1b1b1b" stroke-width="1" fill="none">
+<circle r="71"/>
+<circle r="79"/>
+<circle r="94"/>
+<circle r="152"/>
+<circle r="164"/>
+<circle r="207"/>
+</g>
+<g id="s3"><g id="s2"><g id="s1">
+<path d="M 39.416,95.16 C 33.65,103.95 30.76,110.5 28.93,117.18 C 15.24,113.43 13.54,127.15 23.04,131 C 13.71,145.8 7.84,173.93 0,212 L 0,103 A 103,103 0 0,0 39.416,95.16 z" fill="#1b1b1b" stroke="#1b1b1b" stroke-width="1" id="s0"/>
+<use xlink:href="#s0" fill="#616161" transform="scale(-1,1)"/>
+<path d="M -31.995,160.849 A 164,164 0 0,0 31.995,160.849 C 18.9,170.1 8.4,176.3 0,207 C -8.4,176.3 -18.9,170.1 -31.995,160.849 z" fill="#7b7b7b" stroke="#1b1b1b" stroke-width="1" transform="rotate(22.5)"/>
+</g>
+<use xlink:href="#s1" transform="rotate(45)"/>
+</g>
+<use xlink:href="#s2" transform="rotate(90)"/>
+</g>
+<use xlink:href="#s3" transform="scale(-1)"/>
+</g>
+</svg>

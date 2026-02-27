@@ -1,0 +1,8 @@
+#ifndef GZ4D_DTAG_H
+#define GZ4D_DTAG_H
+
+#include <gz4d/gz4d.h>
+#include <gz4d/dtag/DTAG.h>
+#include <gz4d/dtag/MultiAudioStream.h>
+
+#endif

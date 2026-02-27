@@ -1,0 +1,319 @@
+/* Copyright (c) 2005 Data Visualization Research Lab,
+//                    Center for Coastal and Ocean Mapping,
+//                    University of New Hampshire.  All rights reserved.
+//                    http://www.ccom.unh.edu/vislab
+// Not to be copied or distributed without written agreement.
+// Contact:  colinw@cisunix.unh.edu or roland@ccom.unh.edu
+*/
+/*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*/
+// TimeCircle.cpp
+/*---------------------------------------------------------------------------*/
+/** 
+ *	This class creates a display window that is intended to make it easier for
+ *	the user to see that they are speeding up or slowing down time as they
+ *	zoom in and out of time.  At this point, this is very experimental.  Don't
+ *	know yet if it will be worthwhile.
+ *
+ *	Created by mdp 4/5/2005
+ */
+/*---------------------------------------------------------------------------*/
+
+#include "TimeCircle.h"
+#include "TimeControl.h"
+#include"MainWindow.h"
+#include"Scene3D.h"
+
+extern MainWindow *mainWindow;
+
+/*---------------------------------------------------------------------------*/
+TimeCircle::TimeCircle()
+: ToglWindow("timecircle")
+{
+	int i, nsides = 60;
+	float around, twopi = 6.28318f;
+
+	tc = mainWindow->getScene3D()->timeControl;
+
+	Tcl_Eval("togl .timecircle -depth true -stereo true -double true -sharecontext main -height 60 -ident timecircle; place .timecircle -x 590 -y 870 -width 100 -height 80");
+//	Tcl_Eval("bind .timecontrol <MouseWheel> \"focus .timecontrol; if {%D > 0} {.timecontrol mouse %x %y %s 4 0} else {.timecontrol mouse %x %y %s 5 0}\"");
+//	Tcl_Eval("bind .timecontrol <ButtonPress> \"focus .timecontrol; .timecontrol mouse %x %y %s %b 0\"");
+//	Tcl_Eval("bind .timecontrol <ButtonRelease> \"focus .timecontrol; .timecontrol mouse %x %y %s %b 1\"");
+//	Tcl_Eval("bind .timecontrol <Motion>        \".timecontrol motion %x %y %s 0\"");
+
+//	windowMediator->PushWindow(this);
+
+	displayList = glGenLists(1);
+	glNewList(displayList,GL_COMPILE_AND_EXECUTE);
+	glBegin(GL_QUAD_STRIP);
+		for (i = 0; i <= nsides; i++)
+		{
+			around = i / (float)nsides;
+			glColor3f(around, around, around);
+			glVertex2f(0.0, 0.0);
+			glVertex2f(sin(around * twopi), -cos(around * twopi));
+		}
+	glEnd();
+	glEndList();
+
+	blackCircle = glGenLists(1);
+	glNewList(blackCircle,GL_COMPILE_AND_EXECUTE);
+	glColor3f(0.0, 0.0, 0.0);
+	glBegin(GL_QUAD_STRIP);
+		for (i = 0; i <= nsides; i++)
+		{
+			around = i / (float)nsides;
+			glVertex2f(0.0, 0.0);
+			glVertex2f(sin(around * twopi), cos(around * twopi));
+		}
+	glEnd();
+	glEndList();
+}
+
+/*---------------------------------------------------------------------------*/
+void TimeCircle::Display()
+{
+	int i;
+	double time, scale, factor, inverse;
+	//amounts is a list of scales at which to draw circles, terminated by -1.
+	double amounts[] = {31557600000.0 /*1000 years*/, 3155760000.0 /*100 years*/, 315576000.0 /*10 years*/, 31557600.0 /*1 year (365.25 days)*/, 2592000.0 /*30 days*/, 604800.0 /*one week*/, 86400.0, 14400.0, 3600.0, 600, 60.0, 10.0, 1.0, 0.1, 0.01, 0.001, -1.0};
+	float offset = width / 2.0, voffset = height / 2.0;
+
+	SetTogl(myTogl);
+	glDrawBuffer(GL_BACK);
+	glClearColor(0.0,0.0,0.0,0.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glDepthFunc(GL_LEQUAL);
+		
+	glLineWidth(2.0);
+	
+	time = tc->getGZTime();
+	scale = tc->getScale();
+
+	//loop through various scales to see which should be shown
+	for (i = 0; amounts[i] > 0; i++);
+	for (i--; i >= 0; i--)
+	{
+		factor = scale / amounts[i];
+		if (factor > 5.0 || factor < 0.001)
+			continue;
+		inverse = -360.0 / amounts[i];
+		glPushMatrix();
+		glTranslatef(offset, voffset, .5 - (i / 100.0));
+		glRotatef(fmod(time, amounts[i]) * inverse, 0.0, 0.0, 1.0);
+		factor = 100.0 * pow(factor, 0.5);
+		glScalef(factor, factor, factor);
+		glCallList(displayList);
+		glPopMatrix();
+	}
+	//Draw the center black circle
+/*	glPushMatrix();
+	glTranslatef(offset, voffset, 0.5f);
+		glScalef(10.0, 10.0, 10.0);
+		glCallList(blackCircle);
+	glPopMatrix();
+*/	
+	Togl_SwapBuffers(myTogl);
+}
+
+/*---------------------------------------------------------------------------*/
+void TimeCircle::Reshape()
+{
+	ToglWindow::Reshape();
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0,width,0,height,-1,1);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+}
+
+/*---------------------------------------------------------------------------*/
+/*
+int TimeControl::HandleInput(unsigned int inputType, InputInfo *info)
+{
+	double tscale;
+
+	double tmptime,tmpscale;
+
+	if (inputType == NoInput)
+	{
+		if(targetTime)
+		{
+			if (((currentSysTime-startTranslateSysTime)/0.25)>1.0)
+			{
+				setGZTime(targetTime);
+				targetTime = 0.0;
+			}
+			else
+			{
+				setGZTime(startTranslateGZTime+(targetTime-startTranslateGZTime)*((currentSysTime-startTranslateSysTime)/0.25));
+			}
+		}
+		if(zooming)
+		{
+			tscale = 1+1*(currentSysTime-lastZoomTime);
+			if(zooming > 0)
+				multiplyScale(tscale);
+			else
+				multiplyScale(1/tscale);
+			lastZoomTime = currentSysTime;
+		}
+		if(pageBackStart && pageBackStart < currentSysTime-0.5)
+			setGZTime(currentGZTime-(width*spp));
+		if(pageFwdStart && pageFwdStart < currentSysTime-0.5)
+			setGZTime(currentGZTime+(width*spp));
+		
+		Display();
+	}
+	
+	if( inputType & MouseButtonDown && info->val.i >= 4 && info->val.i <= 5 ) // Scroll wheeel
+ 	{
+		if(info->modifier.i & ModControl)
+			if(info->val.i == 5)
+				multiplyScale(1.0/0.6);
+			else
+				multiplyScale(0.6);
+		else if(info->modifier.i & ModShift)
+			if(info->val.i == 5)
+				multiplyScale(1.0/0.95);
+			else
+				multiplyScale(0.95);
+		else
+			if(info->val.i == 5)
+				multiplyScale(1.0/0.8);
+			else
+				multiplyScale(0.8);
+		return SINK_EVENT;
+ 	}
+	
+	if( inputType & MouseButtonDown && info->val.i == 1)  // left click
+	{
+		// remember, mouse pos is relative to upper left, while 0,0 of draw space is lower left
+		if(info->y.i >20) // are we in the lower part, where the buttons are?
+		{
+			if(info->x.i<28)
+			{
+				if(scale>0)
+					rev();
+				if(paused)
+					paused = !paused;
+			}
+			if(info->x.i>=28 && info->x.i < 56)
+				paused = !paused;
+			if(info->x.i>=56 && info->x.i < 84)
+			{
+				if(scale<0)
+					rev();
+				if(paused)
+					paused = !paused;
+			}
+			if(info->x.i>=84 && info->x.i < 112)
+			{
+				scale = 1.0;
+				offset = currentGZTime-currentSysTime;
+				if(paused)
+					paused = !paused;
+			}
+			if(rt && info->x.i>=112 && info->x.i < 140)
+			{
+				useRT();
+			}
+			if(info->x.i>=scrollStart && info->x.i <= scrollEnd)
+			{
+				scrollClick = info->x.i;
+				startTime = currentGZTime;
+			}
+			else if(info->x.i>=scrollAreaStart && info->x.i <= scrollAreaEnd)
+			{
+				if(info->x.i < scrollStart)
+				{
+					pageBackStart = currentSysTime;
+					setGZTime(currentGZTime-(width*spp));
+				}
+				else
+				{
+					pageFwdStart = currentSysTime;
+					setGZTime(currentGZTime+(width*spp));
+				}
+			}
+		}
+		else
+		{
+			startX = info->x.i;
+			startY = info->y.i;
+			startTime = currentGZTime;
+
+			startScale = scale;
+		}
+		return SINK_EVENT;
+	}
+	
+	// middle mouse
+	if( inputType & MouseButtonDown && info->val.i == 2)
+	{
+		// remember, mouse pos is relative to upper left, while 0,0 of draw space is lower left
+		if(info->y.i <20) // are we in the time scale part
+		{
+			targetTime = currentGZTime + spp*(info->x.i-(width/2));
+			startTranslateSysTime = currentSysTime;
+			startTranslateGZTime = currentGZTime;
+			mouseY = info->y.i;
+			lastZoomTime = currentSysTime;
+		}
+	}
+
+	if( inputType & MouseButtonUp && info->val.i == 2)
+	{
+		targetTime = 0.0;
+		mouseY = 0;
+		zooming = 0;
+	}
+	
+	if( inputType & MouseButtonUp && info->val.i == 1)
+	{
+		if(startX >= 0)
+
+		{
+			startX = -1;
+			setTimeAndScale(getGZTime(),startScale);
+		}
+		if(scrollClick >= 0)
+			scrollClick = -1;
+		pageBackStart = pageFwdStart = 0.0;
+	}
+	
+	if(inputType & MouseMotion)
+	{
+		if(startX >= 0)
+		{
+			//setGZTime(startTime - (info->x.i-startX)*spp);
+			if(abs(info->y.i-startY)>25)
+			{
+				tmpscale = 1+(abs(info->y.i-startY)-25)/3.0;
+			}
+			else
+				tmpscale = 1;
+
+			tmptime = startTime - ((info->x.i-startX)*spp);
+			setTimeAndScale(tmptime,startScale*tmpscale);
+		}
+		if(scrollClick >= 0)
+		{
+			setGZTime(startTime + ((info->x.i-scrollClick)*(bbox->end-bbox->start))/scrollAreaWidth);
+		}
+		if(mouseY)
+		{
+			if(info->y.i > mouseY+10)
+				zooming = 1;
+			else if (info->y.i < mouseY-10)
+				zooming = -1;
+			else zooming = 0;
+		}
+		
+	}
+	
+	return ToglWindow::HandleInput(inputType,info);
+}
+*/
+

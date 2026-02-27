@@ -1,0 +1,42 @@
+Import('env')
+
+sources = '''
+Addressable.cpp
+AIS_BinaryFields.cpp
+Ais.cpp
+BBox.cpp
+Cache.cpp
+CubicSp.cpp
+CubicSpline.cpp
+disc.cpp
+DottedAddress.cpp
+ForwardCubicSpline.cpp
+gauss.cpp
+Gps.cpp
+InverseCubicSpline.cpp
+NmeaSource.cpp
+ObjectHistory.cpp
+PBuffer.cpp
+Quaternion.cpp
+random.cpp
+SmartArray.cpp
+SmartMemory.cpp
+SmartValue.cpp
+Stopwatch.cpp
+TellableInterface.cpp
+TimeLine.cpp
+TimePieces.cpp
+TimeSequence.cpp
+Utilities.cpp
+VesselHistory.cpp
+'''
+#Filename.cpp
+#Xml.cpp
+#LinkedList.cpp
+
+objs = []
+
+for s in Split(sources):
+    objs.append(env.Object(s))
+
+Return('objs')

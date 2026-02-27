@@ -1,0 +1,36 @@
+Import('env')
+
+sources = '''
+Animator.cpp
+DoubleClickInteractor.cpp
+EventHandler.cpp
+ImitatingAnimator.cpp
+InputTentacle.cpp
+PathAnimator.cpp
+Pickable.cpp
+PickInteractor.cpp
+PlanarPointHandle.cpp
+PlaybackTool.cpp
+PointHandle.cpp
+PositionDrag.cpp
+RecordingTool.cpp
+RubberbandInteractor.cpp
+RulerTool.cpp
+ScaleDrag.cpp
+SDV_Cursor.cpp
+Tool3D.cpp
+Tool3DPallette.cpp
+ValueDrag.cpp
+VectorAnimator.cpp
+ViewNudger.cpp
+WindowAnchor.cpp
+ZoomInteractor.cpp
+ZoomWindowTool.cpp
+'''
+
+objs = []
+
+for s in Split(sources):
+    objs.append(env.Object(s))
+
+Return('objs')

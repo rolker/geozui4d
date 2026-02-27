@@ -1,0 +1,15 @@
+build/
+.sconf_temp/
+.sconsign.dblite
+*.pyc
+*~
+GeoZui4D.build.conf
+GeoZui4D.conf
+GeoZui4D.kdevelop.pcs
+GeoZui4D.kdevses
+GeoZui4D_d
+GeoZui4D
+*.o
+config.log
+gzVersion.h
+

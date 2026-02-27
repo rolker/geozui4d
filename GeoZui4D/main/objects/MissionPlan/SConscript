@@ -1,0 +1,17 @@
+Import('env')
+
+sources = '''
+MissionPlan.cpp
+MPCommand.cpp
+MPHandle.cpp
+MPItemBase.cpp
+MPPoint.cpp
+MPSegment.cpp
+'''
+
+objs = []
+
+for s in Split(sources):
+    objs.append(env.Object(s))
+
+Return('objs')

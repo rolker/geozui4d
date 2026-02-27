@@ -1,0 +1,4 @@
+[Project]
+CreatedFrom=cxx
+Manager=KDevCMakeManager
+Name=libgz4d

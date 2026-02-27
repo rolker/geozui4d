@@ -1,0 +1,16 @@
+<BinaryFormat>
+    <Import>binary.xml</Import>
+
+    <Cxx>
+        <Namespace>gz4d</Namespace>
+        <Namespace>binary</Namespace>
+        <Header filename="Packet.h" guard="GZ4D_DATA_BINARY_H">
+            <Include>gz4d/time.h</Include>
+        </Header>
+    </Cxx>
+
+    <Type name="time">
+        <Cxx type="gz4d::Time" default="gz4d::time::Now()"/>
+    </Type>
+
+</BinaryFormat>

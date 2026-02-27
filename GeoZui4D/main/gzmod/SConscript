@@ -1,0 +1,22 @@
+Import('env')
+import os
+
+modules = '''
+BeamPattern.py
+BeamPatternFrame.py
+console.py
+deltaT.py
+gps_tcp.py
+http.py
+lighting.py
+movieMaker.py
+nosb.py
+sendAIS.py
+serial_gps.py
+udp_gps.py
+'''
+
+
+for src in Split(modules):
+    dest = os.path.join(env['lib_dir'],'GeoZui4D/gzmod',src)
+    Command(dest,src,[Copy('$TARGET', '$SOURCE'),Chmod('$TARGET', 0755)])

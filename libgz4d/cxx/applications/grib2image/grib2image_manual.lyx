@@ -1,0 +1,1329 @@
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+\usepackage{hyperref}
+\end_preamble
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize letterpaper
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+grib2image User Manual
+\end_layout
+
+\begin_layout Author
+Roland Arsenault
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Introduction
+\end_layout
+
+\begin_layout Standard
+grib2image is a command line application that produces images from GRIB2
+ data.
+ An XML based configuration file provides colormaps and specifies how grib
+ values map to entries in those colormaps.
+\end_layout
+
+\begin_layout Section
+Usage
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+grib2image config.xml [param1] [param2] [param3] ...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+grib2image expects a configuration file as its first parameter.
+ Additional parameters depend on the contents of the configuration file.
+ For simple configuration files where positional parameter placeholders
+ are not used, no extra parameters are necessary.
+\end_layout
+
+\begin_layout Chapter
+Configuration File
+\end_layout
+
+\begin_layout Standard
+The configuration file is an XML document with a root element named 
+\begin_inset Quotes eld
+\end_inset
+
+Grib2Image
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Children of the root element consist of 
+\begin_inset Quotes eld
+\end_inset
+
+ColorMap
+\begin_inset Quotes erd
+\end_inset
+
+ element(s) and 
+\begin_inset Quotes eld
+\end_inset
+
+Image
+\begin_inset Quotes erd
+\end_inset
+
+ element(s).
+\end_layout
+
+\begin_layout Standard
+At least one 
+\begin_inset Quotes eld
+\end_inset
+
+ColorMap
+\begin_inset Quotes erd
+\end_inset
+
+ element and one 
+\begin_inset Quotes eld
+\end_inset
+
+Image
+\begin_inset Quotes erd
+\end_inset
+
+ element is necessary in order for an image to be produced.
+ Following is a simple configuration file that produces an image called
+ 
+\begin_inset Quotes eld
+\end_inset
+
+out.tif
+\begin_inset Quotes erd
+\end_inset
+
+ from a grib file named 
+\begin_inset Quotes eld
+\end_inset
+
+in.grib
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+<Grib2Image>
+\end_layout
+
+\begin_layout Standard
+
+    <ColorMap label="map1" r=".5" g=".5" b=".5" a="1.0">
+\end_layout
+
+\begin_layout Standard
+
+        <Range>
+\end_layout
+
+\begin_layout Standard
+
+            <Value r=".2" g=".2" b="1.0">265</Value>
+\end_layout
+
+\begin_layout Standard
+
+            <Value>280</Value>
+\end_layout
+
+\begin_layout Standard
+
+            <Value r="1.0" b=".2">295</Value>
+\end_layout
+
+\begin_layout Standard
+
+            <Value>305</Value>
+\end_layout
+
+\begin_layout Standard
+
+        </Range>
+\end_layout
+
+\begin_layout Standard
+
+    </ColorMap>
+\end_layout
+
+\begin_layout Standard
+
+    <Image filename="out.tif" grib="in.grib" message="0" colormap="map1"/>
+\end_layout
+
+\begin_layout Standard
+
+</Grib2Image>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Image element
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+Image
+\emph default
+ element contains 3 mandatory properties to define an image.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+filename
+\emph default
+ - contains the output image filename.
+ Image type is determined by the extension, and support depends on formats
+ supported by libgz4d.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+grib
+\emph default
+ - contains the filename of the grib file.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+colormap
+\emph default
+ - contains the label of the colormap to be applied to the grib data to
+ produce the image.
+\end_layout
+
+\begin_layout Standard
+Additional optional properties may also be used.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+message
+\emph default
+ - Zero based index number for desired message for grib files that contain
+ multiple messages.
+ (Defaults to 0).
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+parameter
+\emph default
+ - Zero based index number for desired parameter for grib messages that
+ contain multiple parameters.
+ Not used is 
+\emph on
+message
+\emph default
+ property not present.
+ (Defaults to 0).
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+mapOffset
+\emph default
+ - 
+\emph on
+Offset
+\emph default
+ parameter used for mapping.
+ (Defaults to 0.0)
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+mapScale
+\emph default
+ - 
+\emph on
+Scale
+\emph default
+ parameter used for mapping.
+ (Defaults to 1.0)
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+mapMin
+\emph default
+ - 
+\emph on
+Min
+\emph default
+ parameter used for mapping.
+ (Defaults to minimum data value)
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+mapMax
+\emph default
+ - 
+\emph on
+Max
+\emph default
+ parameter used for mapping.
+ (Defaults to maximum data value)
+\end_layout
+
+\begin_layout Subsection
+Mapping values to a color map
+\begin_inset LatexCommand label
+name "sub:Mapping-values"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Color maps are not always defined to directly map values to a color.
+ Two sets of parameters may be used to map values to a color map.
+\end_layout
+
+\begin_layout Subsubsection
+Offset and Scale
+\end_layout
+
+\begin_layout Standard
+The value obtained from the grib file is first added to 
+\emph on
+Offset
+\emph default
+ and the result is multiplied by 
+\emph on
+Scale
+\emph default
+.
+ The result is used to lookup the color in the color map.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+mapValue=(gribValue+Offset)Scale\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This method is useful when the range of the data is known and the same mapping
+ is needed for multiple data sets.
+\end_layout
+
+\begin_layout Subsubsection
+Min and Max
+\end_layout
+
+\begin_layout Standard
+The values obtained from the grib file may also be transformed such that
+ the data's maximum value maps to 
+\emph on
+Max
+\emph default
+ and the data's minimum value maps to 
+\emph on
+Min
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+This method is useful when the extends of the data are not known and the
+ results don't need to be compared with data having different extents.
+\end_layout
+
+\begin_layout Subsubsection
+Specifing a mapping with both Offset/Scale and Min/Max
+\end_layout
+
+\begin_layout Standard
+If both set of parameters are used.
+ The values are first mapped to the 
+\begin_inset Quotes eld
+\end_inset
+
+Min
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\emph on
+Max
+\emph default
+ range before being transformed by the 
+\emph on
+Offset
+\emph default
+ and 
+\emph on
+Scale
+\emph default
+ parameters.
+\end_layout
+
+\begin_layout Subsection
+Command line parameters
+\end_layout
+
+\begin_layout Standard
+Any property of the 
+\emph on
+Image
+\emph default
+ element may contain a placeholder that gets replaced by a command line
+ parameter.
+ This allows for more general configuration files to be constructed.
+\end_layout
+
+\begin_layout Standard
+The format of the placeholde is the character 
+\emph on
+@
+\emph default
+ followed by the number of the command line parameter.
+ Command line parameters are numbered sequentialy with 
+\emph on
+@1
+\emph default
+ refering to the first parameter followint the configuration filename.
+ The following example shows an 
+\emph on
+Image
+\emph default
+ element with 2 parameter placeholders.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+<Image filename="@2" grib="@1" message="0" colormap="map1"/>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Assuming the above element is part of a configuration file called config.xml,
+ the following is a possible usage:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+grib2image config.xml in.grib out.tif
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+ColorMap element
+\end_layout
+
+\begin_layout Standard
+A color map specifies how a color is assigned to a value.
+ The 
+\emph on
+ColorMap
+\emph default
+ element contains a 
+\emph on
+label
+\emph default
+ property and may contain 
+\emph on
+r
+\emph default
+, 
+\emph on
+g
+\emph default
+, 
+\emph on
+b
+\emph default
+ or 
+\emph on
+a
+\emph default
+ properties to specify the default color.
+\end_layout
+
+\begin_layout Subsection
+Range element
+\end_layout
+
+\begin_layout Standard
+A 
+\emph on
+Range 
+\emph default
+element contains a list of 
+\emph on
+Value
+\emph default
+ elements with associated colors.
+\end_layout
+
+\begin_layout Subsubsection
+Value element
+\end_layout
+
+\begin_layout Standard
+A 
+\emph on
+Value
+\emph default
+ element defines a color for the value expressed by the element's content.
+ The color component properties (
+\emph on
+r
+\emph default
+,
+\emph on
+g
+\emph default
+,
+\emph on
+b
+\emph default
+ and 
+\emph on
+a
+\emph default
+) are optional, and the unspecified components will copy the previous value's
+ color component or the color map's default color if this is the first value
+ specified in the range.
+\end_layout
+
+\begin_layout Subsection
+Determining a color for a value
+\end_layout
+
+\begin_layout Standard
+Given a value that has been scaled according to section 
+\begin_inset LatexCommand ref
+reference "sub:Mapping-values"
+
+\end_inset
+
+, the color is determined by starting with the color map's default color.
+ 
+\end_layout
+
+\begin_layout Standard
+For every range in which the value is included, a color is determined, by
+ interpolating if necessary, the colors assigned to the closest assigned
+ values.
+ This color is blended using its alpha value with the resulting color.
+ Setting a range's alpha value to 1.0 make the range's color replace the
+ resulting color.
+\end_layout
+
+\begin_layout Chapter
+Examples
+\end_layout
+
+\begin_layout Standard
+The following examples display data from a GRIB2 file containing temperatures
+ in degrees Kelvin.
+\end_layout
+
+\begin_layout Standard
+
+\newpage
+
+\end_layout
+
+\begin_layout Section
+Basic 2 color interpolation
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+<Grib2Image>
+\end_layout
+
+\begin_layout Standard
+
+    <ColorMap label="map1" r=".5" g=".5" b=".5" a="1.0">
+\end_layout
+
+\begin_layout Standard
+
+        <Range>
+\end_layout
+
+\begin_layout Standard
+
+            <Value r=".2" g=".2" b="1.0">265</Value>
+\end_layout
+
+\begin_layout Standard
+
+            <Value r="1.0" b=".2">305</Value>
+\end_layout
+
+\begin_layout Standard
+
+        </Range>
+\end_layout
+
+\begin_layout Standard
+
+    </ColorMap>
+\end_layout
+
+\begin_layout Standard
+
+    <Image filename="example1.jpg" grib="ds.maxt.01-03.bin" message="0" colormap="ma
+p1"/>
+\end_layout
+
+\begin_layout Standard
+
+</Grib2Image>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Value between 265 and 305 are linearly mapped from blue to red.
+ Values outside this range map to grey.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+2 Color interpolation
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename examples/example1.jpg
+	lyxscale 50
+	width 90text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\newpage
+
+\end_layout
+
+\begin_layout Section
+Solid colors
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+<Grib2Image>
+\end_layout
+
+\begin_layout Standard
+
+    <ColorMap label="map1" r=".5" g=".5" b=".5" a="1.0">
+\end_layout
+
+\begin_layout Standard
+
+        <Range>
+\end_layout
+
+\begin_layout Standard
+
+            <Value r=".2" g=".2" b="1.0">265</Value>
+\end_layout
+
+\begin_layout Standard
+
+            <Value>280</Value>
+\end_layout
+
+\begin_layout Standard
+
+        </Range>
+\end_layout
+
+\begin_layout Standard
+
+        <Range>
+\end_layout
+
+\begin_layout Standard
+
+            <Value r="0.8" g=".8" b=".2">280</Value>
+\end_layout
+
+\begin_layout Standard
+
+            <Value>295</Value>
+\end_layout
+
+\begin_layout Standard
+
+        </Range>            
+\end_layout
+
+\begin_layout Standard
+
+        <Range>
+\end_layout
+
+\begin_layout Standard
+
+            <Value r="1.0" g=".2" b=".2">295</Value>
+\end_layout
+
+\begin_layout Standard
+
+            <Value>305</Value>
+\end_layout
+
+\begin_layout Standard
+
+        </Range>
+\end_layout
+
+\begin_layout Standard
+
+    </ColorMap>
+\end_layout
+
+\begin_layout Standard
+
+    <Image filename="example2.png" grib="ds.maxt.01-03.bin" message="0" colormap="ma
+p1"/>
+\end_layout
+
+\begin_layout Standard
+
+</Grib2Image>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Solid color bands are acheived by specyfing a 
+\emph on
+Range
+\emph default
+ for each color.
+ The color is specified in the first 
+\emph on
+Value
+\emph default
+ element of the range, but the second 
+\emph on
+Value
+\emph default
+ element's color defaults to the first one.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Solid colors
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename examples/example2.png
+	lyxscale 50
+	width 90text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\newpage
+
+\end_layout
+
+\begin_layout Section
+Mixing solid and interpolated colors with transparent background.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+<Grib2Image>
+\end_layout
+
+\begin_layout Standard
+
+    <ColorMap label="map1" r=".5" g=".5" b=".5" a="0.0">
+\end_layout
+
+\begin_layout Standard
+
+        <Range>
+\end_layout
+
+\begin_layout Standard
+
+            <Value r=".2" g=".2" b="1.0" a="1.0">265</Value>
+\end_layout
+
+\begin_layout Standard
+
+            <Value>280</Value>
+\end_layout
+
+\begin_layout Standard
+
+            <Value r="1.0" g=".2" b=".2">295</Value>
+\end_layout
+
+\begin_layout Standard
+
+            <Value>305</Value>
+\end_layout
+
+\begin_layout Standard
+
+        </Range>
+\end_layout
+
+\begin_layout Standard
+
+    </ColorMap>
+\end_layout
+
+\begin_layout Standard
+
+    <Image filename="example3.png" grib="ds.maxt.01-03.bin" message="0" colormap="ma
+p1"/>
+\end_layout
+
+\begin_layout Standard
+
+</Grib2Image>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A single Range element is used to specify a solid blue and red area, with
+ a middle area which blends between the two solid areas.
+ A transparent background is acheived by setting the default alpha to 0,
+ then resetting it to 1 for the first 
+\emph on
+Value
+\emph default
+ of the 
+\emph on
+Range
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Transparent background with solid and interpolated color regions.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename examples/example3.png
+	lyxscale 50
+	width 90text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\newpage
+
+\end_layout
+
+\begin_layout Section
+Transparent solid color over interpolated range
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+<Grib2Image>
+\end_layout
+
+\begin_layout Standard
+
+    <ColorMap label="map1" r=".5" g=".5" b=".5" a="1.0">
+\end_layout
+
+\begin_layout Standard
+
+        <Range>
+\end_layout
+
+\begin_layout Standard
+
+            <Value r=".2" g=".2" b="1.0">265</Value>
+\end_layout
+
+\begin_layout Standard
+
+            <Value g="1.0" b=".2">305</Value>
+\end_layout
+
+\begin_layout Standard
+
+        </Range>
+\end_layout
+
+\begin_layout Standard
+
+        <Range>
+\end_layout
+
+\begin_layout Standard
+
+            <Value r="1.0" g="0.5" b="0.5" a=".5">285</Value>
+\end_layout
+
+\begin_layout Standard
+
+            <Value>295</Value>
+\end_layout
+
+\begin_layout Standard
+
+        </Range>
+\end_layout
+
+\begin_layout Standard
+
+    </ColorMap>
+\end_layout
+
+\begin_layout Standard
+
+    <Image filename="example4.tif" grib="ds.maxt.01-03.bin" message="0" colormap="ma
+p1"/>
+\end_layout
+
+\begin_layout Standard
+
+</Grib2Image>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This example shows overlapping 
+\emph on
+Range
+\emph default
+s.
+ Colors are assigned in order that the 
+\emph on
+Range
+\emph default
+s are specified with newer 
+\emph on
+Range
+\emph default
+s blending into the result using its alpha value.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Transparent range over interpolated range
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename examples/example4.tif
+	lyxscale 50
+	width 90text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\newpage
+
+\end_layout
+
+\begin_layout Section
+Mapping values
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+<Grib2Image>
+\end_layout
+
+\begin_layout Standard
+
+    <ColorMap label="map2" r=".5" g=".5" b=".5" a="1.0">
+\end_layout
+
+\begin_layout Standard
+
+        <Range>
+\end_layout
+
+\begin_layout Standard
+
+            <Value r=".2" g=".2" b="1.0" a="1.0">0</Value>
+\end_layout
+
+\begin_layout Standard
+
+            <Value g="1.0" b=".2">0.5</Value>
+\end_layout
+
+\begin_layout Standard
+
+            <Value r="1.0" g="0.2">1.0</Value>
+\end_layout
+
+\begin_layout Standard
+
+        </Range>
+\end_layout
+
+\begin_layout Standard
+
+    </ColorMap>
+\end_layout
+
+\begin_layout Standard
+
+    <Image filename="example6a.jpg" grib="ds.maxt.01-03.bin" message="0" colormap="m
+ap2" mapMin="-0.75" mapMax="1.25"/>
+\end_layout
+
+\begin_layout Standard
+
+    <Image filename="example6b.jpg" grib="ds.maxt.01-03.bin" message="1" colormap="m
+ap2" mapScale="0.03" mapOffset="-273"/>
+\end_layout
+
+\begin_layout Standard
+
+</Grib2Image> 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This example demonstrates a normalized 
+\emph on
+ColorMap
+\emph default
+ with mapped values.
+ It also shows two images from two different message of a GRIB2 file using
+ the same 
+\emph on
+ColorMap
+\emph default
+ with different mappings.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Min and max values are mapped beyond the colormap range
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename examples/example6a.jpg
+	lyxscale 50
+	width 90text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Offset and scale used with a normalized color map
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename examples/example6b.jpg
+	lyxscale 50
+	width 90text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

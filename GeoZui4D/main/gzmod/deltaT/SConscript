@@ -1,0 +1,10 @@
+Import('env')
+import os
+
+modules = '''
+DeltaTUI.py
+__init__.py
+'''
+
+if not env['dist']:
+    env.Install(os.path.join(env['lib_dir'],'GeoZui4D/gzmod/deltaT'),Split(modules))

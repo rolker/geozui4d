@@ -1,0 +1,34 @@
+set(GEOZUI4D_SRC
+    ${GEOZUI4D_SRC}
+    ${CMAKE_CURRENT_SOURCE_DIR}/Addressable.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AIS_BinaryFields.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Ais.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/BBox.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Cache.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/CubicSp.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/CubicSpline.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/disc.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/DottedAddress.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ForwardCubicSpline.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gauss.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Gps.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/InverseCubicSpline.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/NmeaSource.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ObjectHistory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PBuffer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Quaternion.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/random.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SmartArray.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SmartMemory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SmartValue.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Stopwatch.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TellableInterface.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TimeLine.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TimePieces.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TimeSequence.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Utilities.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/VesselHistory.cpp
+    PARENT_SCOPE
+)
+
+#add_library(gz_utilities STATIC ${GEOZUI4D_UTILITIES_SRC})

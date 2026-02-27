@@ -1,0 +1,105 @@
+Import('env')
+import os
+import platform
+
+
+modules ='''
+bitmaps
+BWidget-1.7.0
+BWidget-1.7.0/images
+BWidget-1.7.0/lang
+engine
+engine/PosableStateRelationships
+engine/TextureMaps
+gzmod
+gzmod/ais
+gzmod/gz4d
+gzmod/gz4d/base
+gzmod/gz4d/MovieMaker
+gzmod/lighting
+gzmod/deltaT
+interactors
+objects
+objects/dxf
+objects/GeoData
+objects/nodeTypes
+objects/ogr
+objects/S57
+objects/Sonar
+scripts
+Togl
+utilities
+widgets
+'''
+# objects/MissionPlan
+#win32/bin
+#win32/lib/tk8.4
+#win32/lib/tcl8.4
+
+
+extras = '''
+clutEditor.tcl
+Compass_rose_pale.tif
+CompassPoints.tif
+fullmenu.tcl
+notes.tcl
+visualizer.tcl
+visualizer_procs.tcl
+watermark.tif
+blank.cur
+tclLinkage.h
+subtogl.tcl
+'''
+
+gzExtras = '''
+GeoZui.tcl
+GeoZui_splash.gif
+'''
+
+gnExtras = '''
+GeoNav.tcl
+'''
+gcpExtras = '''
+GeoCoastPilot.tcl
+GeoCoastPilot_splash.gif
+'''
+
+if env['variant'] == 'GeoZui4D':
+    extras += gzExtras
+
+if env['variant'] == 'GeoNav4D':
+    extras += gnExtras
+
+if env['variant'] == 'GeoCoastPilot':
+    extras += gcpExtras
+
+env.Install(os.path.join(env['lib_dir'],'GeoZui4D'),Split(extras))
+
+if env['PLATFORM'] == 'win32':
+  bin_extras = '''
+  s57attributes.csv
+  s57expectedinput.csv
+  s57objectclasses.csv
+  '''
+  env.Install(env['bin_dir'],Split(bin_extras))
+  env.Append(CPPDEFINES=["CPL_DLL=__declspec(dllimport)"])
+
+        
+sources = '''
+main.cpp
+MainWindow.cpp
+SubWindow.cpp
+'''
+
+objs = []
+
+for s in Split(sources):
+    objs.append(env.Object(s))
+
+for m in Split(modules):
+    BuildDir(os.path.join('build-'+platform.system(),env['config'],m),m,duplicate=0)
+    ret = SConscript(os.path.join('build-'+platform.system(),env['config'],m,'SConscript'))
+    if ret is not None:
+        objs.append(ret)
+
+env['gzbin'] = env.Install(env['bin_dir'],env.Program('GeoZui4D'+env['modifier'],objs))

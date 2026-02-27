@@ -1,0 +1,12 @@
+set(GEOZUI4D_SRC
+    ${GEOZUI4D_SRC}
+    ${CMAKE_CURRENT_SOURCE_DIR}/OGR.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/OGR_Feature.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/OGR_Layer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/OGR_Limits.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/OGR_LineString.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/OGR_Polygon.cpp
+    PARENT_SCOPE
+)
+
+#add_library(gz_objects_ogr ${GEOZUI4D_OBJECTS_OGR_SRC})

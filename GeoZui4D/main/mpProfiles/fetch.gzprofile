@@ -1,0 +1,28 @@
+<mission_profile top="fetch">
+    <section name="georef" label="Georeference"  path="georeference" gz="georef">
+        <item gz="locallat" name="originLat" type="float" element="yes" attribute="yes"/>
+        <item gz="locallon" name="originLon" type="float" element="yes" attribute="yes"/>
+        <item gz="utmzone" name="originZone" type="integer" element="yes" attribute="yes"/>
+        <item gz="localn" name="originNorth" type="float" element="yes" attribute="yes"/>
+        <item gz="locale" name="originEast" type="float" element="yes" attribute="yes"/>
+    </section>
+
+	<command name="waypoint" path="waypoint">
+		<item name="Latitude" gz="lat" type="float" attribute="yes" required="yes" units="degrees"/>
+		<item name="Longitude" gz="lon" type="float" attribute="yes" required="yes" units="degrees"/>
+		<item name="Easting" gz="x" type="float" attribute="yes" required="yes" units="m"/>
+		<item name="Northing" gz="y" type="float" attribute="yes" required="yes" units="m"/>
+		<item name="UTMzone" type="int" attribute="yes" required="yes"/>
+        <item name="GPS_Fix" type="bool" attribute="yes" required="yes"/>
+		<item name="PayloadOn" type="bool" attribute="yes" required="yes"/>
+		<item name="VehicleBehavior" type="bool" attribute="yes" required="yes"/>
+		<item name="Alt_Depth" gz="z" type="float"  attribute="yes" required="yes" units="meters"/>
+		<item name="LegSpeed" gz="s" type="float"  attribute="yes" required="yes" units="m/s"/>
+		<item name="LegDistance" gz="d" type="float"  attribute="yes" required="yes" units="meters"/>
+		<item name="LegHeading" gz="h" type="float"  attribute="yes" required="yes" units="degrees (true)"/>
+		<item name="LegTime" gz="t" type="float"  attribute="yes" required="yes" units="seconds"/>
+		<item name="GPSerrorcircle" type="float"  attribute="yes" required="yes" units="meters"/>
+		<item name="MagVar" type="float"  attribute="yes" required="yes" units="degrees"/>
+		<display type="goto"/>
+	</command>
+</mission_profile>

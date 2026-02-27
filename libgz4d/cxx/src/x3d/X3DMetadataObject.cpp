@@ -1,0 +1,1 @@
+#define GZ4D_INTERNAL

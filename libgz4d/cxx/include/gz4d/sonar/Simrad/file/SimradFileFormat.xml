@@ -1,0 +1,234 @@
+<BinaryFormat>
+
+    <Documentation>
+        Vessel coordinate system
+        The ME70 Scientific multibeam echo sounder uses a right
+        hand coordinate system with positive X forward, positive Y to
+        starboard and positive Z down. This means that depth values
+        are positive.
+        Angles are deﬁned as clockwise rotation in the positive direction
+        of the axis. 0 degrees is deﬁned to be at the horizontal plane for
+        angles around the X and Y axis (roll and pitch). For example,
+        roll is around the x-axis, and a positive roll means that starboard
+        side goes down.
+        There are no restrictions to where the coordinate system's origo
+        is located in the X and Y directions. In the Z direction however,
+        the origo must be located on the water line.
+        Separate Array and Vessel coordinate systems are deﬁned, but
+        coincide with each other. Deviation due to inaccuracies during
+        installation will be represented by minor differences between
+        these two coordinate systems.
+        The centre beam of the ME70 fan is at 0 degrees athwart beam
+        steering, beams towards the port side are located at angles of less
+        than 0 degrees (negative values), while beams towards starboard
+        side are located at angles higher than 0 degrees (positive values).
+        A vertical beam has alongship beam steering of 0 degrees. Beams
+        pointing to the aft are located at angles of less than 0 degrees
+        (negative values), while beams towards the bow are located at
+        angles higher than 0 degrees (positive values).
+    </Documentation>
+
+    <Type name="char" size="1">
+        <Cxx type="char"/>
+        <Python structFormat="b"/>
+    </Type>
+
+    <Type name="uchar" size="1">
+        <Cxx type="unsigned char"/>
+        <Python structFormat="B"/>
+    </Type>
+
+    <Type name="short" size="2">
+        <Cxx type="int16_t"/>
+        <Python structFormat="h"/>
+    </Type>
+
+    <Type name="ushort" size="2">
+        <Cxx type="uint16_t"/>
+        <Python structFormat="H"/>
+    </Type>
+
+    <Type name="WORD" base="ushort"/>
+
+    <Type name="int" size="4">
+        <Cxx type="int32_t"/>
+        <Python structFormat="i"/>
+    </Type>
+
+    <Type name="long" base="int"/>
+
+    <Type name="ulong" size="4">
+        <Cxx type="uint32_t"/>
+        <Python structFormat="I"/>
+    </Type>
+
+    <Type name="DWORDLONG" size="8">
+        <Cxx type="uint64_t"/>
+        <Python structFormat="Q"/>
+    </Type>
+
+    <Type name="float" size="4">
+        <Cxx type="float"/>
+        <Python structFormat="f"/>
+    </Type>
+
+    <Type name="double" size="8">
+        <Cxx type="double"/>
+        <Python structFormat="d"/>
+    </Type>
+
+    <Block name="DatagramHeader">
+        <Field name="DatagramType" type="long"/>
+        <Field name="DateTime" type="DWORDLONG"><Documentation> contains a 64-bit integer value stating the number of 100 nanosecond intervals since January 1, 1601. This is the internal ”filetime” used by the Windows NT operating system.</Documentation></Field>
+    </Block>
+
+    <Block name="ConfigurationHeader">
+        <Field name="SurveyName" type="char" count="128"/>
+        <Field name="TransectName" type="char" count="128"/>
+        <Field name="SounderName" type="char" count="128"/>
+        <Field name="Version" type="char" count="30"/>
+        <Field name="Multiplexing" type="short"/>
+        <Field name="TimeBias" type="long">
+            <Documentation>Difference between UTC and local time</Documentation>
+            <Units>minutes</Units>
+        </Field>
+        <Field name="SoundVelocityAverage" type="float">
+            <Units>m/s</Units>
+        </Field>
+        <Field name="SoundVelocityTransducer" type="float">
+            <Units>m/s</Units>
+        </Field>
+        <Field name="Spare" type="char" count="84"/>
+        <Field name="TransducerCount" type="long"/>
+    </Block>
+
+    <Block name="ConfigurationBeam">
+        <Field name="ChannelId" type="char" count="128"/>
+        <Field name="BeamType" type="long">
+            <Documentation>BeamType: This is a 32–bit integer, but only the last three bits are used.
+                Bit 0: 0 = Single beam, 1 = Split beam
+                Bit 1: 0 = Beam in fan, 1 = Reference beam
+                Bit 2: 0 = Reference beam “A”, 1 = Reference beam “B”
+            </Documentation>
+        </Field>
+        <Field name="Frequency" type="float">
+            <Units>Hz</Units>
+        </Field>
+        <Field name="Gain" type="float"><Documentation>The single gain parameter was used actively in raw data files generated with software version 1.3. This was before PulseLengthTable, GainTable and SaCorrectionTable were introduced in software version 1.4 to enable gain and Sa correction parameters for each pulse length.</Documentation></Field>
+        <Field name="EquivalentBeamAngle" type="float">
+            <Units>dB</Units>
+        </Field>
+        <Field name="BeamWidthAlongship" type="float">
+            <Units>degrees</Units>
+        </Field>
+        <Field name="BeamWidthAthwartship" type="float">
+            <Units>degrees</Units>
+        </Field>
+        <Field name="AngleSensitivityAlongship" type="float"/>
+        <Field name="AngleSensitivityAthwarthship" type="float"/>
+        <Field name="AngleOffsetAlongship" type="float">
+            <Units>degrees</Units>
+        </Field>
+        <Field name="AngleOffsetAthwartship" type="float">
+            <Units>degrees</Units>
+        </Field>
+        <Field name="PosX" type="float">
+            <Documentation>future use</Documentation>
+        </Field>
+        <Field name="PosY" type="float">
+            <Documentation>future use</Documentation>
+        </Field>
+        <Field name="PosZ" type="float">
+            <Documentation>future use</Documentation>
+        </Field>
+        <Field name="BeamSteeringAngleAlongship" type="float">
+            <Documentation>Clockwise rotation around the Y axis. See Vessel coordinate system.
+            </Documentation>
+        </Field>
+        <Field name="BeamSteeringAngleAthwartship" type="float">
+            <Documentation>Counter clockwise rotation around the X axis. See Vessel coordinate system
+            </Documentation>
+        </Field>
+        <Field name="BeamSteeringAngleUnused" type="float">
+            <Documentation>Not used</Documentation>
+        </Field>
+        <Field name="PulseLengthTable" count="5" type="float">
+            <Units>seconds</Units>
+        </Field>
+        <Field name="Spare1" type="char" count="8"/>
+        <Field name="GainTable" count="5" type="float"><Units>dB</Units></Field>
+        <Field name="Spare2" type="char" count="8"/>
+        <Field name="SaCorrectionTable" count="5" type="float"><Units>dB</Units></Field>
+        <Field name="Spare3" type="char" count="8"/>
+        <Field name="GPTSoftwareVersion" type="char" count="16"/>
+        <Field name="Spare4" type="char" count="28"/>
+    </Block>
+
+    <Block name="Datagram">
+        <Field name="DgHeader" type="DatagramHeader"/>
+        <Switch indexField="DgHeader.DatagramType">
+            <Block id="0x304e4f43" name="ConfigurationDatagram">
+                <Field name="ConfigHeader" type="ConfigurationHeader"/>
+                <Field name="Beam" type="ConfigurationBeam" count="ConfigHeader.TransducerCount"/>
+            </Block>
+            <Block id="0x314e4f43" name="ConfigurationDatagram1">
+                <Documentation>
+                    The CON1 datagram contain the description of the beam mode
+                    used during the recording of the ﬁle. The description is in terms
+                    of an XML text string containing the information from the beam
+                    conﬁguration XML formats.
+                </Documentation>
+                <Field name="BeamConfiguration" type="char" terminator="0">
+                    <Documentation>xml string</Documentation>
+                </Field>
+            </Block>
+            <Block id="0x30454d4e" name="NMEADatagram">
+                <Documentation>The NMEA datagrams contain original NMEA 0183 input
+                    sentences.</Documentation>
+                <Field name="Text" type="char" terminator="0"/>
+            </Block>
+            <Block id="0x30474154" name="AnotationDatagram">
+                <Documentation>The annotation datagram contains comment text.</Documentation>
+                <Field name="Text" type="char" terminator="0"/>
+            </Block>
+            <Block id="0x30574152" name="SampleDatagram">
+                <Documentation>The sample datagram contains data from just one beam channel.
+                     It can contain power sample data, or it can contain both power
+                     and angle sample data.
+                </Documentation>
+                <Field name="Channel" type="short"><Documentation>Channel number</Documentation></Field>
+                <Field name="Mode" type="short"><Documentation>Datatype: 1 = Power, 2 = Angle, 3 = Both</Documentation></Field>
+                <Field name="TransducerDepth" type="float"><Units>m</Units></Field>
+                <Field name="Frequency" type="float"><Units>Hz</Units></Field>
+                <Field name="TransmitPower" type="float"><Units>W</Units></Field>
+                <Field name="PulseLength" type="float"><Units>s</Units></Field>
+                <Field name="BandWidth" type="float"><Units>Hz</Units></Field>
+                <Field name="SampleInterval" type="float"><Units>s</Units></Field>
+                <Field name="SoundVelocity" type="float"><Units>m/s</Units></Field>
+                <Field name="AbsorptionCoefficient" type="float"><Units>dB/m</Units></Field>
+                <Field name="Heave" type="float"><Units>m</Units></Field>
+                <Field name="Roll" type="float"><Units>degree</Units></Field>
+                <Field name="Pitch" type="float"><Units>degree</Units></Field>
+                <Field name="Temperature" type="float"><Units>deg C</Units></Field>
+                <Field name="Heading" type="float"><Units>degrees</Units></Field>
+                <Field name="TransmitMode" type="short"><Documentation>0 = Active, 1 = Passive, 2 = Test, -1 = Unknown</Documentation></Field>
+                <Field name="Spare" type="char" count="6"/>
+                <Field name="Offset" type="long"><Documentation>First sample</Documentation></Field>
+                <Field name="Count" type="long"><Documentation>Number of samples</Documentation></Field>
+                <Field name="Power" type="short" count="Count"><Documentation>The power data contained in the sample datagram is compressed. In order to restore the correct value(s), you must decompress the value according to the equation below.
+                        y=x (10 log(2))/256
+                        where:
+                        x = power value derived from the datagram
+                        y = converted value (in dB)</Documentation></Field>
+                <!--<Field name="Angle" type="short" count="Count"><Documentation>Angle: The fore-and-aft (alongship) and athwartship electrical angles are output as one 16-bit word. The alongship angle is the most signiﬁcant byte while the athwartship angle is the least signiﬁcant byte. Angle data is expressed in 2’s complement format. The electrical angle must be multiplied with the angle sensitivity to get the target position relative to beam centre. Positive numbers denotes the fore and starboard directions.</Documentation></Field>-->
+            </Block>
+        </Switch>
+        <Field name="LengthCheck" type="long"/>
+    </Block>
+
+
+    <Implement>DatagramHeader</Implement>
+    <Implement>ConfigurationHeader</Implement>
+    <Implement>ConfigurationBeam</Implement>
+    <Implement>Datagram</Implement>
+</BinaryFormat>

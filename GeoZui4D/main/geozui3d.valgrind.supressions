@@ -1,0 +1,202 @@
+{
+   <insert a suppression name here>
+   Memcheck:Addr4
+   obj:/usr/lib/libGL.so.1.0.7676
+}
+{
+   <insert a suppression name here>
+   Memcheck:Param
+   ioctl(generic)
+   fun:ioctl
+   obj:/usr/lib/libGL.so.1.0.7676
+}
+
+{
+   <insert a suppression name here>
+   Memcheck:Param
+   write(buf)
+   fun:write
+   obj:/usr/X11R6/lib/libX11.so.6.2
+   fun:_X11TransWrite
+   obj:/usr/X11R6/lib/libX11.so.6.2
+   fun:_XReply
+   fun:XInternAtom
+   obj:/usr/lib/libSDL-1.2.so.0.7.1
+}
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:index
+}
+{
+   <insert a suppression name here>
+   Memcheck:Param
+   ioctl(generic)
+   fun:ioctl
+   obj:/usr/lib/libGLcore.so.1.0.7676
+}
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   obj:/usr/lib/libGLcore.so.1.0.7676
+}
+
+{
+   <insert a suppression name here>
+   obj:/usr/lib/libGL.so.1.0.7676
+}
+
+{
+   <insert a suppression name here>
+   obj:/usr/lib/libGLcore.so.1.0.7676
+}
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:_nv000027gl
+   obj:/usr/lib/libGLcore.so.1.0.7676
+}
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:_nv000028gl
+   obj:/usr/lib/libGLcore.so.1.0.7676
+   obj:*
+}
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:strcat
+   obj:/usr/lib/libGLcore.so.1.0.7676
+}
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:_ZN11PointHandle11HandleInputEjP9InputInfo
+   fun:_ZN17PlanarPointHandle11HandleInputEjP9InputInfo
+   fun:_ZN13InputTentacle11HandleInputEjP9InputInfo
+   fun:_ZN13InputMediator11HandleInputEjP9InputInfo
+   fun:_ZN10ToglWindow13InputCallbackEiP9InputInfo
+   fun:_ZN10ToglWindow4IdleEiPPc
+   fun:_ZN10ToglWindow10SubCommandEiPPc
+   fun:_ZN8Window3D10SubCommandEiPPc
+   fun:_ZN10ToglWindow18SubCommandCallBackEP4TogliPPc
+   fun:Togl_Widget
+   fun:TclInvokeStringCommand
+   obj:*
+}
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   obj:/usr/lib/libtcl8.4.so
+}
+{
+   <insert a suppression name here>
+   Memcheck:Param
+   socketcall.sendto(msg)
+   fun:sendto
+   obj:/lib/tls/libc-2.3.5.so
+   fun:getifaddrs
+   fun:_ZN4omni16tcpTransportImpl10initialiseEv
+   fun:_ZN4omni29omni_giopEndpoint_initialiser6attachEv
+   fun:_ZN5CORBA8ORB_initERiPPcPKcPA2_S4_
+   fun:_ZN9CorbaLinkC1ERiPPcP10MainWindow
+   fun:_ZN10MainWindow4InitEiPPc
+   fun:_ZN10ToglWindow8InitToglEP4Togl
+   fun:_ZN10ToglWindow16InitToglCallBackEP4Togl
+   fun:Togl_Cmd
+   fun:TclInvokeStringCommand
+}
+{
+   <insert a suppression name here>
+   Memcheck:Param
+   write(buf)
+   fun:write
+   obj:/usr/X11R6/lib/libX11.so.6.2
+   fun:_X11TransWrite
+   obj:/usr/X11R6/lib/libX11.so.6.2
+   fun:XFlush
+   fun:TkUnixDoOneXEvent
+}
+
+
+#suppresions for togl
+{
+	ioctl1
+	Memcheck:Param
+	ioctl(generic)
+	fun:ioctl
+	obj:/usr/lib/libGL.so*
+}
+
+{
+	ioctl2
+	Memcheck:Param
+	ioctl(generic)
+	fun:ioctl
+	obj:/usr/lib/libGLcore.so*
+}
+
+{
+	cond1
+	Memcheck:Cond
+	obj:/usr/lib/libGLcore.so*
+}
+
+{
+	cond2
+	Memcheck:Cond
+	fun:_nv0*gl
+	obj:/usr/lib/libGLcore.so*
+}
+
+{
+	strcat1
+	Memcheck:Cond
+	fun:strcat
+	obj:/usr/lib/libGLcore.so*
+}
+
+{
+	uninit4
+	Memcheck:Value4
+	obj:/usr/lib/libGLcore.so*
+}
+
+{
+	invalidRead4
+	Memcheck:Addr4
+	obj:/usr/lib/libGLcore.so*
+}
+
+
+{
+	uninit16
+	Memcheck:Value16
+	obj:/usr/lib/libGLcore.so*
+}
+#done togl supps
+
+#nvidia 8178
+{
+   <insert a suppression name here>
+   Memcheck:Param
+   modify_ldt(ptr)
+   fun:_nv000001gl
+}
+
+{
+   <insert a suppression name here>
+   Memcheck:Addr4
+   obj:/usr/lib/libGL.so.1.0.8178
+}
+
+{
+   <insert a suppression name here>
+   Memcheck:Addr4
+   obj:/usr/lib/libGL.so.1.0.8178
+   fun:exit
+   fun:Tcl_Exit
+}
+
+

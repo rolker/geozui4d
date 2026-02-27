@@ -1,0 +1,19 @@
+Import('env')
+
+sources = '''
+AveragingOverview.cpp
+Boundary.cpp
+CompositeObject.cpp
+PosableStateLock.cpp
+ProximityHighlighter.cpp
+RelationshipManager.cpp
+RelationshipQueryResult.cpp
+WindowLock.cpp
+'''
+
+objs = []
+
+for s in Split(sources):
+    objs.append(env.Object(s))
+
+Return('objs')

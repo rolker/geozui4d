@@ -1,0 +1,8 @@
+Import('env')
+import glob
+import os
+
+modules = glob.glob('*.xbm')
+modules += glob.glob('*.gif')
+
+env.Install(os.path.join(env['lib_dir'],'GeoZui4D/BWidget-1.7.0/images'),modules)

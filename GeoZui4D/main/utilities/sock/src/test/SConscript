@@ -1,0 +1,16 @@
+Import('env')
+Import('debugFlag')
+
+sources = '''
+test.cpp
+'''
+
+if debugFlag:
+    progName = 'sockTest_d'
+else:
+    progName = 'sockTest'
+
+
+socktest = env.Library(progName,Split(sources))
+
+Return('socktest')

@@ -1,0 +1,14 @@
+Import('env')
+import os
+
+modules = '''
+__init__.py
+ais_msg_1.py
+ais_msg_5.py
+aisstring.py
+binary.py
+BitVector.py
+'''
+
+if not env['dist']:
+    env.Install(os.path.join(env['lib_dir'],'GeoZui4D/gzmod/ais'),Split(modules))

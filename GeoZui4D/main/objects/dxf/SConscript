@@ -1,0 +1,24 @@
+Import('env')
+
+sources = '''
+DXF_3DFACE.cpp
+DXF_ARC.cpp
+DXF_BLOCK.cpp
+DXF.cpp
+DXF_entity.cpp
+DXF_INSERT.cpp
+DXF_layer.cpp
+DXF_LINE.cpp
+DXF_LWPOLYLINE.cpp
+DXF_POLYLINE.cpp
+DXF_reader.cpp
+DXF_thing.cpp
+DXF_VERTEX.cpp
+'''
+
+objs = []
+
+for s in Split(sources):
+    objs.append(env.Object(s))
+
+Return('objs')

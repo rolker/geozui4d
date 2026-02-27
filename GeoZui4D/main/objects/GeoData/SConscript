@@ -1,0 +1,22 @@
+Import('env')
+
+sources = '''
+Cone.cpp
+Cube.cpp
+Cylinder.cpp
+DataLines.cpp
+DataPoints.cpp
+DataTriangles.cpp
+DoublePyramid.cpp
+GeoData.cpp
+Glyph.cpp
+InvertedCone.cpp
+SphereGlyph.cpp
+'''
+
+objs = []
+
+for s in Split(sources):
+    objs.append(env.Object(s))
+
+Return('objs')

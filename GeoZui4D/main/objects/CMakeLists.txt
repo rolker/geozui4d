@@ -1,0 +1,73 @@
+add_subdirectory(dxf)
+add_subdirectory(GeoData)
+add_subdirectory(nodeTypes)
+add_subdirectory(ogr)
+add_subdirectory(S57)
+add_subdirectory(Sonar)
+
+set(GEOZUI4D_SRC
+    ${GEOZUI4D_SRC}
+    ${CMAKE_CURRENT_SOURCE_DIR}/AudioSpectrum.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/BasicVessel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Caption.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Chart.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/CoordinateGrid.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Current.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/CurrentLayer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/CursorObject.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Curtain.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Distance.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/DistortionGrid.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/DynamicTides.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Feature.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/FishSchool.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Floater.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Flow.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gutm.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/GutmTree.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Hugin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ImageStream.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/IMU.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Kinect.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Label.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Line.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/MBGrid.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/NavigationPath.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/NetCDF.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Points.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/RasterStream.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Reference.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Reson.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/RubberBandObject.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/RulerPost.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SDV_Quadtree.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Segment.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SegmentUser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Sound.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SoundDtag.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SoundOgg.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SoundingBuffer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Srtm.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SwathBuffer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SwathStream.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Target.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tetras.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Text.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TextureScreen.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TimeVaryingObject.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/triangles.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tube.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Vessel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/VesselPredictor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Vip.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/WhalePath.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/XYZStream.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/X3D.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/X3DFeatureInstance.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/X3DFragment.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/X3DImageInstance.cpp
+    PARENT_SCOPE
+)
+
+#add_library(gz_objects STATIC ${GEOZUI4D_OBJECTS_SRC})
+

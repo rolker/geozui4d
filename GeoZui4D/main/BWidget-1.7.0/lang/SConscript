@@ -1,0 +1,7 @@
+Import('env')
+import glob
+import os
+
+modules = glob.glob('*.rc')
+
+env.Install(os.path.join(env['lib_dir'],'GeoZui4D/BWidget-1.7.0/lang'),modules)

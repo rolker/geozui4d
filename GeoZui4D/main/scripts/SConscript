@@ -1,0 +1,21 @@
+Import('env')
+import glob
+import os
+
+scripts = '''
+attributeWindow.tcl
+cutaway.tcl
+'''
+
+gcpScripts = '''
+CFR_procs.tcl
+GeoCoastPilot_control_panel.tcl
+GeoCoastPilot_extras.tcl
+GeoCoastPilot_preferences.tcl
+GeoCoastPilot_text_and_procs.tcl
+'''
+
+if env['variant'] == 'GeoCoastPilot':
+    scripts += gcpScripts
+
+env.Install(os.path.join(env['lib_dir'],'GeoZui4D/scripts'),Split(scripts))

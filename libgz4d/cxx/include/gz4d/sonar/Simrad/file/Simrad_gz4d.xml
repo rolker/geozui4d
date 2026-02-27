@@ -1,0 +1,10 @@
+<BinaryFormat>
+    <Import>SimradFileFormat.xml</Import>
+    <Cxx>
+        <Namespace>gz4d</Namespace>
+        <Namespace>Simrad</Namespace>
+        <Header filename="FileFormat.h" guard="GZ4D_SIMRAD_FILEFORMAT_H">
+            <Include>gz4d/sonar/Simrad.h</Include>
+        </Header>
+    </Cxx>
+</BinaryFormat>

@@ -1,0 +1,839 @@
+<BinaryFormat>
+
+    <Type name="uint16" size="2">
+        <Cxx type="uint16_t"/>
+        <Python structFormat="H"/>
+    </Type>
+
+    <Type name="uint8" size="1">
+        <Cxx type="uint8_t"/>
+        <Python structFormat="B"/>
+    </Type>
+
+    <Type name="int16" size="2">
+        <Cxx type="int16_t"/>
+        <Python structFormat="h"/>
+    </Type>
+
+    <Type name="uint32" size="4">
+        <Cxx type="uint32_t"/>
+        <Python structFormat="I"/>
+    </Type>
+
+
+    <Block name="OldHeader">
+        <Field name="EnsembleSize" type="uint16"/>
+        <Field name="LeaderSize" type="uint16"/>
+        <Field name="VelocitySize" type="uint16"/>
+        <Field name="SpectralSize" type="uint16"/>
+        <Field name="EchoSize" type="uint16"/>
+        <Field name="PercentGoodSize" type="uint16"/>
+        <Field name="StatusSize" type="uint16"/>
+    </Block>
+
+    <Block name="OldLeader">
+        <Field name="rtc_month" type="uint8"/>
+        <Field name="rtc_day" type="uint8"/>
+        <Field name="rtc_hour" type="uint8"/>
+        <Field name="rtc_minute" type="uint8"/>
+        <Field name="rtc_second" type="uint8"/>
+        <Field name="tbp_minute" type="uint8"/>
+        <Field name="tbp_second" type="uint8"/>
+        <Field name="tbp_hundreds_second" type="uint8"/>
+        <Field name="ping_per_ensemble" type="uint16"/>
+        <Field name="bin_count" type="uint8"/>
+        <Field name="bin_length" type="uint8"/>
+        <Field name="pulse_length" type="uint8"/>
+        <Field name="blank_after_transmit" type="uint8"/>
+        <Field name="delay_after_blank" type="uint8"/>
+        <Field name="ensemble_number" type="uint16"/>
+        <Field name="bit_status" type="uint8"/>
+        <Field name="adcp_config" type="uint8"/>
+        <Field name="sn_threshold" type="uint8"/>
+        <Field name="pg_threshold" type="uint8"/>
+        <Field name="pitch" type="uint16"/>
+        <Field name="roll" type="uint16"/>
+        <Field name="heading" type="uint16"/>
+        <Field name="adcp_temperature" type="uint16"/>
+        <Field name="hi_voltage_in" type="uint8"/>
+        <Field name="transmit_current" type="uint8"/>
+        <Field name="low_voltage_in" type="uint8"/>
+        <Field name="ctd_conductivity_count" type="uint8" count="3"/>
+        <Field name="ctd_temperature_count" type="uint8" count="3"/>
+        <Field name="ctd_depth_count" type="uint8" count="3"/>
+        <Field name="bottom_tracking_velocity" type="uint8" count="6"/>
+        <Field name="beam_range" type="uint16" count="4"/>
+        <Field name="pitch_stdandard_deviation" type="uint8"/>
+        <Field name="roll_stdandard_deviation" type="uint8"/>
+        <Field name="heading_stdandard_deviation" type="uint8"/>
+        <Field name="ctd_measurement_interval" type="uint8" count="3"/>
+        <Field name="bottom_tracking_pg" type="uint8" count="2"/>
+    </Block>
+
+    <Block name="OldEnsemble">
+        <Field name="header" type="OldHeader"/>
+        <Field name="leader" type="OldLeader"/>
+        <Field name="velocity" type="uint8" count="header.VelocitySize"/>
+    </Block>
+
+
+    <Block name="Header">
+        <Field name="HeaderID" type="uint8">
+            <Validation>
+                <Equals>0x7f</Equals>
+            </Validation>
+        </Field>
+        <Field name="DataSourceID" type="uint8">
+            <Validation>
+                <Equals>0x7f</Equals>
+            </Validation>
+        </Field>
+        <Field name="EnsembleSize" type="uint16"/>
+        <Field name="Spare" type="uint8"/>
+        <Field name="DataCount" type="uint8"/>
+        <Field name="Offsets" type="uint16" count="DataCount"/>
+    </Block>
+
+    <Block name="VelocityCell">
+        <Documentation>The ADCP packs velocity data for each depth cell of each beam into a twobyte, two's-complement integer [-32768, 32767] with the LSB sent first. The ADCP scales velocity data in millimeters per second (mm/s). A value of -32768 (8000h) indicates bad velocity values.</Documentation>
+        <Field name="Velocity" type="int16" count="4"/>
+    </Block>
+
+    <Block name="CorrelationMagnitudeCell">
+        <Documentation>
+        Correlation magnitude data for Broad Bandwidth ensembles give the magnitude of the normalized echo autocorrelation at the lag used for estimating the Doppler phase change. The ADCP represents this magnitude by a linear scale between 0 and 255, where 255 is perfect correlation (i.e., a solid target).
+        Correlation magnitude data for Narrow Bandwidth ensembles give the magnitude of the energy (power) in the low pass filter. Values of 170 to 190 counts represent normal levels. Lower values mean a reduced signal to noise ratio.
+        </Documentation>
+        <Field name="CorrelationMagnitude" type="uint8" count="4"/>
+    </Block>
+
+    <Block name="EchoIntensityCell">
+        <Documentation>
+        The echo intensity scale factor is about 0.45 dB per ADCP count. The ADCP does not directly check for the validity of echo intensity data.
+        </Documentation>
+        <Field name="EchoIntensity" type="uint8" count="4"/>
+    </Block>
+
+    <Block name="PercentGoodCell">
+        <Documentation>
+        The percent-good data field is a data-quality indicator that reports the percentage
+        (0 to 100) of good data collected for each depth cell of the velocity
+        profile. The setting of the EX-command (“EX - Coordinate Transformation,”
+        page 122) determines how the ADCP references percent-good data as
+        shown below.
+
+        EX-Command      Coordinate      Velocity 1              Velocity 2              Velocity 3              Velocity 4
+                        System
+                                                                Percentage Of Good Pings For:
+                                        Beam 1                  BEAM 2                  BEAM 3                  BEAM 4
+        xxx00xxx        Beam                                                    Percentage Of:
+        xxx01xxx        Instrument      3-Beam Transfor-        Transformations         More Than One           4-Beam Trans-
+                                        mations (note 1)        Rejected (note 2)       Beam Bad In Bin         formations
+        xxx10xxx        Ship
+        xxx11xxx        Earth
+
+        1. Because profile data did not exceed correlation threshold (“WC - Broad Bandwidth Profiling Water Correlation Threshold,” page 140).
+        2. Because the error velocity threshold was exceeded (“WE - Broad Bandwidth Profiling Error Velocity Threshold,” page 142).
+
+        At the start of the velocity profile, the backscatter echo strength is typically
+        high on all four beams. Under this condition, the ADCP uses all four beams
+        to calculate the orthogonal and error velocities. As the echo returns from
+        far away depth cells, echo intensity decreases. At some point, the echo will
+        be weak enough on any given beam to cause the ADCP to reject some of its
+        depth cell data. This causes the ADCP to calculate velocities with three
+        beams instead of four beams. When the ADCP does 3-beam solutions, it
+        stops calculating the error velocity because it needs four beams to do this.
+        At some further depth cell, the ADCP rejects all cell data because of the
+        weak echo. As an example, let us assume depth cell 60 has returned the following
+        percent-good data.
+        
+        FIELD #1 = 50, FIELD #2 = 5, FIELD #3 = 0, FIELD #4 = 45
+        
+        If the EX-command was set to collect velocities in BEAM coordinates, the
+        example values show the percentage of pings having good solutions in cell
+        60 for each beam based on the Low Correlation Threshold (WC-command).
+        Here, beam 1=50%, beam 2=5%, beam 3=0%, and beam 4=45%. These are
+        neither typical nor desired percentages. Typically, you would want all four
+        beams to be about equal and greater than 25%.
+        On the other hand, if velocities were collected in Instrument, Ship, or Earth
+        coordinates, the example values show:
+        
+        Field 1 – Percentage of good 3-beam solutions – Shows percentage of successful
+        velocity calculations (50%) using 3-beam solutions because the correlation
+        threshold (WC) was not exceeded.
+        
+        Field 2 – Percentage of transformations rejected – Shows percent of error
+        velocity (5%) that was less than the WE-command setting. WE has a default
+        of 5000 mm/s. This large WE setting effectively prevents the ADCP
+        from rejecting data based on error velocity.
+        
+        Field 3 – Percentage of more than one beam bad in bin – 0% of the velocity
+        data were rejected because not enough beams had good data.
+        
+        Field 4 – Percentage of good 4-beam solutions – 45% of the velocity data
+        collected during the ensemble for depth cell 60 were calculated using four
+        beams.
+        </Documentation>
+        <Field name="PercentGood" type="uint8" count="4"/>
+    </Block>
+
+    <Block name="Attitude">
+        <Field name="Heading" type="uint16"/>
+        <Field name="Pitch" type="uint16"/>
+        <Field name="Roll" type="uint16"/>
+        <Field name="HeadingRate" type="uint16"/>
+        <Field name="PitchRate" type="uint16"/>
+        <Field name="RollRate" type="uint16"/>
+    </Block>
+
+
+    <Block name="DataSection">
+        <Field name="SectionID" type="uint16"/>
+        <Switch indexField="SectionID">
+            <Block name="FixedLeader" id="0">
+                <Field name="CPUFirmwareVersion" type="uint8"/>
+                <Field name="CPUFirmwareRevision" type="uint8"/>
+                <Field name="SystemConfiguration" type="uint16">
+                    <Documentation>
+                    This field defines the ADCP hardware configuration. Convert
+                    this field (2 bytes, LSB first) to binary and interpret as follows.
+                    LSB
+                    BITS 7 6 5 4 3 2 1 0
+                         - - - - - 0 0 0 75-kHz SYSTEM
+                         - - - - - 0 0 1 150-kHz SYSTEM
+                         - - - - - 0 1 0 300-kHz SYSTEM
+                         - - - - - 0 1 1 600-kHz SYSTEM
+                         - - - - - 1 0 0 1200-kHz SYSTEM
+                         - - - - - 1 0 1 2400-kHz SYSTEM
+                         - - - - - 1 1 0 38-kHz SYSTEM
+                         - - - - 0 - - - CONCAVE BEAM PAT.
+                         - - - - 1 - - - CONVEX BEAM PAT.
+                         - - 0 0 - - - - SENSOR CONFIG #1
+                         - - 0 1 - - - - SENSOR CONFIG #2
+                         - - 1 0 - - - - SENSOR CONFIG #3
+                         - 0 - - - - - - XDCR HD NOT ATT.
+                         - 1 - - - - - - XDCR HD ATTACHED
+                         0 - - - - - - - DOWN FACING BEAM
+                         1 - - - - - - - UP-FACING BEAM
+                    MSB
+                    BITS 7 6 5 4 3 2 1 0
+                         - - - - - - 0 0 15E BEAM ANGLE
+                         - - - - - - 0 1 20E BEAM ANGLE
+                         - - - - - - 1 0 30E BEAM ANGLE
+                         - - - - - - 1 1 OTHER BEAM ANGLE
+                         0 1 0 0 - - - - 4-BEAM JANUS CONFIG
+                         0 1 0 1 - - - - 5-BM JANUS CFIG DEMOD)
+                         1 1 1 1 - - - - 5-BM JANUS CFIG.(2 DEMD)
+                    Example: Hex 5249 (i.e., hex 49 followed by hex 52) identifies
+                    a 150-kHz system, convex beam pattern, down-facing,
+                    30E beam angle, 5 beams (3 demods).
+                    </Documentation>
+                </Field>
+                <Field name="Reserved" type="uint16"/>
+                <Field name="NumberOfBeams" type="uint8"/>
+                <Field name="NumberOfCells" type="uint8"/>
+                <Field name="NumberOfPings" type="uint16"/>
+                <Field name="DepthCellLength" type="uint16">
+                    <Documentation>
+                    Contains the length of one depth cell (“WS - Broad Bandwidth
+                    Profiling Depth Cell Size,” page 143).
+                    Scaling: LSD = 1 centimeter; Range = 1 to 6400 cm (210 feet)
+                    </Documentation>
+                </Field>
+                <Field name="BlankAfterTransmit" type="uint16">
+                    <Documentation>
+                    Contains the blanking distance used by the ADCP to allow the
+                    transmit circuits time to recover before the receive cycle begins
+                    (“WF - Broad Bandwidth Profiling Blank after Transmit,”
+                    page 142).
+                    Scaling: LSD = 1 centimeter; Range = 0 to 9999 cm (328
+                    feet)
+                    </Documentation>
+                </Field>
+                <Field name="SignalProcessingMode" type="uint8"/>
+                <Field name="BroadBandwidthProfilingWaterCorrelationThreshold" type="uint8"/>
+                <Field name="NumberCodeReps" type="uint8"/>
+                <Field name="PercentGoodMinimum" type="uint8"/>
+                <Field name="ErrorVelocityMaximum" type="uint16"/>
+                <Field name="TPPMinutes" type="uint8"/>
+                <Field name="TPPSeconds" type="uint8"/>
+                <Field name="TPPHundredths" type="uint8"/>
+                <Field name="CoordinateTransformation" type="uint8">
+                    <Documentation>
+                    Contains the coordinate transformation processing parameters
+                    (“EX - Coordinate Transformation,” page 122). These
+                    firmware switches indicate how the Ocean Surveyor collected
+                    data.
+                    xxx00xxx = NO TRANSFORMATION (BEAM COORDINATES)
+                    xxx01xxx = INSTRUMENT COORDINATES
+                    xxx10xxx = SHIP COORDINATES
+                    xxx11xxx = EARTH COORDINATES
+                    xxxxx1xx = TILTS (PITCH AND ROLL) USED IN SHIP
+                    OR EARTH TRANSFORMATION
+                    xxxxxx1x = 3-BEAM SOLUTION USED IF ONE BEAM IS
+                    BELOW THE CORRELATION THRESHOLD SET
+                    BY THE WC-COMMAND
+                    xxxxxxx1 = BIN MAPPING USED
+                    </Documentation>
+                </Field>
+                <Field name="HeadingAlignment" type="uint16">
+                    <Documentation>
+                    Contains a correction factor for physical heading misalignment
+                    (“EA - Heading Alignment,” page 111).
+                    Scaling: LSD = 0.01 degree; Range = -179.99 to 180.00 degrees
+                    </Documentation>
+                </Field>
+                <Field name="HeadingBias" type="uint16">
+                    <Documentation>
+                    Contains a correction factor for electrical/magnetic heading
+                    bias (“EV - Heading Bias,” page 120).
+                    Scaling: LSD = 0.01 degree; Range = -179.99 to 180.00
+                    degrees
+                    </Documentation>
+                </Field>
+                <Field name="SensorSource" type="uint8">
+                    <Documentation>
+                    Contains the selected source of environmental sensor data
+                    (“EZ - Sensor Source,” page 123). These firmware switches
+                    indicate the following.
+                    Field      Description
+                    x1xxxxxx = calculates EC from ED, ES, and ET
+                    xx1xxxxx = uses ED from depth sensor
+                    xxx1xxxx = uses EH from transducer heading sensor
+                    xxxx1xxx = uses EP from transducer pitch sensor
+                    xxxxx1xx = uses ER from transducer roll sensor
+                    xxxxxx1x = uses ES from conductivity sensor
+                    xxxxxxx1 = uses ET from transducer temp sensor
+                    NOTE: If the field = 0, or if the sensor is not available, the
+                    ADCP uses the manual command setting. If the field = 1, the
+                    ADCP uses the reading from the internal sensor or an external
+                    synchro sensor (only applicable to heading, roll, and
+                    pitch). Although you can enter a "2" in the EZ-command
+                    string, the ADCP only displays a 0 (manual) or 1 (int/ext sensor).
+                    </Documentation>
+                </Field>
+                <Field name="SensorsAvail" type="uint8">
+                    <Documentation>
+                    This field reflects what sensors are available. The bit pattern
+                    is the same as listed for the EZ-command (above), except
+                    that the EC bit is always zero because there is no speed of
+                    sound sensor.
+                    </Documentation>
+                </Field>
+                <Field name="Bin1Distance" type="uint16">
+                    <Documentation>
+                    This field contains the distance to the middle of the first depth
+                    cell (bin). This distance is a function of depth cell length
+                    (WS), the profiling mode (WM), the blank after transmit distance
+                    (WF), and speed of sound.
+                    </Documentation>
+                </Field>
+                <Field name="XmitPulseLength" type="uint16">
+                    <Documentation>
+                    This field, set by the WT-command, contains the length of the
+                    transmit pulse. When the ADCP receives a &lt;BREAK&gt; signal,
+                    it sets the transmit pulse length as close as possible to the
+                    depth cell length (WS-command). This means the ADCP
+                    uses a WT command of zero. However, the WT field contains
+                    the actual length of the transmit pulse used.
+                    Scaling: LSD = 1 centimeter; Range = 0 to 65535 cm (2150
+                    feet)
+                    </Documentation>
+                </Field>
+                <Field name="Reserved1" type="uint16"/>
+                <Field name="FalseTargetThresh" type="uint8"/>
+                <Field name="Reserved2" type="uint8"/>
+                <Field name="TransmitLagDistance" type="uint16">
+                    <Documentation>
+                    This field, determined mainly by the setting of the WMcommand,
+                    contains the distance between pulse repetitions.
+                    Scaling: LSD = 1 centimeter; Range = 0 to 65535 centimeters
+                    </Documentation>
+                </Field>
+                <Field name="Reserved3" type="uint8" count="8"/>
+            </Block>
+            <Block name="VariableLeader" id="0x0080">
+                <Field name="EnsembleNumber" type="uint16"/>
+                <Field name="RTCYear" type="uint8"/>
+                <Field name="RTCMonth" type="uint8"/>
+                <Field name="RTCDay" type="uint8"/>
+                <Field name="RTCHour" type="uint8"/>
+                <Field name="RTCMinute" type="uint8"/>
+                <Field name="RTCSecond" type="uint8"/>
+                <Field name="RTCHundreths" type="uint8"/>
+                <Field name="EnsembleNumberMSB" type="uint8"/>
+                <Field name="Reserved" type="uint16"/>
+                <Field name="SpeedOfSound" type="uint16"/>
+                <Field name="DepthOfTransducer" type="uint16">
+                    <Documentation>
+                    Contains the depth of the transducer below the water surface
+                    (“ED - Depth of Transducer,” page 113). This value may be a
+                    manual setting or a reading from a depth sensor.
+                    Scaling: LSD = 1 decimeter; Range = 1 to 9999 decimeters
+                    </Documentation>
+                </Field>
+                <Field name="Heading" type="uint16">
+                    <Documentation>
+                    Contains the ADCP heading angle (“EH - Heading Angle,”
+                    page 116). This value may be a manual setting or a reading
+                    from a heading sensor.
+                    Scaling: LSD = 0.01 degree; Range = 000.00 to 359.99 degrees
+                    </Documentation>
+                </Field>
+                <Field name="Pitch" type="uint16">
+                    <Documentation>
+                    Contains the ADCP pitch angle (“EP - Pitch and Roll Angles,”
+                    page 118). This value may be a manual setting or a reading
+                    from a tilt sensor. Positive values mean that Beam #3 is spatially
+                    higher than Beam #4.
+                    Scaling: LSD = 0.01 degree; Range = -179.00 to +180.00
+                    degrees
+                    </Documentation>
+                </Field>
+                <Field name="Roll" type="uint16">
+                    <Documentation>
+                    Contains the ADCP roll angle (“ER - Roll (Tilt 2),” page 119).
+                    This value may be a manual setting or a reading from a tilt
+                    sensor. For up-facing ADCPs, positive values mean that
+                    Beam #2 is spatially higher than Beam #1. For down-facing
+                    ADCPs, positive values mean that Beam #1 is spatially higher
+                    than Beam #2.
+                    Scaling: LSD = 0.01 degree; Range = -60.00 to +60.00 degrees
+                    </Documentation>
+                </Field>
+                <Field name="Salinity" type="uint16">
+                    <Documentation>
+                    Contains the salinity value of the water at the transducer head
+                    (“ES - Salinity,” page 119). This value may be a manual setting
+                    or a reading from a conductivity sensor.
+                    Scaling: LSD = 1 part per thousand; Range = 0 to 50 ppt
+                    </Documentation>
+                </Field>
+                <Field name="Temperature" type="uint16">
+                    <Documentation>
+                    Contains the temperature of the water at the transducer head
+                    (“ET - Temperature,” page 119). This value may be a manual
+                    setting or a reading from a temperature sensor.
+                    Scaling: LSD = 0.01 degree; Range = -5.00 to +40.00 degrees
+                    </Documentation>
+                </Field>
+                <Field name="Minutes" type="uint8">
+                    <Documentation>
+                    Minimum time between ping groups (mm:ss.ff)
+                    </Documentation>
+                </Field>
+                <Field name="Seconds" type="uint8">
+                    <Documentation>
+                    Minimum time between ping groups (mm:ss.ff)
+                    </Documentation>
+                </Field>
+                <Field name="Hundredths" type="uint8">
+                    <Documentation>
+                    Minimum time between ping groups (mm:ss.ff)
+                    </Documentation>
+                </Field>
+                <Field name="HeadingStandardDeviation" type="uint8"/>
+                <Field name="PitchStandardDeviation" type="uint8"/>
+                <Field name="RollStandardDeviation" type="uint8"/>
+                <Field name="ErrorStatusWord" type="uint8" count="4">
+                    <Documentation>
+                    Contains the Error Status Word (ESW). The ESW is cleared
+                    (set to zero) between each ensemble.
+                    LSB
+                    BITS 07 06 05 04 03 02 01 00
+                         x  x  x  x  x  x  x  1  Xmit Shutdown
+                         x  x  x  x  x  x  1  x  Xmit Over Current
+                         x  x  x  x  x  1  x  x  Not used
+                         x  x  x  x  1  x  x  x  Not used
+                         x  x  x  1  x  x  x  x  Not used
+                         x  x  1  x  x  x  x  x  Not used
+                         x  1  x  x  x  x  x  x  Not used
+                         1  x  x  x  x  x  x  x  Not used
+                    MSB
+                    BITS 15 14 13 12 11 10 09 08
+                         x  x  x  x  x  x  x  1  Not Used
+                         x  x  x  x  x  x  1  x  Watchdog Disabled
+                         x  x  x  x  x  1  x  x  Not Used
+                         x  x  x  x  1  x  x  x  Not Used
+                         x  x  x  1  x  x  x  x  Not Used
+                         x  x  1  x  x  x  x  x  Not Used
+                         x  1  x  x  x  x  x  x  Not used
+                         1  x  x  x  x  x  x  x  Not used
+                    LSB
+                    BITS 07 06 05 04 03 02 01 00
+                         x  x  x  x  x  x  x  1  Not used
+                         x  x  x  x  x  x  1  x  Not used
+                         x  x  x  x  x  1  x  x  Not used
+                         x  x  x  x  1  x  x  x  Not used
+                         x  x  x  1  x  x  x  x  Not used
+                         x  x  1  x  x  x  x  x  Not used
+                         x  1  x  x  x  x  x  x  Not used
+                         1  x  x  x  x  x  x  x  Not used
+                    MSB
+                    BITS 15 14 13 12 11 10 09 08
+                         x  x  x  x  x  x  x  1  Not Used
+                         x  x  x  x  x  x  1  x  Not used
+                         x  x  x  x  x  1  x  x  Not Used
+                         x  x  x  x  1  x  x  x  Not Used
+                         x  x  x  1  x  x  x  x  Not Used
+                         x  x  1  x  x  x  x  x  Not Used
+                         x  1  x  x  x  x  x  x  Not used
+                         1  x  x  x  x  x  x  x  Not used
+                    </Documentation>
+                </Field>
+                <Field name="Reserved2" type="uint8" count="14"/>
+            </Block>
+            <Block name="VelocityData" id="0x0100">
+                <Field name="cell" type="VelocityCell" count="FixedLeader::NumberOfCells"/>
+            </Block>
+            <Block name="CorrelationMagnitudeData" id="0x0200">
+                <Field name="cell" type="CorrelationMagnitudeCell" count="FixedLeader::NumberOfCells"/>
+            </Block>
+            <Block name="EchoIntensityData" id="0x0300">
+                <Field name="cell" type="EchoIntensityCell" count="FixedLeader::NumberOfCells"/>
+            </Block>
+            <Block name="PercentGoodData" id="0x0400">
+                <Field name="cell" type="PercentGoodCell" count="FixedLeader::NumberOfCells"/>
+            </Block>
+            <Block name="BottomTrackData" id="0x0600">
+                <Field name="NumberOfPings" type="uint16"/>
+                <Field name="Reserved1" type="uint16"/>
+                <Field name="CorrelationMagnitudeMinimum" type="uint8"/>
+                <Field name="EvaluationAmplitudeMinimum" type="uint8"/>
+                <Field name="Reserved2" type="uint16"/>
+                <Field name="Mode" type="uint8"/>
+                <Field name="ErrorVelocityMaximum" type="uint16"/>
+                <Field name="Reserved3" type="uint8" count="4"/>
+                <Field name="Range" type="uint16" count="4">
+                    <Documentation>
+                    Contains the two lower bytes of the vertical range
+                    from the ADCP to the sea bottom (or surface) as
+                    determined by each beam. This vertical range does
+                    not consider the effects of pitch and roll. When bottom
+                    detections are bad, BT Range = 0. See bytes
+                    78 through 81 for MSB description and scaling.
+                    Scaling: LSD = 1 cm; Range = 0 to 65535 cm
+                    </Documentation>
+                </Field>
+                <Field name="Velocity" type="int16" count="4">
+                    <Documentation>
+                    The meaning of the velocity depends on the EX
+                    command setting (“EX - Coordinate Transformation,”
+                    page 122). The four velocities are as follows:
+                    a) Beam Coordinates: Beam 1, Beam 2, Beam 3,
+                    Beam 4
+                    b) Instrument Coordinates: 1->2, 4->3, toward face,
+                    error
+                    c) Ship Coordinates: Stbd, Fwd, Upward, Error
+                    d) Earth Coordinates: East, North, Upward, Error
+                    </Documentation>
+                </Field>
+                <Field name="Correlation" type="uint8" count="4">
+                    <Documentation>
+                    Contains the correlation magnitude in relation to the
+                    sea bottom (or surface) as determined by each
+                    beam. Bottom-track correlation magnitudes have
+                    the same format and scale factor as water-profiling
+                    magnitudes.
+                    </Documentation>
+                </Field>
+                <Field name="EvaluationAmplitude" type="uint8" count="4">
+                    <Documentation>
+                    Contains the evaluation amplitude of the matching
+                    filter used in determining the strength of the bottom
+                    echo.
+                    Scaling: LSD = 1 count; Range = 0 to 255 counts
+                    </Documentation>
+                </Field>
+                <Field name="Reserved4" type="uint8" count="4"/>
+                <Field name="Reserved5" type="uint8" count="6"/>
+                <Field name="Reserved6" type="uint8" count="20"/>
+                <Field name="MaxDepth" type="uint16">
+                    <Documentation>
+                    Stores the maximum tracking depth value (“BX - Maximum Tracking Depth,” page 102).
+                    Scaling: LSD = 1 decimeter; Range = 80 to 9999 decimeters
+                    </Documentation>
+                </Field>
+                <Field name="ReceiverSignalStrengthIndicator" type="uint8" count="4">
+                    <Documentation>
+                    Contains the Receiver Signal Strength Indicator (RSSI) value in the center of the bottom echo as determined by each beam.
+                    Scaling: LSD = ≈ 0.45 dB per count; Range = 0 to 255 counts
+                    </Documentation>
+                </Field>
+                <Field name="Gain" type="uint8">
+                    <Documentation>Contains the Gain level for shallow water.</Documentation>
+                </Field>
+                <Field name="RangeMSB" type="uint8" count="4">
+                    <Documentation>
+                    Contains the most significant byte of the vertical
+                    range from the ADCP to the sea bottom (or surface)
+                    as determined by each beam. This vertical range
+                    does not consider the effects of pitch and roll. When
+                    bottom detections are bad, BT Range=0. See bytes
+                    17 through 24 for LSB description and scaling.
+                    Scaling: LSD = 65,536 cm, Range = 65,536 to
+                    16,777,215 cm
+                    </Documentation>
+                </Field>
+            </Block>
+            <Block name="FixedAttitudeData" id="0x3000">
+                <Field name="AttitudeOutputCoordinates" type="uint8" count="8"/>
+                <Field name="ExternalPitchRollScaling" type="uint8"/>
+                <Field name="FixedHeadingScalling" type="uint8" count="3"/>
+                <Field name="RollMisalignment" type="uint16"/>
+                <Field name="PitchMisalignment" type="uint16"/>
+                <Field name="PitchRollAndCoordinateFrame" type="uint8" count="5"/>
+                <Field name="Orientation" type="uint8"/>
+                <Field name="HeadingOffset" type="uint16"/>
+                <Field name="SensorSource" type="uint8" count="8"/>
+            </Block>
+
+            <Block name="VariableAttitudeData40" id="0x3040"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData44" id="0x3044"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData48" id="0x3048"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData4C" id="0x304C"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData50" id="0x3050"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData54" id="0x3054"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData58" id="0x3058"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData5C" id="0x305C"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData60" id="0x3060"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData64" id="0x3064"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData68" id="0x3068"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData6C" id="0x306C"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData70" id="0x3070"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData74" id="0x3074"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData78" id="0x3078"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData7C" id="0x307C"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+
+            <Block name="VariableAttitudeData80" id="0x3080"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData84" id="0x3084"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData88" id="0x3088"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData8C" id="0x308C"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData90" id="0x3090"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData94" id="0x3094"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData98" id="0x3098"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeData9C" id="0x309C"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataA0" id="0x30A0"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataA4" id="0x30A4"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataA8" id="0x30A8"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataAC" id="0x30AC"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataB0" id="0x30B0"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataB4" id="0x30B4"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataB8" id="0x30B8"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataBC" id="0x30BC"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+
+            <Block name="VariableAttitudeDataC0" id="0x30C0"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataC4" id="0x30C4"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataC8" id="0x30C8"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataCC" id="0x30CC"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataD0" id="0x30D0"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataD4" id="0x30D4"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataD8" id="0x30D8"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataDC" id="0x30DC"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataE0" id="0x30E0"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataE4" id="0x30E4"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataE8" id="0x30E8"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataEC" id="0x30EC"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataF0" id="0x30F0"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataF4" id="0x30F4"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataF8" id="0x30F8"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+            <Block name="VariableAttitudeDataFC" id="0x30FC"><Field name="Attitudes" type="Attitude" count="8"/></Block>
+
+            <Block name="NavigationData" id="0x2000">
+                <Documentation>
+                In the BAM (Binary Angular Measure) format, the most
+                significant bit of the word has a weight of 180 degrees,
+                and you keep dividing by 2 as you proceed to the right.
+                The lease significant bit for a 32-bit BAM is about 8E-8
+                arc degrees (180/231), or just under 1 cm of longitudinal
+                distance at the equator, where 1 arc minute = 1 Nautical
+                mile. If you interpret the BAM word as an unsigned
+                number, the range is 0 to (360-lsb) degrees, and if you
+                interpret the BAM as a signed number, the range is –
+                180 to (180-lsb) degrees. The least significant bit for a
+                16-bit BAM is about 0.0055 degrees (180/215). Some
+                32-bit BAM examples are:
+                UNSIGNED
+                0x40000000 90 degrees
+                0x80000000 180 degrees
+                0xC0000000 270 degrees
+                0xFFFFFFFF 360 degrees minus one LSB degrees
+                SIGNED
+                0x40000000 90 degrees
+                0x80000000 minus 180 degrees
+                0xC0000000 minus 90 degrees
+                0xFFFFFFFF minus one LSB degrees
+
+                The Speed Made Good (SMG) and Direction Made
+                Good (DMG) quantities are calculated from the navigation
+                fixes that enter the system between ADCP outputs,
+                and are calculated as follows:
+                If:
+                aLat(i) = the average of the latitudes of the nav fixes in
+                interval i
+                aLon(i) = the average of the longitudes of the nav fixes
+                in interval i
+                Ta(i) = the average of the time of validity of the nav
+                fixes in interval i
+                dLat = the difference in average latitude between averaging
+                intervals
+                dLon = the difference in average longitude between
+                averaging intervals
+                VelMGn (i) = the velocity made good in the North direction
+                for interval i
+                VelMGe (i) = the velocity made good in the East direction
+                for interval i
+                LatToDist (dLat) is a function that converts delta Latitude
+                to a distance
+                LonToDist (dLon) is a function that converts delta Longitude
+                to a distance
+                Smg (i) = speed made good in interval i
+                Dmg (i) = direction made good in interval i
+                Then:
+                dLat = (aLat (i-1) – aLat (i))
+                dLon = (aLon (i-1) – aLon (i))
+                VelMgn (i) = LatToDist (dLat) / (Ta(i-1) – Ta(i))
+                VelMge (i) = LonToDist (dLon) / (Ta(i-1) – Ta(i))
+                Smg(i) = sqrt(VelMGn(i)^2 + VelMGe(i)^2)
+                Dmg(i) = atan(VelMGe(i) / VelMGn(i))
+                </Documentation>
+                <Field name="UTCDay" type="uint8"/>
+                <Field name="UTCMonth" type="uint8"/>
+                <Field name="UTCYear" type="uint16"/>
+                <Field name="UTCTimeFirstFix" type="uint32">
+                    <Documentation>
+                    UTC time since midnight; LSB = 0.01 seconds
+                    </Documentation>
+                </Field>
+                <Field name="PCClockOffset" type="uint32">
+                    <Documentation>
+                    PC Time – UTC (signed); LSB = milliseconds
+                    </Documentation>
+                </Field>
+                <Field name="FirstLatitude" type="uint32">
+                    <Documentation>
+                    This the first latitude position received after the previous ADCP ping.
+                    LSB=approx. 8E-8 deg (32-bit BAM)
+                    </Documentation>
+                </Field>
+                <Field name="FirstLongitude" type="uint32">
+                    <Documentation>
+                    This is the first longitude position received after the previous ADCP ping.
+                    LSB=approx. 8E-8 deg (32-bit BAM)
+                    </Documentation>
+                </Field>
+                <Field name="UTCTimeLastFix" type="uint32">
+                    <Documentation>
+                    Time since midnight UTC; LSB=1E-4 seconds
+                    </Documentation>
+                </Field>
+                <Field name="LastLatitude" type="uint32">
+                    <Documentation>
+                    This is the last latitude position received prior to the current ADCP ping.
+                    LSB=approx. 8E-8 deg (32-bit BAM)
+                    </Documentation>
+                </Field>
+                <Field name="LastLongitude" type="uint32">
+                    <Documentation>
+                    This is the last longitude position received prior to the current ADCP ping.
+                    LSB=approx. 8E-8 deg (32-bit BAM)
+                    </Documentation>
+                </Field>
+                <Field name="AvgSpeed" type="int16">
+                    <Documentation>
+                    Average Navigational Speed mm/sec (signed)
+                    </Documentation>
+                </Field>
+                <Field name="AvgTrackTrue" type="uint16">
+                    <Documentation>
+                    Average True Navigational Ship Track Direction
+                    LSB=approx. 0.0055 deg (16-bit BAM)
+                    </Documentation>
+                </Field>
+                <Field name="AvgTrackMagnetic" type="uint16">
+                    <Documentation>
+                    Average Magnetic Navigational Ship Track Direction
+                    LSB=approx. 0.0055 deg (16-bit BAM)
+                    </Documentation>
+                </Field>
+                <Field name="SpeedMadeGood" type="int16">
+                    <Documentation>
+                    Speed calculated between navigation positions.
+                    LSB=one mm/sec (signed)
+                    </Documentation>
+                </Field>
+                <Field name="DirectionMadeGood" type="int16">
+                    <Documentation>
+                    Direction calculated between navigation positions.
+                    LSB = approx. 0.0055 deg (16-bit BAM)
+                    </Documentation>
+                </Field>
+                <Field name="Reserved1" type="uint16"/>
+                <Field name="Flags" type="uint16">
+                    <Documentation>
+                    Describes the validity of the data. Each bit has represents
+                    a separate flag and has its own meaning 1=true,
+                    0=false. The flag bits are defined as follows:
+                    bit 0 = Data updated
+                    bit 1 = PSN Valid
+                    bit 2 = Speed Valid
+                    bit 3 = Mag Track Valid
+                    bit 4 = True Track Valid
+                    bit 5 = Date/Time Valid
+                    bit 6 = SMG/DMG Valid
+                    bit 7 = Pitch/Roll Valid
+                    bit 8 = Heading Valid
+                    bit 9 = ADCP Time Valid
+                    bit 10 = Clock Offset Valid
+                    bit 11 = Reserved
+                    bit 12 = Reserved
+                    bit 13 = Reserved
+                    bit 14 = Reserved
+                    bit 15 = Reserved
+                    </Documentation>
+                </Field>
+                <Field name="Reserved2" type="uint16"/>
+                <Field name="EnsembleNumber" type="uint32"/>
+                <Field name="EnsembleYear" type="uint16"/>
+                <Field name="EnsembleDay" type="uint8"/>
+                <Field name="EnsembleMonth" type="uint8"/>
+                <Field name="EnsembleTime" type="uint32">
+                    <Documentation>
+                    Number of seconds since midnight; LSB = 0.01 seconds
+                    </Documentation>
+                </Field>
+                <Field name="Pitch" type="uint16">
+                    <Documentation>
+                    </Documentation>
+                </Field>
+                <Field name="Roll" type="uint16">
+                    <Documentation>
+                    </Documentation>
+                </Field>
+                <Field name="Heading" type="uint16">
+                    <Documentation>
+                    </Documentation>
+                </Field>
+                <Field name="NumberSpeedSamplesAveraged" type="uint16"/>
+                <Field name="NumberTrueTrackSamplesAveraged" type="uint16"/>
+                <Field name="NumberMagneticTrackSamplesAveraged" type="uint16"/>
+                <Field name="NumberHeadingSamplesAveraged" type="uint16"/>
+                <Field name="NumberPitchRollSamplesAveraged" type="uint16"/>
+            </Block>
+        </Switch>
+    </Block>
+
+    <Implement>OldHeader</Implement>
+    <Implement>OldLeader</Implement>
+    <Implement>OldEnsemble</Implement>
+
+    <Implement>VelocityCell</Implement>
+    <Implement>CorrelationMagnitudeCell</Implement>
+    <Implement>EchoIntensityCell</Implement>
+    <Implement>PercentGoodCell</Implement>
+    <Implement>Attitude</Implement>
+
+    <Implement>Header</Implement>
+    <Implement>DataSection</Implement>
+
+</BinaryFormat>

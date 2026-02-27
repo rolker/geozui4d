@@ -1,0 +1,56 @@
+Import('env')
+
+sources = '''
+ClutEditor.cpp
+ExaggeratableState.cpp
+gzCommandInterface.cpp
+HackInteractor.cpp
+InputInfo.cpp
+InputMediator.cpp
+Interactor.cpp
+InterpolationSupport.cpp
+Isotrack.cpp
+Notes.cpp
+ObjectCollection.cpp
+Object.cpp
+ObjectPoseState.cpp
+Persistence.cpp
+PosableStateBase.cpp
+PosableStateUser.cpp
+PosableStateWrapper.cpp
+PosableWrapperSupport.cpp
+PoseState.cpp
+QuadTreeCollection.cpp
+QuadTreeObject.cpp
+QuadTreeTile.cpp
+RTSource.cpp
+Scene3D.cpp
+SDV_Light.cpp
+SessionRecorder.cpp
+SimpleObjectCollection.cpp
+SimpleObject.cpp
+Spaceball.cpp
+Tail.cpp
+TimeControl.cpp
+ToglWindow.cpp
+TranslatableState.cpp
+TranslatableWrapper.cpp
+VideoRecorder.cpp
+ViewManager.cpp
+Wiimote.cpp
+Window3D.cpp
+WindowMediator.cpp
+WindowPoseState.cpp
+'''
+#BilinearInterpolation.cpp
+#ConversionGrid.cpp
+#ConversionMethod.cpp
+#Joystick.cpp
+#ProjectionSpec.cpp
+
+objs = []
+
+for s in Split(sources):
+    objs.append(env.Object(s))
+
+Return('objs')

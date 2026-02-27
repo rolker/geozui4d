@@ -1,0 +1,8 @@
+Import('env')
+
+local_env = env.Clone()
+
+local_env.Append(CPPDEFINES=['USE_TCL_STUBS','USE_TK_STUBS'])
+
+togl = local_env.Object('togl.c')
+Return('togl')

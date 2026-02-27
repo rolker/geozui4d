@@ -1,0 +1,10 @@
+<BinaryFormat>
+    <Import>RDIFileFormat.xml</Import>
+    <Cxx>
+        <Namespace>gz4d</Namespace>
+        <Namespace>RDI</Namespace>
+        <Header filename="FileFormat.h" guard="GZ4D_SONAR_RDI_FILEFORMAT_H">
+            <Include>gz4d/sonar/Sonar.h</Include>
+        </Header>
+    </Cxx>
+</BinaryFormat>

@@ -1,0 +1,6 @@
+
+
+class GzError(Exception):
+	pass
+
+

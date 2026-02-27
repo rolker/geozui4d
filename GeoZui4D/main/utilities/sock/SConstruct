@@ -1,0 +1,41 @@
+env = Environment()
+
+debug = env.Copy(CCFLAGS = '-ggdb')
+release = env.Copy(CCFLAGS = '-O3')
+
+######
+#debug
+######
+
+env = debug
+debugFlag = True
+
+Export('env')
+Export('debugFlag')
+
+debug.BuildDir('build/debug','src',duplicate=0)
+debug_lib = debug.SConscript('build/debug/SConscript')
+debug.Install('lib', debug_lib)
+
+debug.BuildDir('build/debug/test','src/test',duplicate=0)
+debug_test = debug.SConscript('build/debug/test/SConscript')
+debug.Command('build/debug/test/test_d.txt', debug_test, "$SOURCE > $TARGET")
+
+########
+#release
+########
+
+env = release
+debugFlag = False
+
+Export('env')
+Export('debugFlag')
+
+release.BuildDir('build/release','src',duplicate=0)
+release_lib = release.SConscript('build/release/SConscript')
+release.Install('lib', release_lib)
+
+release.BuildDir('build/release/test','src/test',duplicate=0)
+release_test = debug.SConscript('build/release/test/SConscript')
+release.Command('build/release/test/test.txt', release_test, "$SOURCE > $TARGET")
+

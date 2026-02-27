@@ -1,0 +1,12 @@
+set(GEOZUI4D_SRC
+    ${GEOZUI4D_SRC}
+    ${CMAKE_CURRENT_SOURCE_DIR}/Clut.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Grid.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ImageMap.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LatTexture.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/RTVideo.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TextureMap.cpp
+    PARENT_SCOPE
+)
+
+#add_library(gz_engine_texture STATIC ${GEOZUI4D_ENGINE_TEXTURE_SRC})
