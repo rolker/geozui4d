@@ -194,7 +194,8 @@ gz4d/
 
 ## License
 
-Copyright (c) 2000 Data Visualization Research Lab, Center for Coastal and
-Ocean Mapping, University of New Hampshire. All rights reserved.
+Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New
+Hampshire.
 
-For research purposes only. See `GeoZui4D/main/license.txt` for details.
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for
+details.
