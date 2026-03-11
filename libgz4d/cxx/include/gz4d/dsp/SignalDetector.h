@@ -1,3 +1,6 @@
+// Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+// SPDX-License-Identifier: Apache-2.0
+
 #ifndef GZ_DSP_SIGNALDETECTOR_H
 #define GZ_DSP_SIGNALDETECTOR_H
 

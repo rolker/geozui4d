@@ -1,3 +1,6 @@
+// Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+// SPDX-License-Identifier: Apache-2.0
+
 //
 // Declaration of Sv_Slider3 class.
 // Sv_Slider3 objects are used as part of the widget object to handle 

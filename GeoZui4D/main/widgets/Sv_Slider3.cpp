@@ -1,3 +1,6 @@
+// Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+// SPDX-License-Identifier: Apache-2.0
+
 //
 // Implementation of Sv_Slider3 class
 //	This code has at least a 10 year history, Glenn Franck, Nhu Le, Colin Ware, and Matt Plumlee

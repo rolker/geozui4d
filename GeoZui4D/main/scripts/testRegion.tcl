@@ -1,3 +1,6 @@
+# Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+# SPDX-License-Identifier: Apache-2.0
+
 set boundaries {Eastern Eastern_northside Mid_southern Northern Northern_eastside Northwestern Southern Southwestern}
 
 foreach boundary $boundaries {

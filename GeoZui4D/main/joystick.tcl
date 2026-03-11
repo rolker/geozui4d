@@ -1,3 +1,6 @@
+# Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+# SPDX-License-Identifier: Apache-2.0
+
 #-----------------------------------------------------------------------------
 # joystick.tcl -- Support procedures for controlling GeoZui3D's main 3D window
 #                 with a joystick.

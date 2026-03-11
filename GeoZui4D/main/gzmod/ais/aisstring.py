@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+# Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+# SPDX-License-Identifier: Apache-2.0
+
 
 __version__ = '$Revision: 2068 $'.split()[1]
 __date__ = '$Date: 2006-05-02 08:17:59 -0400 (Tue, 02 May 2006) $'.split()[1]

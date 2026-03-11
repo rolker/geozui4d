@@ -1,3 +1,6 @@
+# Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+# SPDX-License-Identifier: Apache-2.0
+
 #--------------------------------------------------------------------------
 # This is a modifyable example script that allows a vehicle to be attached
 # to a .gdl object.  The first section sets up variables which can be

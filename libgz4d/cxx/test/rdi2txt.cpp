@@ -1,3 +1,6 @@
+// Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+// SPDX-License-Identifier: Apache-2.0
+
 #include <gz4d/sonar/RDI/FileSource.h>
 #include <gz4d/thread/Consumer.h>
 #include <gz4d/vector/ios.h>

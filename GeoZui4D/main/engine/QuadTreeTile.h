@@ -1,10 +1,5 @@
-/* Copyright (c) 2008 Data Visualization Research Lab,
-   //                    Center for Coastal and Ocean Mapping,
-   //                    University of New Hampshire.  All rights reserved.
-   //                    http://www.ccom.unh.edu/vislab
-   // Not to be copied or distributed without written agreement.
-   // Contact:  colinw@cisunix.unh.edu or roland@ccom.unh.edu
-*/
+// Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+// SPDX-License-Identifier: Apache-2.0
 // QuadTreeTile.h: Class for multiscale tiled grids of objects that may
 //  have a sort of mipmapped representation when zoomed out and/or
 //  viewed at an angle.

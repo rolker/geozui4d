@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+# Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+# SPDX-License-Identifier: Apache-2.0
+
 # gz
 # rtEK500
 # Capture and display in real time data broadcast in EK500 format.

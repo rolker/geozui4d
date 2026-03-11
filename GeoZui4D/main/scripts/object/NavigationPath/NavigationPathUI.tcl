@@ -1,3 +1,6 @@
+# Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+# SPDX-License-Identifier: Apache-2.0
+
 lappend auto_path ../../../BWidget-1.4.1
 package require BWidget
 

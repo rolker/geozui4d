@@ -1,3 +1,6 @@
+// Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+// SPDX-License-Identifier: Apache-2.0
+
 /* Include file for MT19937                                       */
 /*     : Mixed Integer and Real version (2001/05/12))             */
 /* C++ version with saverand() and overloaded seedrand() added,   */

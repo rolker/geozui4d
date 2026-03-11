@@ -1,3 +1,6 @@
+# Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+# SPDX-License-Identifier: Apache-2.0
+
 #-----------------------------------------------------------------------------
 # GeoNav.tcl -- Interface script for the GeoNav GUI of GeoZui4D.
 #-----------------------------------------------------------------------------
@@ -768,9 +771,8 @@ image create photo splashPhoto -file [file join $appdir "GeoNav.gif"] -height 30
 .splash.canvas create image 200 150 -image splashPhoto
 #label .splash.versionLabel -text "GeoNav3D Version $GeoZuiVersion $GeoZuiDescriptor"
 label .splash.versionLabel -text "$GeoZuiDescriptor"
-label .splash.copyright -text "Copyright (c) 2004-2005.  All rights reserved.
- Not to be copied or distributed without written agreement.
- Contact:  colinw@cisunix.unh.edu or roland@ccom.unh.edu"
+label .splash.copyright -text "Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+ Licensed under the Apache License, Version 2.0"
 button .splash.okbutton -text "OK" -command "wm withdraw .splash" -takefocus 1
 pack .splash.canvas -expand yes -fill both
 pack .splash.versionLabel

@@ -1,3 +1,6 @@
+// Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+// SPDX-License-Identifier: Apache-2.0
+
 /** Note: This class is used as a base class for all ProtoInstance uses.  It
  *  does not represent a generic ProtoInstance for X3D prototypes, at least
  *  not at this time.

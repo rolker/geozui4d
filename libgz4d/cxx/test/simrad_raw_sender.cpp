@@ -1,3 +1,6 @@
+// Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+// SPDX-License-Identifier: Apache-2.0
+
 #include <gz4d/sonar/Simrad/file/FileSource.h>
 #include <gz4d/socket/TCPSocket.h>
 #include <gz4d/data/binary/Packet.h>

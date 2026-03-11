@@ -1,3 +1,6 @@
+// Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+// SPDX-License-Identifier: Apache-2.0
+
 #include "../../boost_python.h"
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <gz4d/sonar/Simrad/net/BeamConfiguration.h>

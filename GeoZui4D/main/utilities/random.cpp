@@ -1,3 +1,6 @@
+// Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+// SPDX-License-Identifier: Apache-2.0
+
 /* Procedures for MT19937: Integer version (1999/10/28)           */
 /*                                                                */
 /* C++ version with saverand() and overloaded seedrand() added,   */

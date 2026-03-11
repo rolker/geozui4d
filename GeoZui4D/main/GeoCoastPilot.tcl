@@ -1,3 +1,6 @@
+# Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+# SPDX-License-Identifier: Apache-2.0
+
 #-----------------------------------------------------------------------------
 # GUI setup
 #-----------------------------------------------------------------------------
@@ -341,9 +344,8 @@ image create photo splashPhoto -file [file join $appdir "GeoCoastPilot_splash.gi
 .splash.canvas create image 200 150 -image splashPhoto
 #label .splash.versionLabel -text "$GeoZuiDescriptor"
 label .splash.versionLabel -text "GeoCoastPilot Version $GeoCoastPilotVersion"
-label .splash.copyright -text "Copyright (c) 2008.  All rights reserved.
- Not to be copied or distributed without written agreement.
- Contact:  briana@ccom.unh.edu or schwehr@ccom.unh.edu"
+label .splash.copyright -text "Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+ Licensed under the Apache License, Version 2.0"
 button .splash.okbutton -text "OK" -command "wm withdraw .splash" -takefocus 1
 pack .splash.canvas -expand yes -fill both
 pack .splash.versionLabel

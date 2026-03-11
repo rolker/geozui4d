@@ -1,3 +1,6 @@
+// Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+// SPDX-License-Identifier: Apache-2.0
+
 #include <gz4d/s57/S57.h>
 #include <gz4d/glut/Application.h>
 #include <gz4d/glo/Vertex.h>

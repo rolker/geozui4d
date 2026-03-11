@@ -1,3 +1,6 @@
+// Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+// SPDX-License-Identifier: Apache-2.0
+
 #include <gz4d/av/AVWriter.h>
 #include <boost/filesystem.hpp>
 #include <iostream>

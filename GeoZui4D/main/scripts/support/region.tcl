@@ -1,3 +1,6 @@
+# Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+# SPDX-License-Identifier: Apache-2.0
+
 #-----------------------------------------------------------------------------
 # region.tcl -- Support procedures for creating events whenever a region is
 #				entered or exited.

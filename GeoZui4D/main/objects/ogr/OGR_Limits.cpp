@@ -1,3 +1,6 @@
+// Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+// SPDX-License-Identifier: Apache-2.0
+
 #include "objects/ogr/OGR_Limits.h"
 
 bool OGR_Limits::operator()(double x, double y) const

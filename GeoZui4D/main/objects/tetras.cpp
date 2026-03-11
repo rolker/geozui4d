@@ -1,10 +1,5 @@
-/* Copyright (c) 2000 Data Visualization Research Lab,
-//                    Center for Coastal and Ocean Mapping,
-//                    University of New Hampshire.  All rights reserved.
-//                    http://www.ccom.unh.edu/vislab
-// Not to be copied or distributed without written agreement.
-// Contact:  colinw@cisunix.unh.edu or roland@ccom.unh.edu
-*/
+// Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+// SPDX-License-Identifier: Apache-2.0
 // Tetras.cpp: implementation of the Points class.
 //  (copied from Points.cpp for test purposes only)
 //////////////////////////////////////////////////////////////////////

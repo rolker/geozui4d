@@ -1,3 +1,6 @@
+# Copyright 2000-2026 Center for Coastal and Ocean Mapping, University of New Hampshire
+# SPDX-License-Identifier: Apache-2.0
+
 #-----------------------------------------------------------------------------
 # GeoCoastPilot Coast Pilot text window and procedures that link all the parts
 # together (3D GUI, text window, info frame in the control panel.
