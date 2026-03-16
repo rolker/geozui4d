@@ -89,6 +89,7 @@ LINK_OBJECT(DynamicTides);
 LINK_OBJECT(EK500);
 LINK_OBJECT(Floater);
 LINK_OBJECT(Flow);
+LINK_OBJECT(GdalRaster);
 LINK_OBJECT(Gutm);
 LINK_OBJECT(Hugin);
 LINK_OBJECT(Label);
@@ -641,13 +642,17 @@ Object * Scene3D::LoadObject(std::string const &filename, Tcl_Interp *interp, ch
             return NULL;
         }
 
-        if ((texture = LoadTexture(filename,interp)))  // Special case: texture
+        // Try registered objects first for extensions that have them,
+        // then fall back to texture loading
+        object = Object::createFromExtension(ext);
+        if(!object)
         {
-            AddTexture(texture);
-            return NULL;
+            if ((texture = LoadTexture(filename,interp)))
+            {
+                AddTexture(texture);
+                return NULL;
+            }
         }
-        else
-            object = Object::createFromExtension(ext);
     }
 
     if (object)
@@ -672,10 +677,17 @@ Object * Scene3D::LoadObject(std::string const &filename, Tcl_Interp *interp, ch
             object = NULL;
         }
   }
-    else
-  {
+
+    // If no object loaded, try texture as fallback
+    if(!object && !ext.empty())
+    {
+        if ((texture = LoadTexture(filename,interp)))
+        {
+            AddTexture(texture);
+            return NULL;
+        }
         std::cerr << "No object loaded!" << endl;
-  }
+    }
     return object;
 }
 
@@ -933,8 +945,15 @@ std::shared_ptr<TextureMap> Scene3D::LoadTexture(std::string const &filename, Tc
 
   texture = CreateTexture(filename);
 
-  if(!texture || texture->SetFilename(filename) || texture->Load())
-      texture.reset();
+  try
+  {
+    if(!texture || texture->SetFilename(filename) || texture->Load())
+        texture.reset();
+  }
+  catch(...)
+  {
+    texture.reset();
+  }
 
   return texture;
 }
