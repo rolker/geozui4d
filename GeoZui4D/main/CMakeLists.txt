@@ -58,11 +58,9 @@ find_package(TclStub REQUIRED)
 set(LIBS ${LIBS} ${TCL_STUB_LIBRARY} ${TK_STUB_LIBRARY})
 
 
-find_package(GDAL)
-if(GDAL_FOUND)
-    include_directories(${GDAL_INCLUDE_DIR})
-    set(LIBS ${LIBS} ${GDAL_LIBRARY})
-endif()
+find_package(GDAL REQUIRED)
+include_directories(${GDAL_INCLUDE_DIR})
+set(LIBS ${LIBS} ${GDAL_LIBRARY})
 
 find_package(JPEG)
 if(JPEG_FOUND)
