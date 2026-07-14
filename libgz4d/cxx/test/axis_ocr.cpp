@@ -3,7 +3,7 @@
 
 #include <gz4d/axis/ocr.h>
 #include <gz4d/image/io.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <gz4d/time/ios.h>
 
 int main(int argc, char * argv[])
@@ -20,7 +20,7 @@ int main(int argc, char * argv[])
     {
         gz4d::ImageL8 img;
         img.Load(argv[i]);
-        std::string fname = boost::filesystem::path(argv[i]).filename().string();
+        std::string fname = std::filesystem::path(argv[i]).filename().string();
         std::cout << fname << ",";
         std::string tstring = ocr(img);
         std::cout << tstring << ",";
