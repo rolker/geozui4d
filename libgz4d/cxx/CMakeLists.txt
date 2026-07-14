@@ -177,6 +177,10 @@ else()
     set(GLEW_FOUND FALSE)
 endif()
 
+# Prefer legacy libGL over GLVND libOpenGL: on GLVND systems
+# OPENGL_gl_LIBRARY is empty, so -lGL never reaches the link line and
+# GL-using binaries fail with "DSO missing from command line"
+set(OpenGL_GL_PREFERENCE LEGACY)
 find_package(OpenGL)
 if(OPENGL_FOUND)
     set(LIBS ${LIBS} ${OPENGL_gl_LIBRARY})

@@ -5,7 +5,7 @@
 #include <iostream>
 #include <gz4d/dtag/MultiSensorStream.h>
 #include <cstdlib>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <gz4d/time/ios.h>
 
 void usage()
@@ -61,7 +61,7 @@ int main(int argc, char * argv[])
         std::cerr << std::endl;
         gz4d::dtag::MultiSensorStream s;
         dtag.GetStream(s);
-        boost::filesystem::path outname = *i;
+        std::filesystem::path outname = *i;
         outname /= "out.bin";
         FILE * out = fopen(outname.string().c_str(),"wb");
         if(!out)

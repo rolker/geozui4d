@@ -5,6 +5,7 @@
 #include "Chart.h"
 #include <filesystem>
 #include <gz4d/Image.h>
+#include <gz4d/image/io.h>
 #include<string.h>
 #include"objects/gutm.h"
 #include<math.h>

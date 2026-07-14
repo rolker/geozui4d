@@ -23,6 +23,7 @@ set(GEOZUI4D_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/FishSchool.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Floater.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Flow.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/GdalRaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gutm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/GutmTree.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Hugin.cpp
