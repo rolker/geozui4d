@@ -152,6 +152,8 @@ else()
 endif()
 
 
+# Prefer legacy libGL over GLVND libOpenGL (see libgz4d/cxx/CMakeLists.txt)
+set(OpenGL_GL_PREFERENCE LEGACY)
 find_package(OpenGL)
 if(OPENGL_FOUND)
     set(LIBS ${LIBS} ${OPENGL_LIBRARIES})
