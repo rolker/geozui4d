@@ -642,17 +642,9 @@ Object * Scene3D::LoadObject(std::string const &filename, Tcl_Interp *interp, ch
             return NULL;
         }
 
-        // Try registered objects first for extensions that have them,
-        // then fall back to texture loading
+        // Try registered objects first for extensions that have them;
+        // the fallback below handles texture loading
         object = Object::createFromExtension(ext);
-        if(!object)
-        {
-            if ((texture = LoadTexture(filename,interp)))
-            {
-                AddTexture(texture);
-                return NULL;
-            }
-        }
     }
 
     if (object)
@@ -950,8 +942,14 @@ std::shared_ptr<TextureMap> Scene3D::LoadTexture(std::string const &filename, Tc
     if(!texture || texture->SetFilename(filename) || texture->Load())
         texture.reset();
   }
+  catch(std::exception const &e)
+  {
+    cerr << "LoadTexture: failed to load " << filename << ": " << e.what() << endl;
+    texture.reset();
+  }
   catch(...)
   {
+    cerr << "LoadTexture: failed to load " << filename << endl;
     texture.reset();
   }
 

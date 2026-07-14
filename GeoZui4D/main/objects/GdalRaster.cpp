@@ -18,6 +18,7 @@
 extern MainWindow * mainWindow;
 
 REGISTER_OBJECT(GdalRaster, "tif");
+REGISTER_ALIAS(GdalRasterTiff, GdalRaster, "tiff");
 REGISTER_ALIAS(GdalRasterVrt, GdalRaster, "vrt");
 
 GdalRaster::GdalRaster()
@@ -57,17 +58,10 @@ int GdalRaster::Load()
         return 1;
     }
 
-    // Reject multi-band byte imagery (RGB/RGBA) — let texture loader handle those
+    // Reject byte imagery (RGB/RGBA, palette, grayscale) — elevation data
+    // uses wider types; let the texture loader handle images
     GDALDataType bandType = ds->GetRasterBand(1)->GetRasterDataType();
-    if(bandCount >= 3 && bandType == GDT_Byte)
-    {
-        GDALClose(ds);
-        return 1;
-    }
-
-    // Also reject single-band palette-indexed images
-    if(bandCount == 1 && bandType == GDT_Byte &&
-       ds->GetRasterBand(1)->GetColorInterpretation() == GCI_PaletteIndex)
+    if(bandType == GDT_Byte)
     {
         GDALClose(ds);
         return 1;
@@ -101,12 +95,11 @@ int GdalRaster::Load()
         gz4d::ogr::SpatialReference wgs84;
         wgs84.SetWellKnownGeogCS("WGS84");
         gz4d::geo::Projection toGeo(spatialReference, wgs84);
+        // Projection::operator()(lat, lon) returns Point(x, y, alt),
+        // so for a geographic destination [0]=lon and [1]=lat
         gz4d::Point<double> geoCenter = toGeo(centerY, centerX);
-        // toGeo returns (x, y) = point in the destination CRS
-        // For geographic WGS84 output, x=lon, y=lat per OGR convention
-        // but Projection swaps lat/lon internally, so [0]=lat, [1]=lon
-        centerLat = geoCenter[0];
-        centerLon = geoCenter[1];
+        centerLon = geoCenter[0];
+        centerLat = geoCenter[1];
     }
 
     autoProjection(centerLon, centerLat);
@@ -267,8 +260,9 @@ void GdalRaster::buildLodIndexBuffers(Window3D *win)
     int minDim = std::min(cols, rows);
 
     // Generate LOD levels with step sizes 1, 2, 4, 8, ...
-    numLodLevels = 0;
-    for(int step = 1; step <= minDim / 4; step *= 2)
+    // Level i always uses step 2^i; the full-resolution level is always built
+    // so small rasters still render.
+    for(int step = 1; step == 1 || step <= minDim / 4; step *= 2)
     {
         std::vector<uint32_t> indices;
         std::vector<GLsizei> counts;
@@ -321,24 +315,23 @@ void GdalRaster::buildLodIndexBuffers(Window3D *win)
             }
         }
 
+        // Push a (possibly empty) entry for every level so buffer index
+        // always matches LOD level; DrawLowRes skips levels with no strips
+        auto ebo = std::shared_ptr<gz4d::glo::Buffer>(
+            new gz4d::glo::Buffer(win->getGloContext(), GL_ELEMENT_ARRAY_BUFFER));
         if(!indices.empty())
         {
-            auto ebo = std::shared_ptr<gz4d::glo::Buffer>(
-                new gz4d::glo::Buffer(win->getGloContext(), GL_ELEMENT_ARRAY_BUFFER));
             ebo->Bind();
             ebo->Data(indices.size() * sizeof(uint32_t), indices.data());
             ebo->Unbind();
-
-            lodIndexBuffers.push_back(ebo);
-            lodCounts.push_back(counts);
-            lodOffsets.push_back(offsets);
         }
 
-        numLodLevels++;
+        lodIndexBuffers.push_back(ebo);
+        lodCounts.push_back(counts);
+        lodOffsets.push_back(offsets);
     }
 
-    if(numLodLevels == 0)
-        numLodLevels = 1;
+    numLodLevels = static_cast<int>(lodIndexBuffers.size());
 }
 
 int GdalRaster::selectLodLevel(float pixelSize)

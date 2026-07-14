@@ -9,7 +9,7 @@
 #include <gz4d/Point.h>
 #include <gz4d/glo/BufferObject.h>
 
-class GdalRaster : Object
+class GdalRaster : public Object
 {
     public:
         GdalRaster();
