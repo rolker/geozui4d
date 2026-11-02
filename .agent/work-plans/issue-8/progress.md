@@ -70,3 +70,22 @@ issue: 8
 - [x] (suggestion) `.gitignore` rule anchored as `/worktrees/`; `git check-ignore` confirms `worktrees/<x>` still matches the tracked rule (a nested `worktrees/` is now caught only by the main checkout's untracked `.git/info/exclude`) — `.gitignore:63` (aad1a51)
 
 Notes: the workspace's `review_progress.sh findings`/`check` select only `Integrated Review` and `Local Review (Pre-Push)`, so they could not see this post-PR `## Local Review` source; its boxes were flipped by exact-line edits in the fix commits instead. No build run: no C++ or CMake changed, and a worktree cannot configure until #9; `bash -n scripts/build.sh` passes; the repository has no pre-commit config.
+
+## Local Review
+**Status**: complete
+**When**: 2026-11-02 12:04 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Dispatch**: resumed (agent a9c09e4ec432e855f, resume 1 of 3)
+**Verdict**: approved
+
+**PR**: #10 at `3ab199f`
+**Depth**: Deep (reason: 348 changed lines on the whole PR diff, over the 200-line Deep threshold; fix round re-reviewed at the whole-diff tier)
+**Must-fix**: 0 | **Suggestions**: 4
+
+All six findings of the Local Review at `ddaef88` verified fixed against source: root-ctest claim corrected in both files (enable_testing() only at libgz4d/cxx/CMakeLists.txt:452, and #9 now carries the top-level enable_testing() scope); docs/work-plans/ untracked; every GeoZui4D.conf sourced, later overriding; version string only in GeoZui4D/main; IVS files follow AGENTS.md's Never; `.gitignore` anchored as `/worktrees/` (git check-ignore confirms).
+
+### Findings
+- [ ] (suggestion) `gz4d_x3d` is built only if PNG, TIFF and JPEG are all found (libgz4d/cxx/src/x3d/CMakeLists.txt:4), and GeoZui4D cannot link without it; say so — `.agents/README.md:26`
+- [ ] (suggestion) MissionPlan (and MissionPlanDisplayTypes) are not built: objects/CMakeLists.txt adds only dxf, GeoData, nodeTypes, ogr, S57, Sonar; drop it or mark "present but not built" — `.agents/README.md:50`
+- [ ] (suggestion) Tcl extension scripts install to lib/GeoZui4D/scripts (GeoZui4D/main/scripts/CMakeLists.txt:4), not lib/GeoZui4D — `.agents/README.md:57`
+- [ ] (suggestion) GLUT is optional (find_package(GLUT) without REQUIRED, linked only if found, GeoZui4D/main/CMakeLists.txt:138-141); mark it so in the link list — `.agents/README.md:78-79`
