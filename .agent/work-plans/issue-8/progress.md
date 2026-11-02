@@ -247,3 +247,13 @@ All four new findings are valid, and all are suggestions; none is a must-fix, so
 
 ### False positives
 - none
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-02 12:30 -05:00
+**By**: Claude Code Agent (claude-fable-5-1)
+**Decided-by**: owner
+**After**: findings
+**Decision**: merge
+
+Owner's answer to the third findings checkpoint on PR #10 (Integrated Review at `5a77391`, four open suggestions on `.agents/README.md`: portaudio, Bluetooth and OpenNI missing from the required-libraries list; "only works installed" needs "by default"; `scene` is a file and the subdirectory list is partial; only part of `gzmod/` is installed): "merge" — defer the four suggestions; every round has found more descriptive slips of the same kind and none blocks the merge. They can be fixed as they bite or in a follow-up issue.
