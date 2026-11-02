@@ -112,7 +112,7 @@ WS_ROOT="$(cat ~/.claude/agent-workspace-root)"
 By hand:
 
 ```bash
-scripts/build.sh                      # cmake -S . -B build -DBUILD_GTESTS=ON; cmake --build build
+scripts/build.sh                      # cmake -S . -B build; cmake --build build
 ctest --test-dir build --output-on-failure
 cmake --install build --prefix install
 install/bin/GeoZui4D [files...]
@@ -123,7 +123,14 @@ What to know:
 - The gtest suite is one executable, `test_libgz4d`, from nine sources in
   `libgz4d/cxx/gtest/` (angle, box, color, geocam, matrix, socket, time,
   timeSequence, URI). It exists only when the build was configured with
-  `BUILD_GTESTS=ON`; a build dir configured without it reports zero tests.
+  `BUILD_GTESTS=ON`, which cannot configure today (the CMake looks for
+  `gtest/test.h`; issue #9), so `scripts/build.sh` leaves it off and the
+  test command finds zero tests and exits 0.
+- **A fresh clone or worktree does not configure** (issue #9): nineteen
+  generated `CMakeLists.txt` files reference an in-source `CMakeFiles/`
+  directory that exists only as an ignored leftover in the owner's main
+  checkout, and the version lookup needs a Subversion working copy. Build in
+  the main checkout until #9 lands.
 - `libgz4d/cxx/test/` is not a test suite: it is 114 utility programs
   (converters, players, calibration tools), each skipped with a message
   when its libraries are missing.

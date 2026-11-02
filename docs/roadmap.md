@@ -16,6 +16,7 @@ issue here runs through the workspace loop to merge.
 |------|-------|
 | The checkout is registered on this machine and validates | `script adapter --project gz4d validate` |
 | The build goes through the project's own tracked script | `file-exists scripts/build.sh` |
+| A fresh clone or worktree configures and builds, and the gtest suite runs (#9) | `gh-issue 9 closed` |
 | Agents read the project's conventions from one guide | `file-exists .agents/README.md` |
 | The skills that duplicate workspace skills are gone and the gz4d rules live in `AGENTS.md` (#7) | `gh-issue 7 closed` |
 
