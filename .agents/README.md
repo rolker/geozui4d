@@ -149,7 +149,8 @@ What to know:
   the suite built: `enable_testing()` is called only in
   `libgz4d/cxx/CMakeLists.txt`, not in the top-level `CMakeLists.txt`, so
   `build/` has no `CTestTestfile.cmake`. A built `test_libgz4d` is
-  reachable only with `ctest --test-dir build/libgz4d/cxx`. A top-level
+  reachable only from `build/libgz4d/cxx` and below
+  (`ctest --test-dir build/libgz4d/cxx`). A top-level
   `enable_testing()` belongs to issue #9 with the gtest header fix.
 - **A fresh clone or worktree does not configure** (issue #9): nineteen
   generated `CMakeLists.txt` files reference an in-source `CMakeFiles/`

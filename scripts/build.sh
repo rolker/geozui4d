@@ -15,8 +15,9 @@
 # is called only in libgz4d/cxx/CMakeLists.txt, not in the top-level
 # CMakeLists.txt, so build/ gets no CTestTestfile.cmake and ctest there finds
 # no tests and exits 0 whatever BUILD_GTESTS says. test_libgz4d is reachable
-# from build/libgz4d/cxx only. Both fixes, the gtest header and a top-level
-# enable_testing(), belong to #9; after them, add -DBUILD_GTESTS=ON here.
+# only from build/libgz4d/cxx and below. Both fixes, the gtest header and a
+# top-level enable_testing(), belong to #9; after them, add -DBUILD_GTESTS=ON
+# here.
 # Note that #9 also means a fresh clone or worktree does not configure at all
 # yet; the main checkout does.
 set -euo pipefail
