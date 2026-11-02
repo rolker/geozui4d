@@ -104,7 +104,7 @@ Copilot R1, re-checked against `0b1cf85`: the `-nav` `appdir` exception and the 
 
 ### Findings
 - [x] (suggestion, Local Review @ `3ab199f`) `gz4d_x3d` is built only when PNG, TIFF and JPEG are all found (`libgz4d/cxx/src/x3d/CMakeLists.txt:4`, else "skipping gz4d_x3d"); the top level then still hands `GeoZui4D/main` the name `gz4d_x3d` (`CMakeLists.txt:17`), so the app cannot link. The guide states the library unconditionally (line 26) and says a missing optional library only "skips the programs that need it" (line 176). Say that the three image libraries are required for the app — `.agents/README.md`
-- [ ] (suggestion, Local Review @ `3ab199f`) `objects/` lists MissionPlan as a scene object type, but `GeoZui4D/main/objects/CMakeLists.txt` adds only dxf, GeoData, nodeTypes, ogr, S57, Sonar, and `LINK_OBJECT(MissionPlan)` is commented out (`engine/Scene3D.cpp:96`). Its header is still included (`engine/Scene3D.cpp:12`), so do not drop it: mark it "present, header included, sources not built" (MissionPlanDisplayTypes likewise is not built) — `.agents/README.md:50`
+- [x] (suggestion, Local Review @ `3ab199f`) `objects/` lists MissionPlan as a scene object type, but `GeoZui4D/main/objects/CMakeLists.txt` adds only dxf, GeoData, nodeTypes, ogr, S57, Sonar, and `LINK_OBJECT(MissionPlan)` is commented out (`engine/Scene3D.cpp:96`). Its header is still included (`engine/Scene3D.cpp:12`), so do not drop it: mark it "present, header included, sources not built" (MissionPlanDisplayTypes likewise is not built) — `.agents/README.md:50`
 - [ ] (suggestion, Local Review @ `3ab199f`) Tcl extension scripts install to `lib/GeoZui4D/scripts` (`GeoZui4D/main/scripts/CMakeLists.txt:4`), not `lib/GeoZui4D` — `.agents/README.md:57`
 
 ### False positives

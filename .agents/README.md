@@ -47,7 +47,8 @@ gz4d/
 │   ├── MainWindow.cpp        # Tcl interpreter setup; the four GUI modes' start scripts
 │   ├── engine/               # Scene3D, rendering, scene management, gzCommandInterface
 │   ├── interactors/          # Input handling: picking, zooming, rubberband, tools, animators
-│   ├── objects/              # Scene object types: dxf, GeoData, MissionPlan, nodeTypes, ogr, S57, Sonar
+│   ├── objects/              # Scene object types: dxf, GeoData, nodeTypes, ogr, S57, Sonar; MissionPlan and
+│   │                         #   MissionPlanDisplayTypes are present but not built (engine/Scene3D.cpp still includes MissionPlan.h)
 │   ├── utilities/            # Helper sources added to the executable
 │   ├── widgets/              # LightDirector and the Sv_* IVS-copyright files (do not modify)
 │   ├── Togl/                 # VENDORED: Tcl/Tk OpenGL widget, built as gz_togl (do not modify)
