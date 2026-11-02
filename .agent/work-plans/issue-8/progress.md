@@ -49,5 +49,5 @@ issue: 8
 - [x] (suggestion) docs/work-plans/ is not tracked (git keeps no empty directory) and is absent from a fresh clone; say it is created on demand — `.agents/README.md:63`
 - [x] (suggestion) The start scripts source every GeoZui4D.conf they find ($GEOZUI4D, ~/.GeoZui4D/, working directory; three independent ifs, MainWindow.cpp:57-80), later ones overriding earlier; not a first-found lookup — `.agents/README.md:88-91`
 - [x] (suggestion) Only GeoZui4D/main/CMakeLists.txt:268-277 builds a version string with an `unknown` fallback; libgz4d/cxx/CMakeLists.txt:396-403 only sets SUBVERSION_REVISION (both still fail configure without a working copy) — `.agents/README.md:183-189`
-- [ ] (suggestion) "without explicit approval" for the IVS files conflicts with AGENTS.md, which lists them under Never; follow AGENTS.md or note the conflict for #7 — `.agents/README.md:175`
+- [x] (suggestion) "without explicit approval" for the IVS files conflicts with AGENTS.md, which lists them under Never; follow AGENTS.md or note the conflict for #7 — `.agents/README.md:175`
 - [ ] (suggestion) Anchor the rule as `/worktrees/` so it cannot match a nested directory, the same trap the guide records for `build/` — `.gitignore:63`

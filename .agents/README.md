@@ -178,8 +178,9 @@ What to know:
 
 - **Do not modify vendored code**: `GeoZui4D/main/Togl/`, `Togl2.0/`,
   `BWidget-1.7.0/`, `libgz4d/cxx/include/gz4d/util/rapidxml/`.
-- **Do not modify the IVS-copyright files** in `GeoZui4D/main/widgets/`
-  (`Sv_Matrix4`, `Sv_Quaternion`, `Sv_Raster`) without explicit approval.
+- **Never modify the IVS-copyright files** in `GeoZui4D/main/widgets/`
+  (`Sv_Matrix4`, `Sv_Quaternion`, `Sv_Raster`); `AGENTS.md` lists this under
+  Never.
 - **`std::filesystem`, never `boost::filesystem`** (ADR-0002). Boost
   Filesystem is no longer linked; a stray use fails at link time.
 - **Headers are `.h`**, even for C++ (four `.hpp` files exist; new headers use `.h`).
