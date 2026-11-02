@@ -89,3 +89,23 @@ All six findings of the Local Review at `ddaef88` verified fixed against source:
 - [ ] (suggestion) MissionPlan (and MissionPlanDisplayTypes) are not built: objects/CMakeLists.txt adds only dxf, GeoData, nodeTypes, ogr, S57, Sonar; drop it or mark "present but not built" — `.agents/README.md:50`
 - [ ] (suggestion) Tcl extension scripts install to lib/GeoZui4D/scripts (GeoZui4D/main/scripts/CMakeLists.txt:4), not lib/GeoZui4D — `.agents/README.md:57`
 - [ ] (suggestion) GLUT is optional (find_package(GLUT) without REQUIRED, linked only if found, GeoZui4D/main/CMakeLists.txt:138-141); mark it so in the link list — `.agents/README.md:78-79`
+
+## Integrated Review
+**Status**: complete
+**When**: 2026-11-02 12:06 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+
+**PR**: #10 at `0b1cf85`
+**Sources**: 2 (Copilot R1 @ `ab29b15`, both comments closed by the Integrated Review at `e2811e2` and re-verified fixed at this head; Local Review @ `3ab199f` (covers `0b1cf85` via bookkeeping), four open suggestions; no human review requested; the repository has no CI at all, no workflows and no check-runs on the PR)
+**Cross-source confirmations**: 0
+**CI**: pending
+
+Copilot R1, re-checked against `0b1cf85`: the `-nav` `appdir` exception and the config override are documented (`.agents/README.md:86-100`; `MainWindow.cpp` sets `appdir {}` in `GeoNavScript` and appends the shared part that sources `GeoZui4D.conf` after it, so a config file can override), and the "Harmless" Subversion claim is replaced (`.agents/README.md:192-200`, matching `GeoZui4D/main/CMakeLists.txt:268-277` and `libgz4d/cxx/CMakeLists.txt:396-403`). Not re-listed. Copilot has not run on any later push.
+
+### Findings
+- [ ] (suggestion, Local Review @ `3ab199f`) `gz4d_x3d` is built only when PNG, TIFF and JPEG are all found (`libgz4d/cxx/src/x3d/CMakeLists.txt:4`, else "skipping gz4d_x3d"); the top level then still hands `GeoZui4D/main` the name `gz4d_x3d` (`CMakeLists.txt:17`), so the app cannot link. The guide states the library unconditionally (line 26) and says a missing optional library only "skips the programs that need it" (line 176). Say that the three image libraries are required for the app — `.agents/README.md`
+- [ ] (suggestion, Local Review @ `3ab199f`) `objects/` lists MissionPlan as a scene object type, but `GeoZui4D/main/objects/CMakeLists.txt` adds only dxf, GeoData, nodeTypes, ogr, S57, Sonar, and `LINK_OBJECT(MissionPlan)` is commented out (`engine/Scene3D.cpp:96`). Its header is still included (`engine/Scene3D.cpp:12`), so do not drop it: mark it "present, header included, sources not built" (MissionPlanDisplayTypes likewise is not built) — `.agents/README.md:50`
+- [ ] (suggestion, Local Review @ `3ab199f`) Tcl extension scripts install to `lib/GeoZui4D/scripts` (`GeoZui4D/main/scripts/CMakeLists.txt:4`), not `lib/GeoZui4D` — `.agents/README.md:57`
+
+### False positives
+- (Local Review @ `3ab199f`) GLUT is optional and the link list should mark it so (`GeoZui4D/main/CMakeLists.txt:138-141`, `find_package(GLUT)` without `REQUIRED`) — the CMake lookup is optional, but the program is not: `main.cpp:12` includes `<GL/glut.h>` unconditionally and `main.cpp:68` calls `glutInit`, and nine more sources under `GeoZui4D/main` use GLUT, so a build without it fails at compile or link. The guide's "links ... GLUT" and "initialises GLUT" are accurate; calling it optional would mislead. (At most, a missing GLUT surfaces at build time rather than configure; not worth a box.)
