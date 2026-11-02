@@ -12,9 +12,11 @@ look.
 GeoZui4D can be worked on with the
 [agent workspace](https://github.com/rolker/agent_workspace)
 (`rolker/agent_workspace`), a separate repository of AI-agent infrastructure
-(per-issue worktrees, review loops, work plans, project conventions) in which
-this project is registered as `gz4d`; the Build & Test section below shows
-its adapter commands. It is optional: everything in this repository builds,
+(per-issue worktrees, review loops, work plans, project conventions). A
+checkout is used with it by registering it on your own machine; that
+registration and its settings are per machine and never committed, here or
+there. The Build & Test section below shows its adapter commands. It is
+optional: everything in this repository builds,
 runs and is developed without it, and this guide is useful on its own. Every claim here was checked against the source on 2026-11-02; when
 the code and this guide disagree, the code wins, and this guide is wrong.
 
@@ -109,7 +111,9 @@ the libais API has diverged.
 
 ## Build & Test
 
-From the agent workspace, through the adapter (the registered commands):
+From the agent workspace, through the adapter (`gz4d` is the name this
+checkout was registered under on the owner's machine; use the name you
+registered yours under):
 
 ```bash
 WS_ROOT="$(cat ~/.claude/agent-workspace-root)"
