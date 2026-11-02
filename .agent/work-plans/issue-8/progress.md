@@ -218,3 +218,32 @@ The two fixes triaged at `fddee4d` verified against source: vorbisfile, GLUT and
 - [ ] (suggestion) "only work installed" and "install step is required": appdir is set before the GeoZui4D.conf files are sourced (MainWindow.cpp:94, 123, 135), so a config file can point the default, -cp and -wall modes elsewhere, as the guide already says for -nav; say "by default" — `.agents/README.md:97`, `.agents/README.md:167`
 - [ ] (suggestion) `scene` is a header (include/gz4d/scene.h), not a header subdirectory, in the list of module subdirectories — `.agents/README.md:74`
 - [ ] (suggestion) gzmod/CMakeLists.txt installs only 12 named .py files plus ais/, deltaT/, lighting/ (and adds gz4d/); 22 top-level .py files exist, so about ten are not installed; say selected modules are installed — `.agents/README.md:59`
+
+## Integrated Review
+**Status**: complete
+**When**: 2026-11-02 12:27 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Dispatch**: resumed (agent a2b1ac57fcd13f84a, resume 2 of 3)
+
+**PR**: #10 at `2c81aca`
+**Sources**: 2 (Local Review @ `3d8b180` (covers `2c81aca` via bookkeeping), four open suggestions; Copilot R1 @ `ab29b15`, both comments closed at `e2811e2` and still fixed at this head, Copilot has not run on any later push; no human review; the repository has no CI at all, no workflows and no check-runs on the PR)
+**Cross-source confirmations**: 0
+**CI**: pending
+
+The two findings of the Integrated Review at `3df96d1` are fixed at this head (b4412ba, 31e1bd3), verified at `.agents/README.md:26`, `:161-164` and `:176-177`; not re-listed. The Local Reviews at `3ab199f` and `d4e0305` are stale and were ruled on earlier.
+
+All four new findings are valid, and all are suggestions; none is a must-fix, so none blocks the merge gate. They are the same kind as the last two rounds: descriptive details in `.agents/README.md` that turn out narrower or wider than the code. The reviewer left a human call on whether to keep correcting these before merging. That decision is the owner's at the findings checkpoint. Triage only records that each claim below holds against the source.
+
+### Findings
+- [ ] (suggestion, Local Review @ `3d8b180`) The new `GeoZui4D/main` row, which lists libraries the app needs although CMake looks them up as optional, misses three more of that shape. All three chains were verified:
+  - portaudio: `objects/Sound.h:6` includes `<gz4d/sound/Portaudio.h>`, which reaches `<portaudio.h>` at `include/gz4d/sound/portaudio/Exception.h:8`. `Sound.cpp` is always compiled (`objects/CMakeLists.txt:47`), `Scene3D.cpp:11` includes `Sound.h`, and the lookup at `GeoZui4D/main/CMakeLists.txt:86-94` is optional.
+  - Bluetooth, on non-Windows builds: `main.cpp:33` includes `engine/Wiimote.h`, which pulls in `<gz4d/WiimoteManager.h>` on non-Windows builds (`engine/Wiimote.h:7-8`). That reaches `<bluetooth/l2cap.h>` through `gz4d/Wiimote.h:10` and `gz4d/socket/BTL2CAPSocket.h:9-11`. The lookup at `:129-135` only prints "Bluetooth not found."
+  - OpenNI: `engine/Scene3D.cpp:9` includes `objects/Kinect.h`, which reaches `"XnCppWrapper.h"` at `include/gz4d/Kinect.h:12`. Nothing guards it: `-DGZ4D_KINECT` is defined at `:186`, but no source tests it. `Kinect.cpp` is always compiled (`objects/CMakeLists.txt:32`).
+
+  Add all three to the row — `.agents/README.md:180`
+- [ ] (suggestion, Local Review @ `3d8b180`) "those modes only work installed" (line 97) and "The install step is required to run the app" (line 167) overstate the case. Each start script sets `appdir` first (`MainWindow.cpp:94`, `:123`, `:135`) and only then appends the shared part that sources every `GeoZui4D.conf`, so a config file can point the default, `-cp` and `-wall` modes at another `appdir`, as the guide already says for `-nav`. Say "by default" in both places — `.agents/README.md:97`, `.agents/README.md:167`
+- [ ] (suggestion, Local Review @ `3d8b180`) The sentence "The header subdirectories are the modules:" lists `scene`, which is the file `include/gz4d/scene.h`, not a directory. Triage also found the list is not complete: `include/gz4d/` also has `axis`, `config`, `cv`, `data`, `dtag`, `geocam`, `glut`, `gPhoto`, `js`, `matrix`, `meta`, `ptu`, `rtsp`, `sound`, `thread`, `time` and `vector`. Mark `scene` as a header and make the list "among them" rather than complete — `.agents/README.md:74`
+- [ ] (suggestion, Local Review @ `3d8b180`) `gzmod/` is described as "installed to lib/GeoZui4D/gzmod". `GeoZui4D/main/gzmod/CMakeLists.txt` installs 12 named `.py` files of the 22 at the top level, plus `ais/`, `deltaT/` and `lighting/`, and adds `gz4d/`. `simMBFish/` is not installed. Say selected modules are installed — `.agents/README.md:59`
+
+### False positives
+- none
