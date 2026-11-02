@@ -58,3 +58,6 @@ libgz4d/cxx/applications/grib2image/examples/
 # Documentation
 GeoZui4D/main/documentation/
 libgz4d/cxx/docs/
+
+# Agent workspace worktrees (one checkout per issue, inside the clone)
+worktrees/
