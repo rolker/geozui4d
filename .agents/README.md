@@ -23,7 +23,7 @@ code and this guide disagree, the code wins, and this guide is wrong.
 
 | Component | Language | Description |
 |-----------|----------|-------------|
-| `libgz4d/cxx` | C++17 | The support library. 392 headers under `include/gz4d/`, almost all header-only; one compiled library, `gz4d_x3d` (the X3D parser in `src/x3d/`); 114 stand-alone test and utility programs in `test/`, each built only when its dependencies are found; a gtest suite in `gtest/` behind `BUILD_GTESTS`. |
+| `libgz4d/cxx` | C++17 | The support library. 392 headers under `include/gz4d/`, almost all header-only; one compiled library, `gz4d_x3d` (the X3D parser in `src/x3d/`), built only when PNG, TIFF and JPEG are all found; 114 stand-alone test and utility programs in `test/`, each built only when its dependencies are found; a gtest suite in `gtest/` behind `BUILD_GTESTS`. |
 | `GeoZui4D/main` | C++17, Tcl/Tk | The application: one executable, `GeoZui4D`, built from `main.cpp`, `MainWindow.cpp`, `SubWindow.cpp` and the sources that `engine/`, `interactors/`, `objects/`, `utilities/` and `widgets/` add to `GEOZUI4D_SRC` (their `add_library` lines are commented out). The GUI is Tcl/Tk scripts that the executable runs. |
 | `libgz4d/python` | Python 2 era | Utilities (`iso8211`, `s57`, `Wiimote`, `pygtk`, `wxPython`). Not built by CMake. |
 
@@ -173,7 +173,7 @@ What to know:
 |-----------|-----------|--------------|
 | `GeoZui4D/main` | `libgz4d/cxx` | Headers under `include/gz4d/` and the `gz4d_x3d` library (`find_path(gz4d_INCLUDE_DIR gz4d/gz4d.h)` and `find_library` for `gz4d_x3d`; the top-level build sets both) |
 | `GeoZui4D/main` | `Togl/` (vendored) | `gz_togl` static library, the Tk OpenGL widget |
-| `libgz4d/cxx` | Boost, GDAL, optional image/audio/video/NetCDF/Bluetooth libraries | Found in `libgz4d/cxx/CMakeLists.txt`; a missing optional library skips the programs that need it |
+| `libgz4d/cxx` | Boost, GDAL, PNG, TIFF, JPEG, optional audio/video/NetCDF/Bluetooth and other image libraries | Found in `libgz4d/cxx/CMakeLists.txt`. PNG, TIFF and JPEG are required for the app: without all three, `gz4d_x3d` is skipped (`src/x3d/CMakeLists.txt:4`), yet the top level still hands `GeoZui4D/main` the name `gz4d_x3d` (`CMakeLists.txt:17`), so the app fails to link. Any other missing optional library only skips the programs that need it |
 
 ## Common Pitfalls
 
