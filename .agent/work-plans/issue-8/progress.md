@@ -109,3 +109,13 @@ Copilot R1, re-checked against `0b1cf85`: the `-nav` `appdir` exception and the 
 
 ### False positives
 - (Local Review @ `3ab199f`) GLUT is optional and the link list should mark it so (`GeoZui4D/main/CMakeLists.txt:138-141`, `find_package(GLUT)` without `REQUIRED`) — the CMake lookup is optional, but the program is not: `main.cpp:12` includes `<GL/glut.h>` unconditionally and `main.cpp:68` calls `glutInit`, and nine more sources under `GeoZui4D/main` use GLUT, so a build without it fails at compile or link. The guide's "links ... GLUT" and "initialises GLUT" are accurate; calling it optional would mislead. (At most, a missing GLUT surfaces at build time rather than configure; not worth a box.)
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-02 12:09 -05:00
+**By**: Claude Code Agent (claude-fable-5-1)
+**Decided-by**: owner
+**After**: findings
+**Decision**: address
+
+Owner's answer to the findings checkpoint on PR #10 (Integrated Review at `486458b`, three open suggestions on `.agents/README.md`: the three image libraries are required for the app, MissionPlan is present but not built, Tcl extension scripts install to `lib/GeoZui4D/scripts`): "address" — fix them, re-review and re-triage before the merge checkpoint.
