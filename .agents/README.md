@@ -23,7 +23,7 @@ code and this guide disagree, the code wins, and this guide is wrong.
 
 | Component | Language | Description |
 |-----------|----------|-------------|
-| `libgz4d/cxx` | C++17 | The support library. 392 headers under `include/gz4d/`, almost all header-only; one compiled library, `gz4d_x3d` (the X3D parser in `src/x3d/`), built only when PNG, TIFF and JPEG are all found; 114 stand-alone test and utility programs in `test/`, each built only when its dependencies are found; a gtest suite in `gtest/` behind `BUILD_GTESTS`. |
+| `libgz4d/cxx` | C++17 | The support library. 392 headers under `include/gz4d/`, almost all header-only; one compiled library, `gz4d_x3d` (the X3D parser in `src/x3d/`), built only when PNG, TIFF and JPEG are all found; 114 stand-alone test and utility programs in `test/`, of which 76 are built only when their dependencies are found and 38 always build; a gtest suite in `gtest/` behind `BUILD_GTESTS`. |
 | `GeoZui4D/main` | C++17, Tcl/Tk | The application: one executable, `GeoZui4D`, built from `main.cpp`, `MainWindow.cpp`, `SubWindow.cpp` and the sources that `engine/`, `interactors/`, `objects/`, `utilities/` and `widgets/` add to `GEOZUI4D_SRC` (their `add_library` lines are commented out). The GUI is Tcl/Tk scripts that the executable runs. |
 | `libgz4d/python` | Python 2 era | Utilities (`iso8211`, `s57`, `Wiimote`, `pygtk`, `wxPython`). Not built by CMake. |
 
@@ -159,8 +159,10 @@ What to know:
   checkout, and the version lookup needs a Subversion working copy. Build in
   the main checkout until #9 lands.
 - `libgz4d/cxx/test/` is not a test suite: it is 114 utility programs
-  (converters, players, calibration tools), each skipped with a message
-  when its libraries are missing.
+  (converters, players, calibration tools). 76 of them are guarded by an
+  `if(...)` and skipped with a message when their libraries are missing;
+  the other 38 (for example `audioSignalGenerator`) are unconditional and
+  always build.
 - Ubuntu package prerequisites are listed in the README under Building.
 - The install step is required to run the app (see Architecture Overview).
 - The build directory is `build/` at the repository root, which `.gitignore`
