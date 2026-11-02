@@ -183,3 +183,19 @@ The three findings of the Integrated Review at `0b1cf85` are fixed at this head 
 **Decision**: address
 
 Owner's answer to the second findings checkpoint on PR #10 (Integrated Review at `fddee4d`, two open suggestions on `.agents/README.md`: vorbisfile, GLUT and NetCDF C++ are required for the app although CMake looks them up as optional; only 76 of the 114 test programs are guarded by a dependency check): "address" — fix them, re-review and re-triage before the merge checkpoint.
+
+## Implementation
+**Status**: complete
+**When**: 2026-11-02 12:21 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Dispatch**: resumed (agent ac29b9609fe0acb21, resume 2 of 3)
+
+**PR**: #10 at `31e1bd3`
+**Addressed**: Integrated Review at `3df96d1` (2026-11-02 12:16 -05:00)
+**Commits**: b4412ba, 31e1bd3
+
+### Actions
+- [x] (suggestion) The skip-only sentence in the `libgz4d/cxx` Dependencies row now covers only the guarded stand-alone programs in `test/`. A new `GeoZui4D/main` row names vorbisfile, GLUT and NetCDF C++ as required for the app. `GeoZui4D/main/CMakeLists.txt` looks each up as optional (vorbisfile at 120-127, GLUT at 138-142, `netcdf_c++4` at 173-181), but `objects/SoundOgg.h:8` (`SoundOgg.cpp` always in `objects/CMakeLists.txt:49`), `main.cpp:12`/`:68`, and `engine/Object.h:24`/`engine/Scene3D.h:24` (reaching `<ncAtt.h>` via `include/gz4d/netcdf/Att.h:8`) use them with no guard — `.agents/README.md:176-177` (b4412ba)
+- [x] (suggestion) Test programs: 76 of the 114 `add_executable` lines in `libgz4d/cxx/test/CMakeLists.txt` sit inside an `if(...)` with a skip message and 38 are unconditional (counted by if/endif nesting; e.g. `audioSignalGenerator`, lines 21-23). Both the inventory row and the Build & Test bullet say so — `.agents/README.md:26`, `.agents/README.md:161-164` (31e1bd3)
+
+Notes: boxes ticked with `review_progress.sh check` (indexes 0-1); `findings` now reports none open. No build run: only `.agents/README.md` changed. The repository has no pre-commit config.
