@@ -119,3 +119,20 @@ Copilot R1, re-checked against `0b1cf85`: the `-nav` `appdir` exception and the 
 **Decision**: address
 
 Owner's answer to the findings checkpoint on PR #10 (Integrated Review at `486458b`, three open suggestions on `.agents/README.md`: the three image libraries are required for the app, MissionPlan is present but not built, Tcl extension scripts install to `lib/GeoZui4D/scripts`): "address" — fix them, re-review and re-triage before the merge checkpoint.
+
+## Implementation
+**Status**: complete
+**When**: 2026-11-02 12:10 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Dispatch**: resumed (agent ac29b9609fe0acb21, resume 1 of 3)
+
+**PR**: #10 at `8e71f00`
+**Addressed**: Integrated Review at `0b1cf85` (2026-11-02 12:06 -05:00)
+**Commits**: ba85233, f18467a, 8e71f00
+
+### Actions
+- [x] (suggestion) PNG, TIFF and JPEG are required for the app: `gz4d_x3d` is built only when all three are found (`libgz4d/cxx/src/x3d/CMakeLists.txt:4`), and the top level still sets `gz4d_x3d_LIBRARY` to that name (`CMakeLists.txt:17`), so without them the app fails to link. Stated in the inventory row and the Dependencies row, which now says only the other optional libraries just skip programs — `.agents/README.md:26`, `.agents/README.md:176` (ba85233)
+- [x] (suggestion) MissionPlan and MissionPlanDisplayTypes kept in the layout but marked as present and not built (neither is added in `GeoZui4D/main/objects/CMakeLists.txt`, and neither has a CMakeLists of its own; `LINK_OBJECT(MissionPlan)` is commented out at `engine/Scene3D.cpp:96`, while `engine/Scene3D.cpp:12` still includes `MissionPlan.h`) — `.agents/README.md:50-51` (f18467a)
+- [x] (suggestion) The Tcl extension scripts install to `lib/GeoZui4D/scripts` (`GeoZui4D/main/scripts/CMakeLists.txt:4`). The same file installs only `attributeWindow.tcl` and `cutaway.tcl` of the directory's 15 `.tcl` files, and the layout line now says so — `.agents/README.md:58` (8e71f00)
+
+Notes: boxes ticked with `review_progress.sh check` (indexes 0-2); `findings` now reports none open. No build run: only `.agents/README.md` changed. The repository has no pre-commit config.
