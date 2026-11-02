@@ -83,11 +83,19 @@ GLUT, builds a `Scene3D`, wires up a dotted naming hierarchy of
 "neighborhoods" (posables, animators, couplings, interactors, events),
 creates the `MainWindow` and a `gzCommandInterface` that exposes the scene
 to Tcl, then calls `MainWindow::Init`, which starts a Tcl interpreter with
-one of four start scripts. Each script sets `appdir` to `../lib/GeoZui4D`
-relative to the executable and sources `visualizer.tcl` from there, with
-`guiMode` set to `zui` (default), `nav` (`-nav`), `cp` (`-cp`) or `wall`
-(`-wall`). So the app only works installed: the Tcl scripts, bitmaps and
-BWidget are found relative to the binary.
+one of four start scripts, chosen by the command line (`MainWindow.cpp`,
+`parseCommandLine`): the default, `-nav`, `-cp` and `-wall`, which set
+`guiMode` to `zui`, `nav`, `cp` and `wall`. Each script first sources a
+`GeoZui4D.conf` file if one exists, looking in the directory named by the
+`GEOZUI4D` environment variable, then `~/.GeoZui4D/`, then the working
+directory; the config file may set `appdir`, `datadir` and the other
+variables the script declares. Then it sources `visualizer.tcl` from
+`appdir`. The default, `-cp` and `-wall` scripts set `appdir` to
+`../lib/GeoZui4D` relative to the executable, so those modes only work
+installed: the Tcl scripts, bitmaps and BWidget are found relative to the
+binary. The `-nav` script sets `appdir` to an empty string, so GeoNav3D
+looks for `visualizer.tcl` in the working directory unless `GeoZui4D.conf`
+sets `appdir`.
 
 The top-level `CMakeLists.txt` builds `libgz4d/cxx` first, points
 `GeoZui4D/main` at the in-tree headers and the `gz4d_x3d` target, and
