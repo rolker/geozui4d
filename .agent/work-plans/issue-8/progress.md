@@ -153,3 +153,23 @@ The three fixes triaged at `486458b` verified against source: gz4d_x3d needs PNG
 ### Findings
 - [ ] (suggestion) "Any other missing optional library only skips the programs that need it" is false for the app: vorbisfile is looked up optionally (GeoZui4D/main/CMakeLists.txt:120-126), but objects/SoundOgg.cpp is always compiled and SoundOgg.h:8 includes <vorbis/vorbisfile.h>, so the app fails without it — `.agents/README.md:177`
 - [ ] (suggestion) Only 76 of the 114 programs in libgz4d/cxx/test/ are guarded with a skip message; the other 38 are unconditional add_executable lines (e.g. audioSignalGenerator at test/CMakeLists.txt:21) and always build — `.agents/README.md:26`, `.agents/README.md:161-163`
+
+## Integrated Review
+**Status**: complete
+**When**: 2026-11-02 12:16 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Dispatch**: resumed (agent a2b1ac57fcd13f84a, resume 1 of 3)
+
+**PR**: #10 at `3df96d1`
+**Sources**: 2 (Local Review @ `d4e0305` (covers `3df96d1` via bookkeeping), two open suggestions; Copilot R1 @ `ab29b15`, both comments closed at `e2811e2` and still fixed at this head, Copilot has not run on any later push; no human review; the repository has no CI at all, no workflows and no check-runs on the PR)
+**Cross-source confirmations**: 0
+**CI**: pending
+
+The three findings of the Integrated Review at `0b1cf85` are fixed at this head (ba85233, f18467a, 8e71f00), verified against `.agents/README.md:26`, `:50-51`, `:58` and `:177`; not re-listed. The Local Review at `3ab199f` is stale (the sources helper drops it); its one remaining open box, GLUT optional, was dismissed as a false positive at `0b1cf85`. That ruling stands, and GLUT now belongs in finding 1 below as an app library that is optional to CMake but required by the code.
+
+### Findings
+- [ ] (suggestion, Local Review @ `d4e0305`) The Dependencies row's "Any other missing optional library only skips the programs that need it" is false for the app. vorbisfile is looked up optionally (`GeoZui4D/main/CMakeLists.txt:120-127`, else "Vorbis not found."), but `objects/SoundOgg.cpp` is always in `GEOZUI4D_SRC` (`objects/CMakeLists.txt:49`) and `objects/SoundOgg.h:8` includes `<vorbis/vorbisfile.h>` unguarded. Triage found the same shape twice more. GLUT: `find_package(GLUT)` without `REQUIRED`, `main.cpp:12` includes `<GL/glut.h>` and `main.cpp:68` calls `glutInit`. NetCDF C++: `netcdf_c++4` is looked up optionally (`CMakeLists.txt:173-181`), but `engine/Object.h:24` and `engine/Scene3D.h:24` include `<gz4d/netcdf.h>`, which reaches `<ncAtt.h>` (`include/gz4d/netcdf/Att.h:8`). Fix: limit the sentence to the stand-alone programs, and name vorbisfile, GLUT and NetCDF C++ as required for the app even though CMake does not stop on them — `.agents/README.md:177`
+- [ ] (suggestion, Local Review @ `d4e0305`) `libgz4d/cxx/test/CMakeLists.txt` guards 76 of its 114 `add_executable` lines with an `if(...)` and a "skipping" message; the other 38 are unconditional and always build (e.g. `audioSignalGenerator`, lines 21-23). The guide says each of the 114 is built or skipped by its dependencies (line 26) and "each skipped with a message when its libraries are missing" (lines 161-163). Say 76 are guarded and 38 always build — `.agents/README.md:26`, `.agents/README.md:161-163`
+
+### False positives
+- none
