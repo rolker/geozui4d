@@ -174,7 +174,8 @@ What to know:
 |-----------|-----------|--------------|
 | `GeoZui4D/main` | `libgz4d/cxx` | Headers under `include/gz4d/` and the `gz4d_x3d` library (`find_path(gz4d_INCLUDE_DIR gz4d/gz4d.h)` and `find_library` for `gz4d_x3d`; the top-level build sets both) |
 | `GeoZui4D/main` | `Togl/` (vendored) | `gz_togl` static library, the Tk OpenGL widget |
-| `libgz4d/cxx` | Boost, GDAL, PNG, TIFF, JPEG, optional audio/video/NetCDF/Bluetooth and other image libraries | Found in `libgz4d/cxx/CMakeLists.txt`. PNG, TIFF and JPEG are required for the app: without all three, `gz4d_x3d` is skipped (`src/x3d/CMakeLists.txt:4`), yet the top level still hands `GeoZui4D/main` the name `gz4d_x3d` (`CMakeLists.txt:17`), so the app fails to link. Any other missing optional library only skips the programs that need it |
+| `libgz4d/cxx` | Boost, GDAL, PNG, TIFF, JPEG, optional audio/video/NetCDF/Bluetooth and other image libraries | Found in `libgz4d/cxx/CMakeLists.txt`. PNG, TIFF and JPEG are required for the app: without all three, `gz4d_x3d` is skipped (`src/x3d/CMakeLists.txt:4`), yet the top level still hands `GeoZui4D/main` the name `gz4d_x3d` (`CMakeLists.txt:17`), so the app fails to link. Elsewhere in `libgz4d/cxx`, a missing optional library only skips the guarded stand-alone programs in `test/` that need it |
+| `GeoZui4D/main` | vorbisfile, GLUT, NetCDF C++ (`netcdf_c++4`) | Required to build the app, although `GeoZui4D/main/CMakeLists.txt` looks each up as optional and configure does not stop without it: `objects/SoundOgg.h` includes `<vorbis/vorbisfile.h>` and `SoundOgg.cpp` is always compiled; `main.cpp` includes `<GL/glut.h>` and calls `glutInit`; `engine/Object.h` and `engine/Scene3D.h` include `<gz4d/netcdf.h>`, which reaches `<ncAtt.h>`. A missing one fails the build at compile or link time |
 
 ## Common Pitfalls
 
