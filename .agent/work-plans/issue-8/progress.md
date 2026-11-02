@@ -51,3 +51,22 @@ issue: 8
 - [x] (suggestion) Only GeoZui4D/main/CMakeLists.txt:268-277 builds a version string with an `unknown` fallback; libgz4d/cxx/CMakeLists.txt:396-403 only sets SUBVERSION_REVISION (both still fail configure without a working copy) — `.agents/README.md:183-189`
 - [x] (suggestion) "without explicit approval" for the IVS files conflicts with AGENTS.md, which lists them under Never; follow AGENTS.md or note the conflict for #7 — `.agents/README.md:175`
 - [x] (suggestion) Anchor the rule as `/worktrees/` so it cannot match a nested directory, the same trap the guide records for `build/` — `.gitignore:63`
+
+## Implementation
+**Status**: complete
+**When**: 2026-11-02 12:01 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+
+**PR**: #10 at `a71f85c`
+**Addressed**: Local Review at `ddaef88` (2026-11-02 11:57 -05:00)
+**Commits**: c64ae92, a71f85c, 5554023, 6b47522, 69c0171, 9c53eeb, aad1a51
+
+### Actions
+- [x] (must-fix) Root `ctest --test-dir build` finds no tests even with `BUILD_GTESTS=ON`: `enable_testing()` is only in `libgz4d/cxx/CMakeLists.txt:452`, so `build/` gets no `CTestTestfile.cmake` (re-probed with CMake 3.28: root finds none and exits 0; the subdirectory runs the test). Both comments now say so and that `test_libgz4d` is reachable only from `build/libgz4d/cxx` and below; no CMakeLists.txt edited (top level is Ask First). The missing top-level `enable_testing()` belongs to issue #9 with the gtest header fix and needs adding to #9's scope — `scripts/build.sh:11-20`, `.agents/README.md:141-153` (c64ae92, a71f85c)
+- [x] (suggestion) `docs/work-plans/` is not tracked; the layout line now says it is not tracked until a plan lands and that the project's `/plan-task` writes plans there — `.agents/README.md:63` (5554023)
+- [x] (suggestion) Start scripts source every `GeoZui4D.conf` found (three independent checks in `MainWindow.cpp:57-80`, later overriding earlier), not a first-found lookup — `.agents/README.md:88-93` (6b47522)
+- [x] (suggestion) Version pitfall: both CMakeLists call `Subversion_WC_INFO` and set `SUBVERSION_REVISION`; only `GeoZui4D/main/CMakeLists.txt:268-277` builds `GZ4D_VERSION` with the `unknown` fallback; both fail configure without a working copy — `.agents/README.md` Common Pitfalls (69c0171)
+- [x] (suggestion) IVS-copyright files now "Never modify", following AGENTS.md's Never list instead of CLAUDE.md's "without explicit approval"; the CLAUDE.md wording itself is left for issue #7 (instruction file, Ask First) — `.agents/README.md` Common Pitfalls (9c53eeb)
+- [x] (suggestion) `.gitignore` rule anchored as `/worktrees/`; `git check-ignore` confirms `worktrees/<x>` still matches the tracked rule (a nested `worktrees/` is now caught only by the main checkout's untracked `.git/info/exclude`) — `.gitignore:63` (aad1a51)
+
+Notes: the workspace's `review_progress.sh findings`/`check` select only `Integrated Review` and `Local Review (Pre-Push)`, so they could not see this post-PR `## Local Review` source; its boxes were flipped by exact-line edits in the fix commits instead. No build run: no C++ or CMake changed, and a worktree cannot configure until #9; `bash -n scripts/build.sh` passes; the repository has no pre-commit config.
