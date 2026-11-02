@@ -173,3 +173,13 @@ The three findings of the Integrated Review at `0b1cf85` are fixed at this head 
 
 ### False positives
 - none
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-02 12:20 -05:00
+**By**: Claude Code Agent (claude-fable-5-1)
+**Decided-by**: owner
+**After**: findings
+**Decision**: address
+
+Owner's answer to the second findings checkpoint on PR #10 (Integrated Review at `fddee4d`, two open suggestions on `.agents/README.md`: vorbisfile, GLUT and NetCDF C++ are required for the app although CMake looks them up as optional; only 76 of the 114 test programs are guarded by a dependency check): "address" — fix them, re-review and re-triage before the merge checkpoint.
