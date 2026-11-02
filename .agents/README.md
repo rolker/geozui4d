@@ -60,7 +60,7 @@ gz4d/
 └── docs/
     ├── decisions/            # ADRs 0001-0003 and their index
     ├── roadmap.md            # Direction section read by the workspace sit-rep
-    └── work-plans/           # Empty; the project's own /plan-task skill writes here
+    └── work-plans/           # Not tracked until a plan lands; the project's own /plan-task skill writes plans here
 ```
 
 ## Architecture Overview
