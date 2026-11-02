@@ -85,11 +85,13 @@ creates the `MainWindow` and a `gzCommandInterface` that exposes the scene
 to Tcl, then calls `MainWindow::Init`, which starts a Tcl interpreter with
 one of four start scripts, chosen by the command line (`MainWindow.cpp`,
 `parseCommandLine`): the default, `-nav`, `-cp` and `-wall`, which set
-`guiMode` to `zui`, `nav`, `cp` and `wall`. Each script first sources a
-`GeoZui4D.conf` file if one exists, looking in the directory named by the
-`GEOZUI4D` environment variable, then `~/.GeoZui4D/`, then the working
-directory; the config file may set `appdir`, `datadir` and the other
-variables the script declares. Then it sources `visualizer.tcl` from
+`guiMode` to `zui`, `nav`, `cp` and `wall`. Each script then sources
+every `GeoZui4D.conf` it finds, in this order: the directory named by the
+`GEOZUI4D` environment variable, `~/.GeoZui4D/`, the working directory.
+These are three independent checks, not a first-found lookup, so a value
+set in a later file overrides the same value from an earlier one. A config
+file may set `appdir`, `datadir` and the other variables the script
+declares. Then it sources `visualizer.tcl` from
 `appdir`. The default, `-cp` and `-wall` scripts set `appdir` to
 `../lib/GeoZui4D` relative to the executable, so those modes only work
 installed: the Tcl scripts, bitmaps and BWidget are found relative to the
