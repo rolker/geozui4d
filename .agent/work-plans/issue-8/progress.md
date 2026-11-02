@@ -136,3 +136,20 @@ Owner's answer to the findings checkpoint on PR #10 (Integrated Review at `48645
 - [x] (suggestion) The Tcl extension scripts install to `lib/GeoZui4D/scripts` (`GeoZui4D/main/scripts/CMakeLists.txt:4`). The same file installs only `attributeWindow.tcl` and `cutaway.tcl` of the directory's 15 `.tcl` files, and the layout line now says so — `.agents/README.md:58` (8e71f00)
 
 Notes: boxes ticked with `review_progress.sh check` (indexes 0-2); `findings` now reports none open. No build run: only `.agents/README.md` changed. The repository has no pre-commit config.
+
+## Local Review
+**Status**: complete
+**When**: 2026-11-02 12:14 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Dispatch**: resumed (agent a9c09e4ec432e855f, resume 2 of 3)
+**Verdict**: approved
+
+**PR**: #10 at `d4e0305`
+**Depth**: Deep (reason: 415 changed lines on the whole PR diff, over the 200-line Deep threshold; fix round re-reviewed at the whole-diff tier)
+**Must-fix**: 0 | **Suggestions**: 2
+
+The three fixes triaged at `486458b` verified against source: gz4d_x3d needs PNG, TIFF and JPEG (src/x3d/CMakeLists.txt:4) while the top level still names it (CMakeLists.txt:17); MissionPlan and MissionPlanDisplayTypes present but not built (LINK_OBJECT commented out at engine/Scene3D.cpp:96, header still included at :12); only attributeWindow.tcl and cutaway.tcl install, to lib/GeoZui4D/scripts (scripts/CMakeLists.txt:1-4; its object/, support/, test/ subdirectories are not installed).
+
+### Findings
+- [ ] (suggestion) "Any other missing optional library only skips the programs that need it" is false for the app: vorbisfile is looked up optionally (GeoZui4D/main/CMakeLists.txt:120-126), but objects/SoundOgg.cpp is always compiled and SoundOgg.h:8 includes <vorbis/vorbisfile.h>, so the app fails without it — `.agents/README.md:177`
+- [ ] (suggestion) Only 76 of the 114 programs in libgz4d/cxx/test/ are guarded with a skip message; the other 38 are unconditional add_executable lines (e.g. audioSignalGenerator at test/CMakeLists.txt:21) and always build — `.agents/README.md:26`, `.agents/README.md:161-163`
