@@ -55,7 +55,7 @@ gz4d/
 │   ├── Togl2.0/              # VENDORED: newer Togl; present but not referenced by CMake (do not modify)
 │   ├── BWidget-1.7.0/        # VENDORED: Tcl/Tk widget set, installed as scripts (do not modify)
 │   ├── *.tcl                 # 15 Tcl/Tk GUI scripts (visualizer.tcl is the start script)
-│   ├── scripts/              # Tcl extension scripts, installed to lib/GeoZui4D
+│   ├── scripts/              # Tcl extension scripts; only attributeWindow.tcl and cutaway.tcl are installed, to lib/GeoZui4D/scripts
 │   ├── gzmod/                # Python extension modules, installed to lib/GeoZui4D/gzmod
 │   └── bitmaps/              # Images installed with the app
 └── docs/
