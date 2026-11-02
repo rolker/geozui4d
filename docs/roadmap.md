@@ -3,9 +3,13 @@
 ## Direction
 
 What must be true for the project's current acceptance case, each line with
-the check that says whether it is true today. The agent workspace's sit-rep
-reads this section (its `sitrep_checks.sh` holds the check grammar) and runs
-every check each time; this section holds no status and no dates.
+the check that says whether it is true today. The sit-rep of the
+[agent workspace](https://github.com/rolker/agent_workspace)
+(`rolker/agent_workspace`, a separate repository of AI-agent infrastructure in
+which this project is registered; using it is optional) reads this section
+(its `sitrep_checks.sh` holds the check grammar) and runs every check each
+time; this section holds no status and no dates. Without the workspace, the
+table is still a plain statement of what the project is working towards.
 
 **Acceptance case.** GeoZui4D is worked from the agent workspace: the
 checkout is registered and validates, builds and tests go through the

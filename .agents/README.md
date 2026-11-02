@@ -7,7 +7,15 @@
 This guide is for agents working in this repository. The rules agents must
 follow are in [`AGENTS.md`](../AGENTS.md); the Claude Code adapter is
 [`CLAUDE.md`](../CLAUDE.md). This file says what the code is and where to
-look. Every claim here was checked against the source on 2026-11-02; when
+look.
+
+GeoZui4D can be worked on with the
+[agent workspace](https://github.com/rolker/agent_workspace)
+(`rolker/agent_workspace`), a separate repository of AI-agent infrastructure
+(per-issue worktrees, review loops, work plans, project conventions) in which
+this project is registered as `gz4d`; the Build & Test section below shows
+its adapter commands. It is optional: everything in this repository builds,
+runs and is developed without it, and this guide is useful on its own. Every claim here was checked against the source on 2026-11-02; when
 the code and this guide disagree, the code wins, and this guide is wrong.
 
 ## Package Inventory
