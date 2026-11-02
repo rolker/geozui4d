@@ -199,3 +199,22 @@ Owner's answer to the second findings checkpoint on PR #10 (Integrated Review at
 - [x] (suggestion) Test programs: 76 of the 114 `add_executable` lines in `libgz4d/cxx/test/CMakeLists.txt` sit inside an `if(...)` with a skip message and 38 are unconditional (counted by if/endif nesting; e.g. `audioSignalGenerator`, lines 21-23). Both the inventory row and the Build & Test bullet say so — `.agents/README.md:26`, `.agents/README.md:161-164` (31e1bd3)
 
 Notes: boxes ticked with `review_progress.sh check` (indexes 0-1); `findings` now reports none open. No build run: only `.agents/README.md` changed. The repository has no pre-commit config.
+
+## Local Review
+**Status**: complete
+**When**: 2026-11-02 12:26 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Dispatch**: resumed (agent a9c09e4ec432e855f, resume 3 of 3)
+**Verdict**: approved
+
+**PR**: #10 at `3d8b180`
+**Depth**: Deep (reason: 481 changed lines on the whole PR diff, over the 200-line Deep threshold; fix round re-reviewed at the whole-diff tier)
+**Must-fix**: 0 | **Suggestions**: 4
+
+The two fixes triaged at `fddee4d` verified against source: vorbisfile, GLUT and netcdf_c++4 are optional lookups in GeoZui4D/main/CMakeLists.txt (120-127, 138-142, 173-181) yet used unguarded (objects/SoundOgg.h:8 with SoundOgg.cpp at objects/CMakeLists.txt:49; main.cpp:12 and :68; engine/Object.h:24 and Scene3D.h:24 reaching <ncAtt.h> through netcdf.h, File.h, Var.h, Att.h:8); 76 of 114 test programs guarded, 38 unconditional. Gemini and Codex: no issues.
+
+### Findings
+- [ ] (suggestion) The app's required-though-optional list misses three more of the same shape: portaudio (objects/Sound.h:6 reaches <portaudio.h> via gz4d/sound/portaudio/Exception.h:8; CMake lookup at GeoZui4D/main/CMakeLists.txt:86-94), Bluetooth (main.cpp:33 engine/Wiimote.h, non-WIN32, reaches <bluetooth/...> via WiimoteManager.h, BTL2CAPSocket.h; lookup at :129-135), OpenNI (engine/Scene3D.cpp:9 objects/Kinect.h reaches unguarded "XnCppWrapper.h" at gz4d/Kinect.h:12; Kinect.cpp at objects/CMakeLists.txt:32; lookup at :183-191) — `.agents/README.md:180`
+- [ ] (suggestion) "only work installed" and "install step is required": appdir is set before the GeoZui4D.conf files are sourced (MainWindow.cpp:94, 123, 135), so a config file can point the default, -cp and -wall modes elsewhere, as the guide already says for -nav; say "by default" — `.agents/README.md:97`, `.agents/README.md:167`
+- [ ] (suggestion) `scene` is a header (include/gz4d/scene.h), not a header subdirectory, in the list of module subdirectories — `.agents/README.md:74`
+- [ ] (suggestion) gzmod/CMakeLists.txt installs only 12 named .py files plus ais/, deltaT/, lighting/ (and adds gz4d/); 22 top-level .py files exist, so about ten are not installed; say selected modules are installed — `.agents/README.md:59`
