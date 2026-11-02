@@ -10,9 +10,13 @@
 #
 # The libgz4d gtest suite stays off: with BUILD_GTESTS=ON the configure step
 # looks for a header named gtest/test.h, which GoogleTest does not ship, and
-# stops (issue #9). Once #9 lands, add -DBUILD_GTESTS=ON to the configure
-# line so that `ctest --test-dir build --output-on-failure`, the registered
-# test command, finds test_libgz4d. Until then it finds no tests and exits 0.
+# stops (issue #9). Turning it on is not enough on its own for the registered
+# test command, `ctest --test-dir build --output-on-failure`: enable_testing()
+# is called only in libgz4d/cxx/CMakeLists.txt, not in the top-level
+# CMakeLists.txt, so build/ gets no CTestTestfile.cmake and ctest there finds
+# no tests and exits 0 whatever BUILD_GTESTS says. test_libgz4d is reachable
+# from build/libgz4d/cxx only. Both fixes, the gtest header and a top-level
+# enable_testing(), belong to #9; after them, add -DBUILD_GTESTS=ON here.
 # Note that #9 also means a fresh clone or worktree does not configure at all
 # yet; the main checkout does.
 set -euo pipefail

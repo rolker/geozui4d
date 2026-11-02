@@ -45,7 +45,7 @@ issue: 8
 **Must-fix**: 1 | **Suggestions**: 5
 
 ### Findings
-- [ ] (must-fix) Adding -DBUILD_GTESTS=ON after #9 will not make `ctest --test-dir build` find test_libgz4d: enable_testing() is only in libgz4d/cxx/CMakeLists.txt:452, the root CMakeLists.txt has none, so root ctest reports "No tests were found" and exits 0 (probe confirmed); correct both claims and add the root enable_testing() need to #9 — `scripts/build.sh:11-16`, `.agents/README.md:141-146`
+- [x] (must-fix) Adding -DBUILD_GTESTS=ON after #9 will not make `ctest --test-dir build` find test_libgz4d: enable_testing() is only in libgz4d/cxx/CMakeLists.txt:452, the root CMakeLists.txt has none, so root ctest reports "No tests were found" and exits 0 (probe confirmed); correct both claims and add the root enable_testing() need to #9 — `scripts/build.sh:11-16`, `.agents/README.md:141-146`
 - [ ] (suggestion) docs/work-plans/ is not tracked (git keeps no empty directory) and is absent from a fresh clone; say it is created on demand — `.agents/README.md:63`
 - [ ] (suggestion) The start scripts source every GeoZui4D.conf they find ($GEOZUI4D, ~/.GeoZui4D/, working directory; three independent ifs, MainWindow.cpp:57-80), later ones overriding earlier; not a first-found lookup — `.agents/README.md:88-91`
 - [ ] (suggestion) Only GeoZui4D/main/CMakeLists.txt:268-277 builds a version string with an `unknown` fallback; libgz4d/cxx/CMakeLists.txt:396-403 only sets SUBVERSION_REVISION (both still fail configure without a working copy) — `.agents/README.md:183-189`
