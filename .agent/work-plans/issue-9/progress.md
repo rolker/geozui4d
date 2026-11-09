@@ -262,3 +262,15 @@ Dismissed: Gemini's numeric check on rev-list output (result code already checke
 - [ ] (suggestion) The git lookup does not check that the repository is this project's: a tarball unpacked inside another git checkout takes that checkout's count and sha, and a shallow clone gives patch = depth; the doc's "a source tarball ... count is 0" is not always true. Qualify the sentence or compare `git rev-parse --show-toplevel` — `.agents/README.md:201`
 - [ ] (suggestion) The `-DGTest_DIR=...` advice and the `gtest: <GTest_DIR>` message apply only on CMake 3.20+ (FindGTest is module-only on 3.14-3.19 and ignores GTest_DIR; GTEST_ROOT there); state the version — `.agents/README.md:150`
 - [ ] (suggestion) README now publishes `make -j8` and build.sh hardcodes `--parallel 8`, while AGENTS.md, CLAUDE.md and the audit-project skill still say `-j$(nproc)`; confirm with the owner that the 8-job rule belongs in the published commands, then align the instruction files (Ask First) or revert — `README.md:118`
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-09 10:52 -05:00
+**By**: Claude Code Agent (claude-fable-5-1)
+**Decided-by**: owner
+**After**: publish
+**Decision**: address
+
+The pre-push Local Review (7f2a84e) approved the branch: 0 must-fix, 4 suggestions, Ship recommended. Suggestion 4 needed the owner: the branch hardcodes 8 build jobs in README.md, scripts/build.sh and the .agents/README.md comment, from his "use 8 for the work in this project" (2026-11-09), while AGENTS.md, CLAUDE.md and the audit skill say -j$(nproc). Asked which the published commands should say, he answered: "Core count in published text". So README.md, scripts/build.sh, the .agents/README.md comment and the plan line go back to $(nproc) / --parallel "$(nproc)"; the three instruction files are untouched; 8 jobs remains the rule for the agents' own builds on this machine only. Because that changes tracked files, the checkpoint is answered address rather than publish, and the fix pass also takes the three documentation suggestions: README.md:126 says the Test block runs from the repository root; the git version text in .agents/README.md:201 is qualified (a tarball unpacked inside another checkout takes that checkout's count and sha; a shallow clone gives patch 1); .agents/README.md:150-152 says the GTest_DIR advice applies on CMake 3.20 and later, with GTEST_ROOT the setting on 3.14 to 3.19.
+
+Also decided by the owner at this checkpoint: open a gz4d issue for URI.h:274 (URI::encode has an empty body and returns nothing), separate from this drive.
