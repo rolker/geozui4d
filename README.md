@@ -120,12 +120,14 @@ make -j8
 
 ### Test
 
-The libgz4d unit tests (GoogleTest) are off by default. To build and run them:
+The libgz4d unit tests (GoogleTest) are off by default. To build and run
+them, from the repository root (`cd ..` first if you are still in `build/`
+from the Build step):
 
 ```sh
 cmake -S . -B build -DBUILD_GTESTS=ON
 cmake --build build --parallel 8
-cd build && ctest --output-on-failure
+(cd build && ctest --output-on-failure)
 ```
 
 `scripts/build.sh` runs the first two steps.

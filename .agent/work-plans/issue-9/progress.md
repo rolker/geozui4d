@@ -258,7 +258,7 @@ Verified by the lead: the 19 deletions are exactly the stub lines and none remai
 Dismissed: Gemini's numeric check on rev-list output (result code already checked); the broad `build*` skip pattern (no such directory exists); the pre-existing URI.h:274 missing return (not this branch; worth its own issue).
 
 ### Findings
-- [ ] (suggestion) The new Test block starts with `cmake -S . -B build` from the repository root, but the Build block just before it leaves the shell in build/; say "from the repository root" or use a subshell — `README.md:126`
+- [x] (suggestion) The new Test block starts with `cmake -S . -B build` from the repository root, but the Build block just before it leaves the shell in build/; say "from the repository root" or use a subshell — `README.md:126`
 - [ ] (suggestion) The git lookup does not check that the repository is this project's: a tarball unpacked inside another git checkout takes that checkout's count and sha, and a shallow clone gives patch = depth; the doc's "a source tarball ... count is 0" is not always true. Qualify the sentence or compare `git rev-parse --show-toplevel` — `.agents/README.md:201`
 - [ ] (suggestion) The `-DGTest_DIR=...` advice and the `gtest: <GTest_DIR>` message apply only on CMake 3.20+ (FindGTest is module-only on 3.14-3.19 and ignores GTest_DIR; GTEST_ROOT there); state the version — `.agents/README.md:150`
 - [ ] (suggestion) README now publishes `make -j8` and build.sh hardcodes `--parallel 8`, while AGENTS.md, CLAUDE.md and the audit-project skill still say `-j$(nproc)`; confirm with the owner that the 8-job rule belongs in the published commands, then align the instruction files (Ask First) or revert — `README.md:118`
