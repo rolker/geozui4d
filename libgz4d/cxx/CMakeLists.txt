@@ -447,26 +447,10 @@ option(BUILD_GTESTS  "Enable gtest testing." OFF)
 
 if(BUILD_GTESTS)
 
-    option(GTESTS_NEED_PTHREADS "Enable if tests need to link agains pthreads" OFF)
-
-    find_path(gtest_INCLUDE_DIR gtest/test.h)
-    find_library(gtest_LIBRARY gtest)
-    find_library(gtest_main_LIBRARY gtest_main)
-
-    if(gtest_INCLUDE_DIR AND gtest_LIBRARY AND gtest_main_LIBRARY)
-        include_directories(${gtest_INCLUDE_DIR})
-        set(GTEST_LIBS ${GTEST_LIBS} ${gtest_LIBRARY} ${gtest_main_LIBRARY})
-    else()
-        message(FATAL_ERROR "gtest not found")
-    endif()
-
-    if(GTESTS_NEED_PTHREADS)
-        find_package(Threads)
-        if(CMAKE_THREAD_LIBS_INIT AND CMAKE_USE_PTHREADS_INIT)
-            set(GTEST_LIBS ${GTEST_LIBS} ${CMAKE_THREAD_LIBS_INIT})
-        else()
-            message(FATAL_ERROR "pthreads not found")
-        endif()
+    # GTest::GTest and GTest::Main carry the include path and Threads.
+    find_package(GTest REQUIRED)
+    if(GTest_DIR)
+        message("gtest: ${GTest_DIR}")
     endif()
 
     enable_testing()
