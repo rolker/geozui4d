@@ -436,3 +436,25 @@ Verification: `sitrep_checks.sh --root .` exit 0, all nine rows parse; "this gui
 - Gap for the PR description: the AGENTS.md and CLAUDE.md build blocks still omit -DBUILD_GTESTS=ON and the test step; a follow-up, since editing them further is outside this issue's approval.
 - Gap for the PR description: the same two blocks' `cmake --install` needs CMake 3.15, above the 3.14 minimum (ADR-0001), unnoted there for the same reason.
 - Gap for the PR description: CLAUDE.md's "without explicit approval" wording for the IVS files conflicts with AGENTS.md's Never; it predates this branch and is the owner's to settle.
+
+## Local Review (Pre-Push)
+**Status**: complete
+**When**: 2026-11-09 12:33 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Dispatch**: resumed (agent a4aa2ca832f3801bc, resume 3 of 3)
+**Verdict**: approved
+
+**Branch**: feature/issue-7 at `28e5062`
+**Base**: main
+**Depth**: Deep (reason: round 4 convergence check per handoff)
+**Must-fix**: 0 | **Suggestions**: 0
+**Round**: 4 | **Ship**: recommended — no must-fix findings; remaining suggestions can be applied or tracked
+
+Scope: the round-3 findings and the fix diff `23b0a72..97044a0`. Cross-model: skipped (round-4 convergence check, per handoff). Governance and plan drift by the lead; Claude adversarial (fresh subagent) ran and found no must-fix.
+
+Checked against the files: the approval clause is gone, so the IVS bullet matches the AGENTS.md Never entry (`.agents/README.md:190-191`); the history claim is scoped to git history since the 2026-02-27 import (`e76de6a`) and names the Mark Paton credit at `Sv_Raster.cpp:12` as the open reason; the new "name Mark A. Paton as author" claim holds for all four Matrix4/Quaternion files (`.h:8`, `.cpp:7`). Both commits carry the agent identity and trailer; `sitrep_checks.sh --root .` exits 0; "this guide stands on its own" is intact.
+
+Dropped below the threshold: two adversarial wording nits (a literal `git log -p | grep IVS` also matches the 11a46d7 commit message; `Sv_Raster.h:15` mentions IVS in a TDR comment). The origin question is already marked as the owner's.
+
+### Findings
+- [ ] No issues found. LGTM.
