@@ -1,6 +1,6 @@
 ---
 name: build
-description: Build and optionally install GeoZui4D. Run after code changes to verify compilation.
+description: Build, test and optionally install GeoZui4D. Run after code changes to verify that it compiles and the tests pass.
 ---
 
 # Build
