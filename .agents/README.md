@@ -4,10 +4,11 @@
 > ocean mapping, marine navigation and underwater exploration, from the Data
 > Visualization Research Lab at CCOM, University of New Hampshire.
 
-This guide is for agents working in this repository. The rules agents must
-follow are in [`AGENTS.md`](../AGENTS.md); the Claude Code adapter is
-[`CLAUDE.md`](../CLAUDE.md). This file says what the code is and where to
-look.
+This guide is for agents working in this repository. It says what the code
+is, where to look, and which gz4d conventions to follow (under Common
+Pitfalls). [`AGENTS.md`](../AGENTS.md) holds the boundaries (what agents do
+on their own, ask about first, or never do) and points here for the
+conventions; the Claude Code adapter is [`CLAUDE.md`](../CLAUDE.md).
 
 GeoZui4D can be used with the
 [agent workspace](https://github.com/rolker/agent_workspace), a separate
@@ -16,8 +17,9 @@ this guide stands on its own. See that repository for what it does and how
 to set a project up with it. The adapter commands under Build & Test apply
 once that is done.
 
-Every claim here was checked against the source on 2026-11-02; when the
-code and this guide disagree, the code wins, and this guide is wrong.
+Every claim here was checked against the source on 2026-11-02, and the
+conventions and layout changes added since on 2026-11-09; when the code and
+this guide disagree, the code wins, and this guide is wrong.
 
 ## Package Inventory
 
@@ -31,6 +33,7 @@ code and this guide disagree, the code wins, and this guide is wrong.
 
 ```
 gz4d/
+├── .agent/work-plans/        # Tracked; one issue-<N>/ directory per issue: plan.md and the progress.md timeline
 ├── CMakeLists.txt            # Top level: builds libgz4d/cxx, then GeoZui4D/main
 ├── scripts/build.sh          # Configure + build, as the workspace adapter runs it
 ├── libgz4d/
@@ -50,7 +53,7 @@ gz4d/
 │   ├── objects/              # Scene object types: dxf, GeoData, nodeTypes, ogr, S57, Sonar; MissionPlan and
 │   │                         #   MissionPlanDisplayTypes are present but not built (engine/Scene3D.cpp still includes MissionPlan.h)
 │   ├── utilities/            # Helper sources added to the executable
-│   ├── widgets/              # LightDirector and the Sv_* IVS-copyright files (do not modify)
+│   ├── widgets/              # LightDirector and the Sv_* widgets; six Sv_* files are protected (see Common Pitfalls)
 │   ├── Togl/                 # VENDORED: Tcl/Tk OpenGL widget, built as gz_togl (do not modify)
 │   ├── Togl2.0/              # VENDORED: newer Togl; present but not referenced by CMake (do not modify)
 │   ├── BWidget-1.7.0/        # VENDORED: Tcl/Tk widget set, installed as scripts (do not modify)
@@ -60,8 +63,7 @@ gz4d/
 │   └── bitmaps/              # Images installed with the app
 └── docs/
     ├── decisions/            # ADRs 0001-0003 and their index
-    ├── roadmap.md            # Direction section read by the workspace sit-rep
-    └── work-plans/           # Not tracked until a plan lands; the project's own /plan-task skill writes plans here
+    └── roadmap.md            # Direction section read by the workspace sit-rep
 ```
 
 ## Architecture Overview
@@ -135,7 +137,7 @@ By hand:
 ```bash
 scripts/build.sh                      # cmake -S . -B build -DBUILD_GTESTS=ON; cmake --build build --parallel "$(nproc 2>/dev/null || echo 4)"
 (cd build && ctest --output-on-failure)
-cmake --install build --prefix install
+cmake --install build --prefix install # needs CMake 3.15, above the 3.14 minimum
 install/bin/GeoZui4D [files...]
 ```
 
@@ -169,9 +171,8 @@ What to know:
 - Ubuntu package prerequisites are listed in the README under Building.
 - The install step is required to run the app (see Architecture Overview).
 - The build directory is `build/` at the repository root, which `.gitignore`
-  ignores with the rule `build/`. That rule also matches
-  `.claude/skills/build/`, so that skill is not under version control
-  (issue #7 tracks the fix).
+  ignores with the rule `/build/` (and `install/` with `/install/`). The
+  rules are anchored to the root, so `.claude/skills/build/` is tracked.
 
 ## Dependencies
 
@@ -186,16 +187,35 @@ What to know:
 
 - **Do not modify vendored code**: `GeoZui4D/main/Togl/`, `Togl2.0/`,
   `BWidget-1.7.0/`, `libgz4d/cxx/include/gz4d/util/rapidxml/`.
-- **Never modify the IVS-copyright files** in `GeoZui4D/main/widgets/`
-  (`Sv_Matrix4`, `Sv_Quaternion`, `Sv_Raster`); `AGENTS.md` lists this under
-  Never.
+- **Never modify the IVS files** in `GeoZui4D/main/widgets/`; `AGENTS.md`
+  lists `Sv_Matrix4`, `Sv_Quaternion` and `Sv_Raster` under Never. These
+  six files are covered: `Sv_Matrix4.h`, `Sv_Matrix4.cpp`,
+  `Sv_Quaternion.h`, `Sv_Quaternion.cpp`, `Sv_Raster.h` and
+  `Sv_Raster.cpp`. The two `Sv_Matrix4` and two `Sv_Quaternion` files
+  carry the Interactive Visualization Systems Inc. copyright line and name
+  Mark A. Paton as author. `Sv_Raster.h` carries no copyright header.
+  `Sv_Raster.cpp` carries the CCOM Apache-2.0 header added by the
+  2026-03-11 relicensing commit (`11a46d7`); no IVS line appears in its
+  git history, which begins with the 2026-02-27 import (`e76de6a`), but its
+  comment block credits Mark Paton with "various additions & mods.", so
+  whether the two `Sv_Raster` files share the IVS origin is unverified and
+  is the owner's to settle; until then they are treated like the other
+  four.
+- **Check that neither list has been touched**:
+  `git log --oneline -5 -- <path>` on each vendored directory and each of
+  the six files above shows the commits that last changed it.
 - **`std::filesystem`, never `boost::filesystem`** (ADR-0002). Boost
   Filesystem is no longer linked; a stray use fails at link time.
 - **Headers are `.h`**, even for C++ (four `.hpp` files exist; new headers use `.h`).
-- **Changes to a `CMakeLists.txt`** get a build-impact assessment in review
-  (the project's `/review-pr` skill, step 5; issue #7 ports the rule to `AGENTS.md`).
+- **Changes to a `CMakeLists.txt`** get a build-impact note in the pull
+  request: whether the change could break the build, and whether it adds a
+  new dependency or changes an existing one.
 - **Sub-project `CMakeLists.txt` files were generated** (`libgz4d/cxx/src/`
   and `test/` say "auto generated by gen_cmake.py"); edit by hand with care.
+- **License-header coverage is checked periodically, by hand**; nothing
+  runs it automatically. Scan the `.cpp`, `.h` and `.tcl` files and classify
+  each as Apache 2.0 (ADR-0003), IVS copyright, or no header, leaving out the
+  vendored code.
 - **The version comes from git.** Both `GeoZui4D/main/CMakeLists.txt` and
   `libgz4d/cxx/CMakeLists.txt` run `git rev-list --count HEAD` and
   `git rev-parse --short HEAD` and set `GZ4D_COMMIT_COUNT` (used as the
@@ -207,8 +227,3 @@ What to know:
   checkout takes that checkout's count and sha, and a shallow clone counts
   only the commits it has (1 for `--depth 1`). The repository has no tags,
   so `git describe` is not used.
-- **The project's own skills** (`.claude/skills/`) include four that
-  duplicate agent-workspace skills by name; in a workspace session the bare
-  `/plan-task`, `/research`, `/audit-project` and `/brand-guidelines` are
-  the project's copies and `/agent-workspace:<skill>` the workspace's.
-  Issue #7 tracks removing the duplicates.

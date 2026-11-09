@@ -39,17 +39,38 @@ When a GitHub issue exists for the work, reference it in branch names and
 commits (`Closes #<N>` or `Refs #<N>`). For trivial fixes (typos, minor doc
 corrections), a dedicated issue is not required.
 
+## Conventions
+
+The gz4d conventions (vendored and IVS code, `std::filesystem`, headers,
+`CMakeLists.txt` changes, license headers and the rest) are in
+[`.agents/README.md`](.agents/README.md), the agent guide for this
+repository. Read it before changing code; this file does not repeat them.
+
+Each issue's work plan and progress timeline are committed under
+`.agent/work-plans/issue-<N>/` on that issue's feature branch. This location
+is provisional until rolker/agent_workspace#393 settles where they live (see
+the Deferral rows in [`docs/roadmap.md`](docs/roadmap.md)).
+
+When this repository is worked from the
+[agent workspace](https://github.com/rolker/agent_workspace), the loop skills
+`plan-task`, `review-issue`, `review-plan`, `review-code`, `triage-reviews`,
+`address-findings`, `audit-project`, `run-issue`, `orchestrator`,
+`start-task`, `sitrep`, `onboard-project`, `document-project` and
+`test-engineering` come from it. The workspace's `research` skill does not
+reach project sessions while rolker/agent_workspace#331 is open, so there is
+no research skill here for now.
+
 ## Build & Test
 
 ```bash
-# Full build from repo root
+# Full build from repo root (leaves the shell in build/)
 mkdir -p build && cd build && cmake .. && make -j$(nproc)
 
-# Install locally
-cd build && cmake --install . --prefix ../install
+# Install locally (from build/)
+cmake --install . --prefix ../install
 
-# Run the application
-../install/bin/GeoZui4D [files...]
+# Run the application from the repo root
+cd .. && ./install/bin/GeoZui4D [files...]
 ```
 
 The top-level CMakeLists.txt builds both libgz4d and GeoZui4D. Sub-projects

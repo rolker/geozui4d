@@ -18,14 +18,14 @@ Visualization Research Lab (VisLab), Center for Coastal and Ocean Mapping
 ## Build Commands
 
 ```bash
-# Build
+# Full build from repo root (leaves the shell in build/)
 mkdir -p build && cd build && cmake .. && make -j$(nproc)
 
-# Install
-cd build && cmake --install . --prefix ../install
+# Install locally (from build/)
+cmake --install . --prefix ../install
 
-# Run
-./install/bin/GeoZui4D
+# Run the application from the repo root
+cd .. && ./install/bin/GeoZui4D [files...]
 ```
 
 ## Key Directories
@@ -82,9 +82,11 @@ See [`docs/decisions/`](docs/decisions/) for recorded decisions:
 
 | Skill | Purpose |
 |-------|---------|
-| `/plan-task` | Generate a work plan for an issue |
-| `/review-pr` | Review a PR against project conventions |
-| `/audit-project` | Audit project for documentation and build health |
-| `/research` | Research a topic, maintain digest |
 | `/brand-guidelines` | CCOM/JHC brand identity and editorial standards |
-| `/build` | Build and install the project |
+| `/build` | Build, test and optionally install the project |
+
+When the repository is worked from the agent workspace, planning, review and
+audit are the workspace skills (`agent-workspace:plan-task`,
+`agent-workspace:review-code`, `agent-workspace:audit-project`); the
+workspace's `research` skill is not available to project sessions yet
+(rolker/agent_workspace#331).

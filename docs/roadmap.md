@@ -31,7 +31,7 @@ issue here runs through the workspace loop to merge.
 | The workspace builds through the project's own tracked script | `file-exists scripts/build.sh` |
 | The checkout is registered on this machine and validates | `script adapter --project gz4d validate` |
 | Agents read the project's conventions from one guide that stands on its own | `file-contains .agents/README.md this guide stands on its own` |
-| The skills that duplicate workspace skills are gone and the gz4d rules live in `AGENTS.md` (#7) | `gh-issue 7 closed` |
+| The skills that duplicate workspace skills are gone and the gz4d conventions live in `.agents/README.md`, with `AGENTS.md` pointing at them (#7) | `gh-issue 7 closed` |
 | An issue here has run through the workspace loop to merge | |
 
 | Deferral | Revisit check |
