@@ -146,10 +146,13 @@ What to know:
   timeSequence, URI). It exists only when the build was configured with
   `BUILD_GTESTS=ON`, which `scripts/build.sh` turns on. GoogleTest is found
   with `find_package(GTest REQUIRED)` (`libgtest-dev` on Ubuntu), so a
-  missing GoogleTest stops the configure. When GoogleTest was found through
-  its CMake package files, configure prints `gtest: <GTest_DIR>`.
-  When more than one GoogleTest is installed (for example a copy under
-  `~/.local`), pass `-DGTest_DIR=...` to choose.
+  missing GoogleTest stops the configure. On CMake 3.20 and later,
+  `FindGTest` uses GoogleTest's own CMake package files when they exist;
+  configure then prints `gtest: <GTest_DIR>`, and when more than one
+  GoogleTest is installed (for example a copy under `~/.local`),
+  `-DGTest_DIR=...` chooses. On CMake 3.14 to 3.19 `FindGTest` searches
+  for the header and libraries itself and ignores `GTest_DIR`; there
+  `-DGTEST_ROOT=...` chooses.
 - The top-level `CMakeLists.txt` calls `enable_testing()`, so `ctest` run
   in `build/` finds `test_libgz4d`. Use `cd build && ctest`:
   `ctest --test-dir build` needs CMake 3.20, above the 3.14 minimum.
