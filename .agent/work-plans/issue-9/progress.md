@@ -291,3 +291,25 @@ Also decided by the owner at this checkpoint: open a gz4d issue for URI.h:274 (U
 - [x] Owner decision "Core count in published text": README `make -j$(nproc)` (three places) and `cmake --build build --parallel "$(nproc)"`; `scripts/build.sh` back to main's `--parallel "$(nproc 2>/dev/null || echo 4)"` with its comment updated; `.agents/README.md` comment echoes build.sh; plan stage 1 check says `--parallel "$(nproc)"`. AGENTS.md, CLAUDE.md and the audit-project skill untouched — `README.md:118` (7182a5f)
 
 Verification (this worktree, CMake 3.28.3, 8 jobs): `cmake -S . -B build -DBUILD_GTESTS=ON` ok (gtest: `/home/roland/.local/lib/cmake/GTest`, version `4.0.81-g7182a5f`); `cmake --build build --parallel 8` exit 0; `(cd build && ctest --output-on-failure)` 1 of 1 passed; `bash -n scripts/build.sh` ok. No CMake logic changed, so the version-lookup probes were not re-run. Nothing pushed.
+
+## Local Review (Pre-Push)
+**Status**: complete
+**When**: 2026-11-09 11:00 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Dispatch**: resumed (agent a92b6969adba9016f, resume 1 of 3)
+**Verdict**: approved
+
+**Branch**: feature/issue-9 at `68730e3`
+**Base**: main
+**Depth**: Deep (reason: whole-branch diff, 29+ files; fix round re-reviewed on the whole-diff tier per the classification doc)
+**Must-fix**: 0 | **Suggestions**: 0
+**Round**: 2 | **Ship**: recommended — no must-fix findings; remaining suggestions can be applied or tracked
+
+Scope: the four round-1 suggestions (Local Review at `7f2a84e`) and the fix commits 785ee42, 7738a1f, e78b5b2, 7182a5f (`git diff 09157ea..7182a5f`). Specialists: static analysis (`bash -n scripts/build.sh` ok; shellcheck not installed), governance, plan drift, Claude adversarial (fresh subagent), cross-model Gemini and Codex (both complete, EXIT=0, no issues found).
+
+Verified against the files: README.md Build uses `make -j$(nproc)`; the Test block says to run from the repository root (`cd ..` if still in build/), builds with `--parallel "$(nproc)"` and runs ctest in a subshell, so Build, Test and Install paste in order. scripts/build.sh's build line is character for character main's (`--parallel "$(nproc 2>/dev/null || echo 4)"`) and its header comment matches. `.agents/README.md:136` echoes that line. The version-fallback text (`.agents/README.md:203`) and the comments in both CMakeLists files are qualified for another checkout and shallow clones; the CMakeLists edits are comment lines only. The GTest_DIR advice and `gtest:` message are stated for CMake 3.20+, with GTEST_ROOT on 3.14-3.19, matching FindGTest 3.28's source (config branch versionadded 3.20, GTEST_ROOT hints). plan.md line 74 says `--parallel "$(nproc)"`. AGENTS.md, CLAUDE.md and `.claude/` are unchanged versus main. All four round-1 suggestions are addressed as the Implementation entry (68730e3) claims.
+
+Dropped (below threshold): the adversarial reviewer's notes that `GTest_ROOT`/`CMAKE_PREFIX_PATH` also steer FindGTest on 3.14-3.19 (the text is correct, not exhaustive), and that the README's bare `$(nproc)` has no macOS fallback (README targets Ubuntu; the owner chose core count; AGENTS.md and CLAUDE.md use the same form).
+
+### Findings
+- [ ] No issues found. LGTM.
