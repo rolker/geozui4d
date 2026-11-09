@@ -32,70 +32,103 @@ Stage 1 - configure, build, lookup, enable_testing
    `libgz4d/cxx/src/x3d/` and 18 under `libgz4d/cxx/boost.python/*/`). None are
    vendored.
 2. **Keep the generator from recreating them** - in `libgz4d/cxx/gen_cmake.py`
-   `genModules`, skip subdirectories named `CMakeFiles` (and other build
-   artifacts: `build*`, `*.dir`, `.svn`, `.git`). The script is Python 2
+   apply the skip in BOTH `genModules` and `genBoostPython` (lines 149-213; it
+   has its own subdirectory `isdir` loop at about line 160 and writes
+   `add_subdirectory(sub_path)` at about line 213, and 18 of the 19 stubs come
+   from it). Use one shared predicate (e.g. `skipDir(name)`) that rejects
+   `CMakeFiles`, `build*`, `*.dir`, `.svn`, `.git`. The script is Python 2
    (`file()`); do not port it here. Check it is not run against the tree.
-3. **Version lookup** - replace both `find_package(Subversion)` blocks with a
-   `git describe --tags --always --dirty` via `find_package(Git)` +
-   `execute_process(... ERROR_QUIET)`, falling back to `unknown` when git or the
-   repository is absent (a tarball). Keep `gz4d_version` / `GZ4D_VERSION`
-   defined in `GeoZui4D/main`; in `libgz4d/cxx` drop the unused
-   `SUBVERSION_REVISION` message (verify with grep that nothing reads it). Works
-   on CMake 3.14 (ADR-0001).
-4. **gtest lookup** - in `libgz4d/cxx/CMakeLists.txt` change the header search
-   to `gtest/gtest.h` (keeping the `find_library` calls), or use
-   `find_package(GTest)` if it keeps the `GTEST_LIBS` contract simple. Remove
-   the stray `message(${GTEST_LIBS})` in `gtest/CMakeLists.txt` only if it
-   errors when empty.
+3. **Version lookup (git, not Subversion)** - replace both
+   `find_package(Subversion)` blocks with `find_package(Git QUIET)` plus
+   `execute_process` calls. Each call sets `WORKING_DIRECTORY
+   ${CMAKE_CURRENT_SOURCE_DIR}`, `OUTPUT_STRIP_TRAILING_WHITESPACE`, `ERROR_QUIET`
+   and a `RESULT_VARIABLE`, and the output is used only when the result is `0`:
+   `git rev-list --count HEAD` gives the commit count, `git rev-parse --short
+   HEAD` the short sha. The repository has no tags, so `git describe` alone is
+   not used. Values:
+   - `GeoZui4D/main/CMakeLists.txt` (block at about lines 268-279):
+     `gz4d_version` becomes `4.0.<count>-g<sha>`; when git, the repository or
+     either result is missing it stays `unknown`. `GZ4D_VERSION` is still
+     defined from it. Line about 321: `CPACK_PACKAGE_VERSION_PATCH` becomes the
+     commit count, or `0` on fallback, so `CPACK_PACKAGE_FILE_NAME`
+     (`GeoZui4D_4.0-<patch>_i386`) keeps its shape.
+   - `libgz4d/cxx/CMakeLists.txt` (block at about lines 396-399):
+     the same lookup sets a variable `GZ4D_COMMIT_COUNT` (replacing
+     `SUBVERSION_REVISION`, whose `message("revision: ...")` becomes a message of
+     the new values); line about 482: `CPACK_PACKAGE_VERSION_PATCH` becomes
+     `${GZ4D_COMMIT_COUNT}`, `0` on fallback. `SUBVERSION_REVISION` is not
+     unused; grep for any other reader and update it. Works on CMake 3.14
+     (ADR-0001).
+4. **gtest lookup** - in `libgz4d/cxx/CMakeLists.txt` replace the hand-rolled
+   `find_path`/`find_library` (looking for `gtest/test.h`) with
+   `find_package(GTest REQUIRED)` and link `GTest::GTest` and `GTest::Main`
+   (they bring pthreads, so the `GTESTS_NEED_PTHREADS` option is no longer
+   needed for this). Adjust `libgz4d/cxx/gtest/CMakeLists.txt` to use the
+   imported targets instead of `GTEST_LIBS`; remove its stray
+   `message(${GTEST_LIBS})` only if it errors when empty.
 5. **enable_testing at top level** - add `enable_testing()` to the top-level
-   `CMakeLists.txt` before the `add_subdirectory` calls. This is the only
+   `CMakeLists.txt` before the `add_subdirectory` calls (a subdirectory-only
+   call writes no `CTestTestfile.cmake` at the build root). This is the only
    top-level edit (owner approved); leave the existing call in `libgz4d/cxx`.
 6. **Stage 1 check (fresh worktree)** - `cmake -S . -B build` and
    `cmake --build build --parallel` succeed with default options; configure
-   with `-DBUILD_GTESTS=ON` succeeds; `ctest --test-dir build -N` lists
-   `test_libgz4d`.
+   with `-DBUILD_GTESTS=ON` succeeds; `cd build && ctest -N` lists
+   `test_libgz4d`. (`ctest --test-dir` needs CMake 3.20, above the 3.14
+   minimum, so the plan uses `cd build && ctest` everywhere.)
 
-Stage 2 - make the nine gtest sources compile and pass
+Stage 2 - build files and docs only; no test or library edits
 
-7. **Compile** - build `test_libgz4d` (angle, box, color, geocam, matrix,
-   socket, time, timeSequence, URI; 403 lines in all). Fix include paths
-   (sources use `"../include/gz4d/..."` relative includes and `<../include/...>`
-   forms), missing link libs (boost, `LIBS`), and C++17 breakage, in the tests
-   or `libgz4d/cxx/gtest/CMakeLists.txt` first, library headers only if the
-   header is genuinely wrong.
-8. **Pass** - run `ctest --test-dir build --output-on-failure`. For each
-   failure decide whether the test or the library is wrong. Early reading
-   suggests exact `EXPECT_EQ` on doubles (e.g. `347.7` in `angle.cpp`) will fail
-   on rounding; switching to `EXPECT_DOUBLE_EQ`/`EXPECT_NEAR` is a test fix.
-   A test that fails on real library behaviour is recorded in the progress
-   entry and reported, not silently weakened. A test that needs the network
-   (`socket.cpp`) must not make the suite flaky.
-9. **Re-enable in the build script** - `scripts/build.sh`: add
+The plan reviewer built `test_libgz4d` by hand from the nine unchanged sources
+(angle, box, color, geocam, matrix, socket, time, timeSequence, URI) with
+`g++ -std=c++17`, gtest from `libgtest-dev`, boost and `-pthread`: all compile
+and all 23 tests pass, including the exact compare in `angle.cpp`. So stage 2
+edits no test source and no library header. `socket.cpp` only resolves
+`http://localhost`, so it needs no network. Edit a test only if the real CMake
+build shows it broken; do not edit passing tests.
+
+7. **Build and run** - build `test_libgz4d` through CMake with
+   `-DBUILD_GTESTS=ON` and run `cd build && ctest --output-on-failure`. Expect
+   23 tests passing. Any unexpected failure is recorded in the progress entry
+   and reported, not silently weakened.
+8. **Re-enable in the build script** - `scripts/build.sh`: add
    `-DBUILD_GTESTS=ON` and replace its comment block (which describes #9 as
-   open) with a short accurate one. Update README build/test steps if they
-   disagree with the result (check `README.md`, verify against the run).
-10. **Final acceptance** - in a brand-new `git worktree` of the branch:
-    `scripts/build.sh` and `ctest --test-dir build --output-on-failure`
-    pass. Commit per logical change (Refs #9).
+   open) with a short accurate one. Any `ctest` call there uses `cd build &&
+   ctest` unless the installed CMake supports `--test-dir` (state which in the
+   commit).
+9. **README** - add `libgtest-dev` to the Ubuntu package list (`README.md`
+   about lines 90-106): `build.sh` now needs it, since a missing gtest is a
+   `FATAL_ERROR`. Make the test step `cd build && ctest --output-on-failure`
+   and fix any other build/test step that disagrees with the verified run.
+10. **`.agents/README.md`** - rewrite lines about 144-160 (gtest cannot
+    configure, `build.sh` leaves it off, no top-level `enable_testing()`, fresh
+    clone does not configure) and about 196-205 (version from Subversion, used
+    as CPack patch) to describe the fixed state: gtest on by `build.sh` and
+    run with `cd build && ctest`; a fresh clone configures; the version is
+    `4.0.<commit count>-g<sha>` from git with an `unknown` / patch 0 fallback.
+    Verify each statement against the final code.
+11. **Final acceptance** - in a brand-new `git worktree` of the branch:
+    `scripts/build.sh` and `cd build && ctest --output-on-failure` pass.
+    Commit per logical change (Refs #9).
 
 ## Files to Change
 
 | File | Change |
 |------|--------|
 | 19 `CMakeLists.txt` (`libgz4d/cxx/src/x3d`, `libgz4d/cxx/boost.python/*`) | delete `add_subdirectory(CMakeFiles)` |
-| `libgz4d/cxx/gen_cmake.py` | skip `CMakeFiles` and build-artifact directories |
-| `libgz4d/cxx/CMakeLists.txt` | drop Subversion block; gtest header `gtest/gtest.h` |
-| `GeoZui4D/main/CMakeLists.txt` | version from `git describe`, fallback `unknown` |
+| `libgz4d/cxx/gen_cmake.py` | skip `CMakeFiles` and build-artifact dirs in both `genModules` and `genBoostPython` |
+| `libgz4d/cxx/CMakeLists.txt` | git version/commit-count lookup, CPack patch = commit count (0 fallback); `find_package(GTest)` |
+| `GeoZui4D/main/CMakeLists.txt` | `gz4d_version` = `4.0.<count>-g<sha>` (fallback `unknown`); CPack patch = commit count (0 fallback) |
 | `CMakeLists.txt` (top level, approved) | add `enable_testing()` only |
-| `libgz4d/cxx/gtest/*.cpp`, `gtest/CMakeLists.txt` | stage 2 compile/pass fixes |
-| `scripts/build.sh`, `README.md` | enable `BUILD_GTESTS=ON`; correct comments and steps |
+| `libgz4d/cxx/gtest/CMakeLists.txt` | use `GTest::GTest`/`GTest::Main`; no test sources edited |
+| `scripts/build.sh` | enable `BUILD_GTESTS=ON`; correct comments |
+| `README.md` | `libgtest-dev` in Ubuntu packages; `cd build && ctest` test step |
+| `.agents/README.md` | replace the three "still broken" descriptions (about lines 144-160, 196-205) |
 
 ## Prior Art
 
 The `Subversion_WC_INFO` block is replaced by the common `git describe`
 idiom (`find_package(Git)`); CMake's `find_package(GTest)` is the standard
-alternative to hand-rolled `find_path`, considered for step 4. Nothing new is
-built.
+alternative to hand-rolled x
 
 ## Serves
 
@@ -128,21 +161,21 @@ No change to the design picture (the project keeps no design document).
 
 | If we change... | Also update... | Included in plan? |
 |---|---|---|
-| gtest lookup / top-level `enable_testing()` | `scripts/build.sh` flags and comments | Yes (step 9) |
+| gtest lookup / top-level `enable_testing()` | `scripts/build.sh` flags and comments | Yes (step 8) |
 | build/test behaviour | README steps | Yes (step 9) |
-| `gen_cmake.py` | regenerated stubs | Yes (step 2) |
+| `gen_cmake.py` | regenerated stubs | Yes (step 2, both functions) |
+| version source | CPack patch in both CMakeLists, `.agents/README.md` | Yes (steps 3, 10) |
+| `BUILD_GTESTS=ON` in build.sh | README prerequisites (`libgtest-dev`) | Yes (step 9) |
 | fresh builds never run in CI | CI workflow | No - #12 |
 
 ## Open Questions
 
-- Stage 2 size is unknown until the sources are compiled. If it needs large
-  library changes (not test-side fixes), stop and raise it at plan review or a
-  checkpoint instead of expanding quietly; the owner said "whole thing in this
-  issue", so a split would be his call.
+- The version scheme (commit count as CPack patch, `4.0.<count>-g<sha>`) was
+  decided by the host and is listed for the owner's veto.
 - Stage 1 may expose further configure or compile errors in a fresh tree beyond
   the three listed (nothing has built here before); each would be fixed in
   scope if small, or reported.
 
 ## Estimated Scope
 
-Single PR, two stages (commits). Stage 1 small; stage 2 uncertain.
+Single PR, two stages (commits). Both stages small (stage 2 is build-file and docs work).
