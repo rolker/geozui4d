@@ -71,7 +71,7 @@ Stage 1 - configure, build, lookup, enable_testing
    call writes no `CTestTestfile.cmake` at the build root). This is the only
    top-level edit (owner approved); leave the existing call in `libgz4d/cxx`.
 6. **Stage 1 check (fresh worktree)** - `cmake -S . -B build` and
-   `cmake --build build --parallel 8` succeed with default options; configure
+   `cmake --build build --parallel "$(nproc)"` succeed with default options; configure
    with `-DBUILD_GTESTS=ON` succeeds; `cd build && ctest -N` lists
    `test_libgz4d`. (`ctest --test-dir` needs CMake 3.20, above the 3.14
    minimum, so the plan uses `cd build && ctest` everywhere.)

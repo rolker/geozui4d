@@ -12,10 +12,10 @@
 # installed (libgtest-dev on Ubuntu); configure stops if it is missing. Run
 # the tests afterwards with `cd build && ctest --output-on-failure`
 # (`ctest --test-dir` needs CMake 3.20, above the project's 3.14 minimum).
-# The build uses 8 jobs.
+# The build uses one job per core (4 if nproc is missing).
 set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 cmake -S . -B build -DBUILD_GTESTS=ON
-cmake --build build --parallel 8 "$@"
+cmake --build build --parallel "$(nproc 2>/dev/null || echo 4)" "$@"

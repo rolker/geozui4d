@@ -133,7 +133,7 @@ WS_ROOT="$(cat ~/.claude/agent-workspace-root)"
 By hand:
 
 ```bash
-scripts/build.sh                      # cmake -S . -B build -DBUILD_GTESTS=ON; cmake --build build --parallel 8
+scripts/build.sh                      # cmake -S . -B build -DBUILD_GTESTS=ON; cmake --build build --parallel "$(nproc 2>/dev/null || echo 4)"
 (cd build && ctest --output-on-failure)
 cmake --install build --prefix install
 install/bin/GeoZui4D [files...]

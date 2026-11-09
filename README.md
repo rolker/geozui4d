@@ -115,7 +115,7 @@ sudo apt install \
 ```sh
 mkdir -p build && cd build
 cmake ..
-make -j8
+make -j$(nproc)
 ```
 
 ### Test
@@ -126,7 +126,7 @@ from the Build step):
 
 ```sh
 cmake -S . -B build -DBUILD_GTESTS=ON
-cmake --build build --parallel 8
+cmake --build build --parallel "$(nproc)"
 (cd build && ctest --output-on-failure)
 ```
 
@@ -150,7 +150,7 @@ The sub-projects can still be built independently if needed.
 mkdir -p /tmp/gz4d-libgz4d-build && cd /tmp/gz4d-libgz4d-build
 cmake /path/to/gz4d/libgz4d/cxx \
   -Dais_INCLUDE_DIR=NOTFOUND -Dais_LIBRARY=NOTFOUND
-make -j8
+make -j$(nproc)
 ```
 
 The AIS module is disabled above because the current libais API has diverged.
@@ -162,7 +162,7 @@ mkdir -p /tmp/gz4d-app-build && cd /tmp/gz4d-app-build
 cmake /path/to/gz4d/GeoZui4D/main \
   -Dgz4d_INCLUDE_DIR=/path/to/gz4d/libgz4d/cxx/include \
   -Dgz4d_x3d_LIBRARY=/tmp/gz4d-libgz4d-build/src/x3d/libgz4d_x3d.so
-make -j8
+make -j$(nproc)
 ```
 
 #### Install and Run
