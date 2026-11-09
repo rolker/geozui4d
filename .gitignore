@@ -1,6 +1,6 @@
 # Build directories
-build/
-install/
+/build/
+/install/
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
