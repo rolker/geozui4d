@@ -468,3 +468,25 @@ Dropped below the threshold: two adversarial wording nits (a literal `git log -p
 **Decision**: publish
 
 Round-4 Local Review (Pre-Push) 27ee35d (reviewing 28e5062) approved: both round-3 findings fixed and verified against the files, nothing new. Rounds 1 and 2 had Gemini and Codex; rounds 3 and 4 were convergence checks without cross-model reviewers, per the review-depth rule. The host pushes the branch and opens the pull request with the Decision summary from the newest Implementation entry, including its three gap lines for the owner.
+
+## Integrated Review
+**Status**: complete
+**When**: 2026-11-09 12:36 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+
+**PR**: #15 at `fa037e4`
+**Sources**: 4 (Local Review (Pre-Push) R4 @ `28e5062` (covers `fa037e4` via bookkeeping), prior rounds R1 @ `4d974c0`, R2 @ `c38ac4d`, R3 @ `23b0a72` (all findings ticked); GitHub: 1 review, 0 inline comments, 0 conversation comments; Copilot failed (quota exhausted))
+**Cross-source confirmations**: 0
+**CI**: all-pass (no checks: the repository has no CI workflow, `.github/workflows/` does not exist; issue #12 proposes one)
+
+Copilot is recorded as failed, not absent and not pending: `copilot-pull-request-reviewer[bot]` posted one COMMENTED review at 17:34:53Z against the head `fa037e4`, 0 inline comments, body "Copilot was unable to review this pull request because the user who requested the review has insufficient remaining quota." That is a quota failure, not a review; nothing in it is triaged. Its `copilot-pull-request-reviewer` check-run on the head (github-actions, completed, conclusion failure) is that same failed run. It is a review signal, not CI: `merge_pr.sh` ignores the Copilot check-run's conclusion (#300), so the `**CI**` line above is unchanged. Copilot is no longer a requested reviewer; a re-request would need quota.
+
+Local timeline. Round 1 (`4d974c0`, changes-requested: 1 must-fix, 5 suggestions), round 2 (`c38ac4d`, 1 must-fix, 2 suggestions) and round 3 (`23b0a72`, 1 must-fix, 1 suggestion) have every box ticked, each fixed in the following Implementation entry (`ab5da91`, `384b735`, `97044a0`); the one deferral (AGENTS.md/CLAUDE.md build blocks without gtests or a test step) is listed in the PR body's gaps for the owner. Round 4 (`28e5062`, entry committed in `27ee35d`) approved with no must-fix and no suggestions. Its only unchecked box is the placeholder "No issues found. LGTM.", which `review_progress.sh sources` returned as a local finding; it states no defect and is carried as nothing. `28e5062..fa037e4` touches only `.agent/work-plans/issue-7/progress.md`, so round 4 covers the head.
+
+Spot-checked at the head: `.claude/skills/` holds only `brand-guidelines` and `build`; `/build/` and `/install/` are ignored by the anchored root rules and the build skill is tracked; the skill's job-limit hint uses `<N>`; the guide's IVS bullet lists the six files with no approval clause (`.agents/README.md:190-204`); no file under `libgz4d/`, `GeoZui4D/` or any `CMakeLists.txt` changed. The PR body carries a Decision summary and a gaps section for the owner.
+
+### Findings
+None open.
+
+### False positives
+None.
