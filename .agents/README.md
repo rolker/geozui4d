@@ -198,9 +198,12 @@ What to know:
   `git rev-parse --short HEAD` and set `GZ4D_COMMIT_COUNT` (used as the
   CPack patch version) and `GZ4D_COMMIT_SHA`. Only `GeoZui4D/main` builds a
   version string from them (`GZ4D_VERSION`, `4.0.<count>-g<sha>`). Without
-  git or a git repository (a source tarball), the count is 0 and the
-  version string is `unknown`; configure does not stop. The repository has
-  no tags, so `git describe` is not used.
+  git or a git repository, the count is 0 and the version string is
+  `unknown`; configure does not stop. The lookup does not check that the
+  repository is this project's: a source tarball unpacked inside another git
+  checkout takes that checkout's count and sha, and a shallow clone counts
+  only the commits it has (1 for `--depth 1`). The repository has no tags,
+  so `git describe` is not used.
 - **The project's own skills** (`.claude/skills/`) include four that
   duplicate agent-workspace skills by name; in a workspace session the bare
   `/plan-task`, `/research`, `/audit-project` and `/brand-guidelines` are

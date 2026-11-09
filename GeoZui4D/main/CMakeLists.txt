@@ -267,6 +267,9 @@ endif()
 
 # Version from git: commit count (used as the CPack patch) and short sha.
 # Falls back to a count of 0 when git or the repository is not available.
+# The repository is not checked to be this project's: a tarball unpacked
+# inside another git checkout takes that checkout's count and sha, and a
+# shallow clone counts only the commits it has.
 set(GZ4D_COMMIT_COUNT 0)
 set(GZ4D_COMMIT_SHA "")
 find_package(Git QUIET)
