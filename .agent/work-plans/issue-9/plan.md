@@ -71,7 +71,7 @@ Stage 1 - configure, build, lookup, enable_testing
    call writes no `CTestTestfile.cmake` at the build root). This is the only
    top-level edit (owner approved); leave the existing call in `libgz4d/cxx`.
 6. **Stage 1 check (fresh worktree)** - `cmake -S . -B build` and
-   `cmake --build build --parallel` succeed with default options; configure
+   `cmake --build build --parallel 8` succeed with default options; configure
    with `-DBUILD_GTESTS=ON` succeeds; `cd build && ctest -N` lists
    `test_libgz4d`. (`ctest --test-dir` needs CMake 3.20, above the 3.14
    minimum, so the plan uses `cd build && ctest` everywhere.)
@@ -126,9 +126,11 @@ build shows it broken; do not edit passing tests.
 
 ## Prior Art
 
-The `Subversion_WC_INFO` block is replaced by the common `git describe`
-idiom (`find_package(Git)`); CMake's `find_package(GTest)` is the standard
-alternative to hand-rolled x
+The `Subversion_WC_INFO` block is replaced by the common git version idiom
+(`find_package(Git)` with `execute_process` running `git rev-list --count
+HEAD` and `git rev-parse --short HEAD`; `git describe` is not used because the
+repository has no tags). CMake's `find_package(GTest)` is the standard
+alternative to hand-rolled `find_path`/`find_library` lookups for GoogleTest.
 
 ## Serves
 
@@ -147,7 +149,7 @@ No change to the design picture (the project keeps no design document).
 | Ask First: top-level `CMakeLists.txt` | One line, `enable_testing()`, approved by the owner on 2026-11-09; nothing else there |
 | Run the build after code changes | Verified in a fresh worktree, not the main checkout |
 | Never modify vendored code | None of the touched files are in Togl, BWidget or rapidxml |
-| Atomic commits, issue refs | Separate commits for stubs, generator, version, gtest lookup, test fixes |
+| Atomic commits, issue refs | Separate commits for stubs, generator, version, gtest lookup, `enable_testing()`, build script, docs |
 
 ## ADR Compliance
 
