@@ -273,3 +273,29 @@ Departure: two commit subjects were lost through a shell heredoc mistake; the tw
 - The build skill runs `scripts/build.sh` plus ctest, so the audit's full build includes the tests (host decision, for the owner's veto).
 - The duplicate `cd build` is fixed in both `AGENTS.md` and `CLAUDE.md`, whose build blocks now match (host decision, for the owner's veto).
 - The work-plans location is recorded as provisional pending rolker/agent_workspace#393.
+
+## Local Review (Pre-Push)
+**Status**: complete
+**When**: 2026-11-09 12:19 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Verdict**: changes-requested
+
+**Branch**: feature/issue-7 at `4d974c0`
+**Base**: main
+**Depth**: Deep (reason: 13 files, +575/-470; AGENTS.md, CLAUDE.md and skill files are governance override triggers)
+**Must-fix**: 1 | **Suggestions**: 5
+**Round**: 1 | **Ship**: continue — round 1: 1 must-fix; first round always re-reviews after fixes
+
+Specialists: static analysis (no profile for `.md`/`.gitignore`, so not checked), governance, plan drift, Claude adversarial (fresh subagent), cross-model Gemini (3 suggestions, all dropped below) and Codex (no issues), both EXIT=0.
+
+Verified by the lead: no `.pre-commit-config.yaml`, hooks dir holds only `*.sample`, `core.hooksPath` unset, so the `git commit-tree` rebuild bypassed nothing; 9ed93bd, 2c3f134 and their rebuilt descendant 3b2005b have their subjects, `Refs #7`, the Co-Authored-By trailer and the agent identity (one cosmetic extra trailing newline). `brand-guidelines/SKILL.md` is byte-identical to the workspace copy. The 14 skills named in `AGENTS.md` are exactly those with `session_scope: both|project`; `research` has none and rolker/agent_workspace#331 is open. `sitrep_checks.sh --root .` parses every row; the Direction line is the owner's wording verbatim; "this guide stands on its own" survives. `.gitignore`: `git check-ignore --no-index` shows `libgz4d/cxx/build/**` and `GeoZui4D/main/build/**` still ignored by the nested `.gitignore` files, `main_refactor/build` and `ng/build` by the root dead-dir rules; README's sub-project builds are out of tree. AGENTS.md/CLAUDE.md build blocks work pasted in order. Nothing gz4d-specific from the four deleted skills is lost except the exact IVS file list (suggestion 3). Configured `build/` has `BUILD_GTESTS=ON` and `ctest -N` lists `test_libgz4d`.
+
+Dropped as false positives: adversarial "109 files become untracked under nested build dirs" (its check used `--exclude-from` with the root file only; the nested `.gitignore` files cover them); Gemini ".hpp missing from the license check" (all four `.hpp` are vendored RapidXML); Gemini "CLAUDE.md build block is drift" (host checkpoint approved it); CLAUDE.md IVS "with explicit approval" vs AGENTS.md Never (pre-existing, outside the owner's grant).
+
+### Findings
+- [ ] (must-fix) Tracked build skill hardcodes `--parallel 8`, contradicting the owner's #9 decision that published commands say the core count (7182a5f); 8 jobs is the agents' local rule. Use a placeholder, e.g. `cmake --build build --parallel <N>` (or `scripts/build.sh --parallel <N>`: the script appends its args and the last `--parallel` wins, checked on CMake 3.28); not `$(nproc)`, which defeats a bullet about limiting jobs — `.claude/skills/build/SKILL.md:57-58`
+- [ ] (suggestion) "(a project audit always includes it)" is false now: the workspace `audit-project` that replaces gz4d's runs no build; drop the parenthetical — `.claude/skills/build/SKILL.md:56`
+- [ ] (suggestion) Name the five IVS files the deleted audit-project listed (`Sv_Matrix4.{h,cpp}`, `Sv_Quaternion.{h,cpp}`, `Sv_Raster.h`); "Sv_Raster" also covers `Sv_Raster.cpp`, which is CCOM Apache-2.0, and the new recency hint says "each IVS file" with no list — `.agents/README.md:190-195`
+- [ ] (suggestion) Skill description still says "Build and optionally install ... verify compilation"; align with the tests it now runs and CLAUDE.md's "Build, test and optionally install" — `.claude/skills/build/SKILL.md:3`
+- [ ] (suggestion) `cmake --install` needs CMake 3.15, above the 3.14 minimum (ADR-0001); new in the skill, pre-existing in `AGENTS.md:70`, `CLAUDE.md:25`, `.agents/README.md:140`; note it or open a follow-up — `.claude/skills/build/SKILL.md:45`
+- [ ] (suggestion) AGENTS.md/CLAUDE.md build blocks configure without gtests and run no tests, unlike the build skill and guide (Gemini and Claude adversarial both raised it); outside the owner's grant, so list it as a gap or follow-up in the PR description — `AGENTS.md:63-74`
