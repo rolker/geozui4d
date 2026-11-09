@@ -53,7 +53,7 @@ gz4d/
 │   ├── objects/              # Scene object types: dxf, GeoData, nodeTypes, ogr, S57, Sonar; MissionPlan and
 │   │                         #   MissionPlanDisplayTypes are present but not built (engine/Scene3D.cpp still includes MissionPlan.h)
 │   ├── utilities/            # Helper sources added to the executable
-│   ├── widgets/              # LightDirector and the Sv_* IVS-copyright files (do not modify)
+│   ├── widgets/              # LightDirector and the Sv_* widgets; six Sv_* files are protected (see Common Pitfalls)
 │   ├── Togl/                 # VENDORED: Tcl/Tk OpenGL widget, built as gz_togl (do not modify)
 │   ├── Togl2.0/              # VENDORED: newer Togl; present but not referenced by CMake (do not modify)
 │   ├── BWidget-1.7.0/        # VENDORED: Tcl/Tk widget set, installed as scripts (do not modify)
