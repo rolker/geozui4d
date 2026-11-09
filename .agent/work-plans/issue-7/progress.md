@@ -173,3 +173,60 @@ Two host decisions, listed for the owner's veto: (a) the build skill, when commi
 **Plan**: `.agent/work-plans/issue-7/plan.md` at `48e7b4d`
 
 Revision after plan review 14c7620: conditional workspace-skill wording (research gap named), provisional work-plans convention, corrected .gitignore reasoning, build skill pointed at scripts/build.sh, cd build fix in AGENTS.md, IVS recency hint, dependency rule, README layout and date.
+
+## Plan Review
+**Status**: complete
+**When**: 2026-11-09 12:06 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Verdict**: ready
+
+**Issue**: #7 — Agent-workspace readiness: remove duplicated skills, port gz4d conventions to AGENTS.md, track the build skill, accept .agent/work-plans/
+**Plan**: `.agent/work-plans/issue-7/plan.md` at `48e7b4d`
+**Branch**: `feature/issue-7`
+
+Round 2. This round checks that the revision carries the round-1 Plan Review (14c7620: one must-fix, seven suggestions) and the host's two decisions (build skill points at `scripts/build.sh`; duplicate `cd build` fixed in `AGENTS.md`), and that it adds no new problem. The owner's checkpoint decisions are not re-opened.
+
+### Evaluation
+
+| Dimension | Verdict | Notes |
+|---|---|---|
+| Scope | Good | Unchanged: one PR of about 8 commits, docs, skill files and `.gitignore` only, within the owner's Ask First grant plus the two host decisions listed for his veto. |
+| Issue alignment | Good | All eight round-1 items are carried (table below). Serves: "The goal of staying usable with or without the workspace (`docs/roadmap.md`); gz4d has no separate design document." |
+| File targeting | Good | The same stale references are covered. Two leftovers are described in findings 2 and 3. |
+| Consequences | Good | The `.gitignore` row is now correct. In this worktree `git check-ignore -v` gives `.gitignore:2:build/` for the skill. `libgz4d/.gitignore` and `GeoZui4D/main/.gitignore` each carry `build/`. |
+| Principle alignment | Good | The false `research` claim is gone. Step 6 still offers an unconditional alternative (finding 1). |
+| ADR compliance | Good | Unchanged: gz4d 0002 and 0003 are cited, and workspace 0013 is covered by the work-plans convention. |
+| ROS conventions | N/A | Not a ROS project. |
+
+### Round-1 items, checked against the revised plan
+
+| # | Item | Carried? |
+|---|---|---|
+| 1 (must-fix) | No false claim about `research`; workspace wording conditional | Yes. Steps 7 and 8 are conditional ("when this repository is worked from the agent workspace") and name the `research` gap with rolker/agent_workspace#331. The step 7 list of 14 skills matches every skill with `session_scope: both` or `project` in `$WS_ROOT/.claude/skills/*/SKILL.md` (workspace `main`, clean). `research` has no `session_scope`. |
+| 2 | Work-plans convention provisional | Yes. Step 7 cites rolker/agent_workspace#393 and the roadmap Deferral row, which exists at `docs/roadmap.md` L40. |
+| 3 | `.gitignore` reasoning | Yes. Step 1 and the Consequences row now name the nested build dirs and the nested `.gitignore` files. |
+| 4 | Build skill vs test suite | Yes, by host decision (a). The plan's account of `scripts/build.sh` is accurate: `-DBUILD_GTESTS=ON`, builds all targets, tests via `cd build && ctest --output-on-failure`. |
+| 5 | Build-step text in `AGENTS.md`/`CLAUDE.md` | Partly. `AGENTS.md` is fixed by host decision (b), but `CLAUDE.md` is not mentioned (finding 2). |
+| 6 | Recency hint covers IVS files | Yes (step 5). |
+| 7 | Dependencies in the CMake build-impact rule | Yes (step 5). |
+| 8 | Layout diagram, verified date, "this guide stands on its own" | Yes (step 6). The phrase matches the roadmap L33 check verbatim. |
+
+### Findings
+
+1. **[Principle alignment, suggestion]** Step 6 still lets the implementer replace the `.agents/README.md` "project's own skills" bullet (L210-214) with "one line saying the loop skills come from the workspace". This is the unconditional wording that round 1 removed from steps 7 and 8, and it would go into the guide that "stands on its own" (L12-17). Delete the bullet, or use step 7's conditional wording with the `research` gap.
+2. **[Issue alignment, suggestion]** `CLAUDE.md` Build Commands (L20-29) has the same duplicate `cd build` as `AGENTS.md`. Its Run line, `./install/bin/GeoZui4D`, is also wrong once the shell is in `build/`. Because `CLAUDE.md` imports `AGENTS.md`, the two blocks will disagree after step 7. Fix it in step 8 on the same footing as host decision (b), or list it as a gap in the PR.
+3. **[File targeting, suggestion]** Two small items:
+   - Step 2 should say what the skill's `--install` mode becomes. `scripts/build.sh` does not install, so the install step needs the repo-root form `cmake --install build --prefix install`.
+   - `.agents/README.md` L7-10 says "The rules agents must follow are in `AGENTS.md` ... This file says what the code is and where to look". Once the conventions live in the guide (the reworded Direction line), that text is wrong. Adjust it in step 6.
+4. **[Principle alignment, suggestion]** Step 10 skips the build because no source or CMake file changes. Step 2 does rewrite the build skill's commands, though. Run the rewritten commands once (`scripts/build.sh --parallel 8`, then `cd build && ctest --output-on-failure`), so the skill is checked before it is committed.
+
+### Summary
+
+The revision carries the must-fix and all seven round-1 suggestions, and it implements both host decisions accurately. The four remaining items are wording and verification details that can be handled during implementation. The plan is ready.
+
+### Recommended Actions
+
+- [ ] Step 6: delete the "project's own skills" bullet, or reword it conditionally like step 7.
+- [ ] Fix or record the `CLAUDE.md` Build Commands block (duplicate `cd build`, Run path).
+- [ ] State the build skill's install command, and adjust `.agents/README.md` L7-10 to match the new split.
+- [ ] Run the rewritten build skill's commands once before committing it.
