@@ -351,3 +351,30 @@ Dropped: Gemini's stateful `cd` in the AGENTS.md/CLAUDE.md blocks (labelled per 
 - [x] (must-fix) The guide now says `Sv_Raster.cpp` "is not one of them", narrowing the AGENTS.md/CLAUDE.md Never rule ("Sv_Raster", no extension) on header evidence that does not hold: `Sv_Raster.cpp` never had an IVS line, and its CCOM Apache-2.0 header came from the blanket relicensing commit 11a46d7, not from an owner ruling. Drop that sentence and list `Sv_Raster.cpp` with the others as covered by the Never rule (the conservative reading), leaving whether it is truly IVS for the owner (it arose from the round-1 suggestion's wording) — `.agents/README.md:190-195`
 - [x] (suggestion) The layout comment still calls all `Sv_*` files "IVS-copyright files", which contradicts the explicit list; Sv_Pointer, Sv_Slider3, Sv_Standards and Sv_Widgets carry CCOM Apache-2.0. Point at the list instead — `.agents/README.md:56`
 - [x] (suggestion) "as part of any audit: this project's rule" reads as a fragment; e.g. "Run the full build, with the tests, as part of any audit of this project" — `.claude/skills/build/SKILL.md:58-59`
+
+## Implementation
+**Status**: complete
+**When**: 2026-11-09 12:28 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Dispatch**: resumed (agent aedb35908270466e6, resume 1 of 3)
+
+**Branch**: feature/issue-7 at `384b735`
+**Addressed**: Local Review (Pre-Push) at `c38ac4d` (2026-11-09 12:25 -05:00)
+**Commits**: `3cfbde3`, `edba0a2`, `384b735`
+
+### Actions
+- [x] (must-fix) Guide lists six protected files (`Sv_Matrix4.h`, `Sv_Matrix4.cpp`, `Sv_Quaternion.h`, `Sv_Quaternion.cpp`, `Sv_Raster.h`, `Sv_Raster.cpp`), the conservative reading of the AGENTS.md Never entry "Sv_Raster". Header facts stated neutrally and checked: the four Matrix4/Quaternion files carry the IVS line; `Sv_Raster.h` has no copyright header; `Sv_Raster.cpp`'s CCOM Apache-2.0 header came from `11a46d7` (2026-03-11, relicensing), and `git log -p` finds no IVS line in its history. The Sv_Raster origin is left to the owner; "is not one of them" dropped; recency hint says "the six files above" — `.agents/README.md:190-203` (`3cfbde3`)
+- [x] (suggestion) Layout comment now "LightDirector and the Sv_* widgets; six Sv_* files are protected (see Common Pitfalls)"; checked that Sv_Pointer, Sv_Slider3, Sv_Standards and Sv_Widgets carry the Apache-2.0 header — `.agents/README.md:56` (`edba0a2`)
+- [x] (suggestion) Audit rule reads "Run the full build, with the tests, as part of any audit of this project" — `.claude/skills/build/SKILL.md:58` (`384b735`)
+
+Verification: `sitrep_checks.sh --root .` exit 0, all nine rows parse; "this guide stands on its own" still verbatim at `.agents/README.md:16`. No build: text-only changes.
+
+### Decision summary
+- Conventions live in `.agents/README.md`; `AGENTS.md` points at them and does not repeat them (owner).
+- The four duplicate skills are removed; the workspace `research` skill does not reach project sessions while rolker/agent_workspace#331 is open, stated in `AGENTS.md` and `CLAUDE.md` (owner accepted the gap). No claim about skill shadowing is made.
+- The build skill runs `scripts/build.sh` plus ctest, so the audit's full build includes the tests (host decision, for the owner's veto); its job-limit hint uses a placeholder `<N>`, not a machine-specific number.
+- The duplicate `cd build` is fixed in both `AGENTS.md` and `CLAUDE.md`, whose build blocks now match (host decision, for the owner's veto).
+- The work-plans location is recorded as provisional pending rolker/agent_workspace#393.
+- The guide treats six widget files as protected, `Sv_Raster.cpp` included, reading the Never entry "Sv_Raster" conservatively; whether the two `Sv_Raster` files share the IVS origin is the owner's to settle (host decision, for the owner's veto).
+- Gap for the PR description: the AGENTS.md and CLAUDE.md build blocks still omit -DBUILD_GTESTS=ON and the test step; a follow-up, since editing them further is outside this issue's approval.
+- Gap for the PR description: the same two blocks' `cmake --install` needs CMake 3.15, above the 3.14 minimum (ADR-0001), unnoted there for the same reason.
