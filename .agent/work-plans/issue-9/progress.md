@@ -127,3 +127,17 @@ The structure is sound, the scope fits in one PR, and stage 2 is a build-file ch
 - [ ] Add `libgtest-dev` to the README's Ubuntu prerequisite list in step 9.
 - [ ] Add `.agents/README.md` (lines 144-160, 196-205) to Files to Change.
 - [ ] Optional: make the README test step work on CMake older than 3.20; check `RESULT_VARIABLE` in the git block; prefer `find_package(GTest)`; leave passing tests unchanged.
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-09 10:10 -05:00
+**By**: Claude Code Agent (claude-fable-5-1)
+**Decided-by**: host (plan review verdict needs-work with four must-fix corrections to the plan text, none structural and none changing scope; /orchestrator's table lets the host answer revise at plan)
+**After**: plan
+**Decision**: revise
+
+The Plan Review (465ab4c) found four must-fix corrections and four suggestions, all mechanism. The reviewer also built test_libgz4d by hand from the nine unchanged sources: all 23 tests compiled and passed, so stage 2 needs no library changes and nothing goes back to the owner on scope.
+
+Host decision on must-fix 2 (what replaces the Subversion revision), listed for the owner's veto: the version patch becomes the commit count (`git rev-list --count HEAD`), an integer that grows like the old revision did, so CPack's `4.0.<patch>` keeps its shape; `gz4d_version` becomes `4.0.<count>-g<short sha>` from `git describe --always`; when git is missing or the tree is not a repository, both fall back to the existing `unknown` and patch 0, checking RESULT_VARIABLE and setting WORKING_DIRECTORY (suggestion 6). The repository has no tags, so a bare `git describe` is not usable on its own.
+
+The plan-task re-run carries the four must-fix items (skip CMakeFiles in both genModules and genBoostPython of gen_cmake.py; the version scheme above; libgtest-dev added to the README's Ubuntu package list; .agents/README.md lines 144-160 and 196-205 added to Files to Change) and the four suggestions (ctest step compatible with CMake 3.14, `cd build && ctest`; the git describe fallback above; find_package(GTest); do not edit tests that already pass).
