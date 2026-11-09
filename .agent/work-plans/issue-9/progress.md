@@ -80,3 +80,50 @@ The review's other two actions (verify in a fresh worktree, not the main checkou
 **Plan**: `.agent/work-plans/issue-9/plan.md` at `c51d659`
 
 Two stages: (1) remove stub CMakeFiles lines, git-describe version, gtest/gtest.h lookup and top-level enable_testing(), verified in a fresh worktree; (2) make the nine gtest sources compile and pass, with build.sh and README updated. Stage 2 size is unknown.
+
+## Plan Review
+**Status**: complete
+**When**: 2026-11-09 10:12 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Verdict**: needs-work
+
+**Issue**: #9 — A fresh checkout does not configure: stub CMakeFiles subdirectories, Subversion lookup, gtest header name
+**Plan**: `.agent/work-plans/issue-9/plan.md` at `c51d659`
+**Branch**: `feature/issue-9`
+
+### Evaluation
+
+| Dimension | Verdict | Notes |
+|---|---|---|
+| Scope | Good | One PR, two stages. Stage 2 is small: built by hand in the scratchpad (`g++ -std=c++17 -I libgz4d/cxx/include`, `-lgtest -lgtest_main`, boost date_time/system/program_options/thread, `-pthread`), all nine sources compile with no change and all 23 tests pass (GCC, gtest from `libgtest-dev`). No library changes are needed; the Checkpoint's "large changes" trigger does not fire. |
+| Issue alignment | Good | All three defects, the `enable_testing()` addition, and both acceptance lines are covered. The Issue Review's actions (fresh worktree, two stages, owner approval, CI follow-up) are addressed. Serves: Project goal "usable on modern systems" (`docs/roadmap.md`), Direction line "A fresh clone configures, builds and runs its tests by hand (#9)". The project has no design document. Checked: both strings are in `docs/roadmap.md` (lines 5, 29). |
+| File targeting | Needs work | `gen_cmake.py` fix names the wrong function for 18 of 19 stubs (finding 1). `.agents/README.md` is missing (finding 4). All 19 `add_subdirectory(CMakeFiles)` files are under `libgz4d/cxx/src/x3d` and `libgz4d/cxx/boost.python/`; none is vendored (checked with `git grep -l`). |
+| Consequences | Needs work | CPack reads `SUBVERSION_REVISION` (finding 2); `BUILD_GTESTS=ON` in `scripts/build.sh` makes `libgtest-dev` a hard prerequisite the README does not list (finding 3); `.agents/README.md` documents all three defects as current (finding 4). |
+| Principle alignment | Good | Only `enable_testing()` at top level (owner-approved); no other top-level edit. Verification in a fresh worktree (this worktree has no `CMakeFiles/` or `.svn` directories outside `build/`). No vendored or IVS files touched. Prior art stated. Design picture: none kept. |
+| ADR compliance | Good | ADR-0001: `find_package(Git)`, `execute_process`, `find_package(GTest)` are all available in CMake 3.14. ADR-0002/0003 not triggered. |
+| ROS conventions | N/A | Not a ROS project. |
+
+Checked against source: a top-level `enable_testing()` is needed. A minimal 3.14-minimum project with `enable_testing()`/`add_test()` only in a subdirectory writes no `CTestTestfile.cmake` at the build root, and `ctest --test-dir b -N` reports 0 tests. With `enable_testing()` added at the top level it reports 1 (CMake 3.28.3). `socket.cpp` only resolves `http://localhost`, so it needs no network.
+
+### Findings
+
+1. **[File targeting] must-fix**: Step 2 changes only `genModules` in `gen_cmake.py`, but 18 of the 19 stubs are under `boost.python/` and come from `genBoostPython` (lines 149-213), which has its own `isdir` loop at line 160 and writes `add_subdirectory(sub_path)` at line 213. Apply the skip to both functions, ideally with one shared predicate.
+2. **[Consequences] must-fix**: Step 3 says `SUBVERSION_REVISION` is unused in `libgz4d/cxx`, but `libgz4d/cxx/CMakeLists.txt:482` and `GeoZui4D/main/CMakeLists.txt:321` set `CPACK_PACKAGE_VERSION_PATCH` from it, and both feed `CPACK_PACKAGE_FILE_NAME`. The plan must say what the CPack patch becomes in both files, for example the `git rev-list --count HEAD` result or `0`. It must also say what form `gz4d_version` takes. The repository has no tags, so `git describe --tags --always` gives a bare sha (`acad6a8`) where it used to give `4.0.<rev>`. Something like `4.0-g<sha>`, falling back to `4.0-unknown`, keeps the old shape.
+3. **[Consequences] must-fix**: Step 9 adds `-DBUILD_GTESTS=ON` to `scripts/build.sh`, and a missing gtest is a `FATAL_ERROR`. So the registered build command fails on any machine without `libgtest-dev`, which the README's Ubuntu prerequisite list (`README.md:90-106`) does not include. Add `libgtest-dev` to that list explicitly. "Update README if it disagrees" does not cover the prerequisites.
+4. **[Consequences] must-fix**: `.agents/README.md` describes the defects this plan fixes as current: lines 144-160 (gtest cannot configure, `build.sh` leaves it off, no top-level `enable_testing()`, fresh clone does not configure) and lines 196-205 (the version comes from Subversion and is used as the CPack patch). Add it to Files to Change.
+5. **[Issue alignment] suggestion**: The acceptance and README test commands use `ctest --test-dir`, which arrived in CMake 3.20, while the project minimum is 3.14 (ADR-0001). The README has no Ubuntu version, and Ubuntu 20.04 ships 3.16. The issue's acceptance line is fine to keep, but the README's test step should use `cd build && ctest --output-on-failure` or state that `--test-dir` needs CMake 3.20 or later.
+6. **[Approach] suggestion**: In the `git describe` block, check `RESULT_VARIABLE` (not only empty output) and set `WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}`, so a tarball or a git-less machine gets the fallback cleanly. `build/` is in `.gitignore`, so `--dirty` will not fire on build output.
+7. **[Approach] suggestion**: Prefer `find_package(GTest)` in step 4. Its imported target brings Threads along, which removes the need for the `GTESTS_NEED_PTHREADS` option (default OFF), and `libgtest.a` needs pthread on older glibc.
+8. **[Approach] suggestion**: Step 8's expectation that the exact `EXPECT_EQ` on `347.7` in `angle.cpp` will fail did not hold: it passes. Do not change tests that pass. Edit only what the real CMake build actually shows to be broken.
+
+### Summary
+
+The structure is sound, the scope fits in one PR, and stage 2 is a build-file change, not a library rewrite: all 23 tests compile and pass as they stand. Four corrections are needed before implementation. They are the generator function, the CPack and version consequences, the `libgtest-dev` prerequisite and `.agents/README.md`. Each is a small plan edit.
+
+### Recommended Actions
+
+- [ ] Extend the `gen_cmake.py` skip to `genBoostPython` as well as `genModules`.
+- [ ] State the new `gz4d_version` form and what `CPACK_PACKAGE_VERSION_PATCH` becomes in both CMakeLists files; drop the claim that `SUBVERSION_REVISION` is unused.
+- [ ] Add `libgtest-dev` to the README's Ubuntu prerequisite list in step 9.
+- [ ] Add `.agents/README.md` (lines 144-160, 196-205) to Files to Change.
+- [ ] Optional: make the README test step work on CMake older than 3.20; check `RESULT_VARIABLE` in the git block; prefer `find_package(GTest)`; leave passing tests unchanged.
