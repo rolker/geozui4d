@@ -323,3 +323,25 @@ Dropped (below threshold): the adversarial reviewer's notes that `GTest_ROOT`/`C
 **Decision**: publish
 
 Round-2 Local Review (Pre-Push) (a1920df, reviewing 68730e3) approved with no must-fix and no suggestions; all four round-1 suggestions verified fixed against the files; Gemini and Codex both completed with no findings. The host pushes the branch and opens the pull request with the Decision summary from the Implementation entries, its last clause brought up to date with the owner's core-count decision.
+
+## Integrated Review
+**Status**: complete
+**When**: 2026-11-09 11:22 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+
+**PR**: #14 at `4e57c56`
+**Sources**: 2 (Local Review (Pre-Push) R2 @ `68730e3` (covers `4e57c56` via bookkeeping), Local Review (Pre-Push) R1 @ `09157ea` (prior round; all four suggestions ticked); GitHub: 0 reviews, 0 inline comments, 0 conversation comments; Copilot absent)
+**Cross-source confirmations**: 0
+**CI**: all-pass (no checks: the repository has no CI workflow, `.github/workflows/` does not exist; issue #12 proposes one)
+
+Copilot is recorded as absent, not failed and not pending: it reviewed the previous pull request in this repository within nine minutes, but on #14 it posted nothing in over twenty minutes, is not a requested reviewer, and has no `copilot-pull-request-reviewer` check-run. `fetch_pr_reviews.sh` at `4e57c56` (11:22): 0 reviews, 0 conversation comments, 0 check-runs.
+
+Local timeline. Round 1 (reviewed `09157ea`, entry committed in `7f2a84e`) approved with four suggestions (README Test block run from the repository root, git version fallback text qualified, GTest_DIR advice limited to CMake 3.20+, core count in published commands per the owner's checkpoint decision); all four are ticked in that entry and were fixed in 785ee42, 7738a1f, e78b5b2, 7182a5f (Implementation entry at `7182a5f`). Round 2 (reviewed `68730e3`, entry committed in `a1920df`) re-read the whole branch and confirmed each fix against the files, with no must-fix and no suggestions. Its only unchecked box is the placeholder "No issues found. LGTM.", which `review_progress.sh sources` returned as a local finding; it states no defect and is carried as nothing. `68730e3..4e57c56` touches only `.agent/work-plans/issue-9/progress.md`, so round 2 covers the head.
+
+Spot-checked at the head: no `add_subdirectory(CMakeFiles)` remains in any CMakeLists.txt; no Subversion lookup remains in either CMakeLists; `find_package(GTest REQUIRED)` with the imported targets in `libgz4d/cxx/CMakeLists.txt`; the top-level edit is `enable_testing()`; `scripts/build.sh` configures with `-DBUILD_GTESTS=ON` and builds with main's `--parallel "$(nproc 2>/dev/null || echo 4)"`. The PR body carries a Decision summary.
+
+### Findings
+None open.
+
+### False positives
+None.
