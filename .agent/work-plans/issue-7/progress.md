@@ -299,3 +299,31 @@ Dropped as false positives: adversarial "109 files become untracked under nested
 - [x] (suggestion) Skill description still says "Build and optionally install ... verify compilation"; align with the tests it now runs and CLAUDE.md's "Build, test and optionally install" — `.claude/skills/build/SKILL.md:3`
 - [x] (suggestion) `cmake --install` needs CMake 3.15, above the 3.14 minimum (ADR-0001); new in the skill, pre-existing in `AGENTS.md:70`, `CLAUDE.md:25`, `.agents/README.md:140`; note it or open a follow-up — `.claude/skills/build/SKILL.md:45`
 - [x] (suggestion) AGENTS.md/CLAUDE.md build blocks configure without gtests and run no tests, unlike the build skill and guide (Gemini and Claude adversarial both raised it); outside the owner's grant, so list it as a gap or follow-up in the PR description — `AGENTS.md:63-74` (deferred: editing the AGENTS.md and CLAUDE.md build blocks further is outside the owner's grant; listed as a gap for the PR description in the Implementation entry's Decision summary)
+
+## Implementation
+**Status**: complete
+**When**: 2026-11-09 12:24 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+
+**Branch**: feature/issue-7 at `ab5da91`
+**Addressed**: Local Review (Pre-Push) at `4d974c0` (2026-11-09 12:19 -05:00)
+**Commits**: `103b7e0`, `01f6350`, `600c85d`, `783e2f5`, `cbcc645`, `ab5da91`
+
+### Actions
+- [x] (must-fix) Hardcoded `--parallel 8` replaced by `scripts/build.sh --parallel <N>` (the script passes its arguments to the build step; the last `--parallel` wins) and a sentence to pick N for the machine — `.claude/skills/build/SKILL.md:60-63` (`103b7e0`)
+- [x] (suggestion) "(a project audit always includes it)" dropped; the rule now reads as this project's own: full build, with the tests, in any audit — `.claude/skills/build/SKILL.md:58` (`01f6350`)
+- [x] (suggestion) Guide names the five IVS files (`Sv_Matrix4.h`, `Sv_Matrix4.cpp`, `Sv_Quaternion.h`, `Sv_Quaternion.cpp`, `Sv_Raster.h`), says `Sv_Raster.cpp` is CCOM Apache-2.0 and not one of them, and the recency hint refers to "the five IVS files above". Checked against the files: the first four carry the IVS copyright; `Sv_Raster.h` has no copyright header at all (the guide says so) — `.agents/README.md:190-198` (`600c85d`)
+- [x] (suggestion) Description now "Build, test and optionally install GeoZui4D ... verify that it compiles and the tests pass", matching CLAUDE.md — `.claude/skills/build/SKILL.md:3` (`783e2f5`)
+- [x] (suggestion) CMake 3.15 note for `cmake --install` added to the skill and as a trailing comment in the guide's by-hand block; AGENTS.md and CLAUDE.md left unchanged (Ask First files; the owner's grant did not cover it) — `.claude/skills/build/SKILL.md:48`, `.agents/README.md:140` (`cbcc645`)
+- [x] (suggestion) AGENTS.md/CLAUDE.md build blocks without gtests or a test step — `AGENTS.md:63-74` (deferred: editing those blocks further is outside the owner's grant; listed below as a gap for the PR description) (`ab5da91`)
+
+Verification: `grep -n parallel .claude/skills/build/SKILL.md` shows only `<N>`, no number; `sitrep_checks.sh --root .` exit 0, all nine rows parse (the #7 line `false` while the issue is open). No build: text-only changes. No file under `libgz4d/`, `GeoZui4D/` or any `CMakeLists.txt` changed.
+
+### Decision summary
+- Conventions live in `.agents/README.md`; `AGENTS.md` points at them and does not repeat them (owner).
+- The four duplicate skills are removed; the workspace `research` skill does not reach project sessions while rolker/agent_workspace#331 is open, stated in `AGENTS.md` and `CLAUDE.md` (owner accepted the gap). No claim about skill shadowing is made.
+- The build skill runs `scripts/build.sh` plus ctest, so the audit's full build includes the tests (host decision, for the owner's veto); its job-limit hint uses a placeholder `<N>`, not a machine-specific number.
+- The duplicate `cd build` is fixed in both `AGENTS.md` and `CLAUDE.md`, whose build blocks now match (host decision, for the owner's veto).
+- The work-plans location is recorded as provisional pending rolker/agent_workspace#393.
+- Gap for the PR description: the AGENTS.md and CLAUDE.md build blocks still omit -DBUILD_GTESTS=ON and the test step; a follow-up, since editing them further is outside this issue's approval.
+- Gap for the PR description: the same two blocks' `cmake --install` needs CMake 3.15, above the 3.14 minimum (ADR-0001), unnoted there for the same reason; and their IVS lines (`AGENTS.md` Never, `CLAUDE.md` IVS section) still say "Sv_Raster", which also covers the Apache-2.0 `Sv_Raster.cpp` (pre-existing).
