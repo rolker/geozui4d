@@ -187,12 +187,15 @@ What to know:
 
 - **Do not modify vendored code**: `GeoZui4D/main/Togl/`, `Togl2.0/`,
   `BWidget-1.7.0/`, `libgz4d/cxx/include/gz4d/util/rapidxml/`.
-- **Never modify the IVS-copyright files** in `GeoZui4D/main/widgets/`
-  (`Sv_Matrix4`, `Sv_Quaternion`, `Sv_Raster`); `AGENTS.md` lists this under
-  Never.
+- **Never modify the IVS files** in `GeoZui4D/main/widgets/`, these five:
+  `Sv_Matrix4.h`, `Sv_Matrix4.cpp`, `Sv_Quaternion.h`, `Sv_Quaternion.cpp`
+  and `Sv_Raster.h`; `AGENTS.md` lists this under Never. The first four
+  carry the Interactive Visualization Systems Inc. copyright; `Sv_Raster.h`
+  has no copyright header. `Sv_Raster.cpp` carries the CCOM Apache-2.0
+  header and is not one of them.
 - **Check that neither list has been touched**:
-  `git log --oneline -5 -- <path>` on each vendored directory and each IVS
-  file shows the commits that last changed it.
+  `git log --oneline -5 -- <path>` on each vendored directory and each of
+  the five IVS files above shows the commits that last changed it.
 - **`std::filesystem`, never `boost::filesystem`** (ADR-0002). Boost
   Filesystem is no longer linked; a stray use fails at link time.
 - **Headers are `.h`**, even for C++ (four `.hpp` files exist; new headers use `.h`).
