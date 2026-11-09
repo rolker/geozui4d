@@ -207,3 +207,34 @@ All eight items from the first review are carried correctly, and the host's vers
 **Decision**: proceed
 
 The round-2 Plan Review (50ce5ab) found all eight round-1 items carried correctly and the host's version scheme implemented in both CMakeLists files; it tested the GTest::GTest and GTest::Main targets against a 3.14-minimum project on the system libgtest-dev. Six suggestions remain and go into the implement handoff, not back to the plan: limit the stub grep to libgz4d/ so the plan and timeline are never rewritten; also fix .agents/README.md line 137 (ctest --test-dir); the README gets a test step that configures with -DBUILD_GTESTS=ON and runs cd build && ctest; remove message(${GTEST_LIBS}) in libgz4d/cxx/gtest/CMakeLists.txt and drop the unused GTESTS_NEED_PTHREADS option; record which GTestConfig.cmake configure found, since this machine also has GoogleTest 1.13 under ~/.local, or run once with -DGTest_DIR=/usr/lib/x86_64-linux-gnu/cmake/GTest; fix the two plan text slips (Prior Art cut off and still saying git describe; the Principles Self-Check listing a test-fixes commit) in the same pass.
+
+## Implementation
+**Status**: complete
+**When**: 2026-11-09 10:41 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Branch**: feature/issue-9 at `299eef3`
+
+Baseline in this fresh worktree: `cmake -S . -B build` failed, first error `Subversion_WC_INFO` (`svn info .../libgz4d/cxx` E155007), then `add_subdirectory given source "CMakeFiles"` in `src/x3d` and the `boost.python` files.
+
+Changes (one commit each, all Refs #9):
+- `f3c48ea` removed `add_subdirectory(CMakeFiles)` from 19 CMakeLists (grep limited to `libgz4d/`: 1 in `src/x3d`, 18 in `boost.python`).
+- `f1eaffa` `gen_cmake.py`: shared `skipDir()` (CMakeFiles, build*, *.dir, .svn, .git) used in both `genModules` and `genBoostPython`; still Python 2, not run by the build.
+- `38e714b` version from git in `libgz4d/cxx` and `GeoZui4D/main`: `rev-list --count HEAD` and `rev-parse --short HEAD`, `WORKING_DIRECTORY` set, `RESULT_VARIABLE` checked. `GZ4D_VERSION` = `4.0.<count>-g<sha>`, CPack patch = count in both files; outside a repository or without git: `unknown`, patch 0 (checked with a minimal 3.14 project in the scratchpad, both with no repository and with `CMAKE_DISABLE_FIND_PACKAGE_Git=ON`).
+- `fb57672` `find_package(GTest REQUIRED)`, `test_libgz4d` links `GTest::GTest GTest::Main`; `GTESTS_NEED_PTHREADS` option and `message(${GTEST_LIBS})` removed; configure prints `gtest: <GTest_DIR>`. No test source edited.
+- `ec8f942` top-level `CMakeLists.txt`: the single line `enable_testing()`, nothing else.
+- `84b7432` plan text: Prior Art completed (rev-list/rev-parse, not git describe), "test fixes" commit dropped from the Self-Check, stage 1 check uses `--parallel 8`.
+- `69a7b9c` `scripts/build.sh`: `-DBUILD_GTESTS=ON`, `--parallel 8` (was `nproc`), accurate comment.
+- `299eef3` `README.md`: `libgtest-dev` in the Ubuntu list, new Test section (`-DBUILD_GTESTS=ON`, `--parallel 8`, `cd build && ctest --output-on-failure`), `make -j8`. `.agents/README.md`: lines 113, 136-137, 144-160 and 196-204 rewritten to the fixed state.
+
+Verification (this worktree, CMake 3.28.3, all builds 8 jobs):
+- `cmake -S . -B build`: ok. `cmake --build build --parallel 8`: ok (exit 0; existing warnings only, e.g. `-Wreturn-type` in `URI.h:276`, CMP0148).
+- `cmake -S . -B build -DBUILD_GTESTS=ON`: ok; found `/home/roland/.local/lib/cmake/GTest/GTestConfig.cmake` (1.13.0). Build ok. `cd build && ctest -N`: `test_libgz4d`, 1 test. `ctest --output-on-failure`: 1 of 1 passed; `test_libgz4d` itself: 23 tests from 9 suites passed.
+- Final acceptance in a brand-new detached worktree at `299eef3` (scratchpad, since removed): `cmake -S . -B build -DGTest_DIR=/usr/lib/x86_64-linux-gnu/cmake/GTest`, then `scripts/build.sh`: ok; found `/usr/lib/x86_64-linux-gnu/cmake/GTest/GTestConfig.cmake` (1.14.0, the system libgtest-dev); version `4.0.74-g299eef3`. `cd build && ctest --output-on-failure`: 1 of 1 passed (23 of 23 gtest cases).
+
+Departures: `scripts/build.sh` now builds with 8 jobs instead of `nproc` (owner direction relayed by the coordinator, after an earlier unbounded build was OOM-killed). `AGENTS.md`, `CLAUDE.md` and `.claude/skills/audit-project/SKILL.md` still say `make -j$(nproc)`; they are instruction files (Ask First) and were not touched. `.agents/README.md:130` still names the adapter's registered test command `ctest --test-dir build`, which is the workspace's setting, not changed here.
+
+### Decision summary
+- Version from git commit count and short sha (`4.0.<count>-g<sha>`, CPack patch = count), with `unknown`/0 fallback; no tags, so no `git describe`.
+- GoogleTest through `find_package(GTest)` and its imported targets; the pthreads option is gone.
+- `enable_testing()` at the top level is the only top-level edit; tests run with `cd build && ctest` (3.14-compatible).
+- `scripts/build.sh` enables the gtest suite, so `libgtest-dev` is a documented prerequisite; builds use 8 jobs.
