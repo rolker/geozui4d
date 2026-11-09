@@ -103,16 +103,32 @@ sudo apt install \
   libavformat-dev libavcodec-dev libavutil-dev \
   libvorbis-dev \
   libbluetooth-dev \
-  libspnav-dev
+  libspnav-dev \
+  libgtest-dev
 ```
+
+`libgtest-dev` is needed only for the tests (`-DBUILD_GTESTS=ON`, which
+`scripts/build.sh` turns on).
 
 ### Build
 
 ```sh
 mkdir -p build && cd build
 cmake ..
-make -j$(nproc)
+make -j8
 ```
+
+### Test
+
+The libgz4d unit tests (GoogleTest) are off by default. To build and run them:
+
+```sh
+cmake -S . -B build -DBUILD_GTESTS=ON
+cmake --build build --parallel 8
+cd build && ctest --output-on-failure
+```
+
+`scripts/build.sh` runs the first two steps.
 
 ### Install and Run
 
@@ -132,7 +148,7 @@ The sub-projects can still be built independently if needed.
 mkdir -p /tmp/gz4d-libgz4d-build && cd /tmp/gz4d-libgz4d-build
 cmake /path/to/gz4d/libgz4d/cxx \
   -Dais_INCLUDE_DIR=NOTFOUND -Dais_LIBRARY=NOTFOUND
-make -j$(nproc)
+make -j8
 ```
 
 The AIS module is disabled above because the current libais API has diverged.
@@ -144,7 +160,7 @@ mkdir -p /tmp/gz4d-app-build && cd /tmp/gz4d-app-build
 cmake /path/to/gz4d/GeoZui4D/main \
   -Dgz4d_INCLUDE_DIR=/path/to/gz4d/libgz4d/cxx/include \
   -Dgz4d_x3d_LIBRARY=/tmp/gz4d-libgz4d-build/src/x3d/libgz4d_x3d.so
-make -j$(nproc)
+make -j8
 ```
 
 #### Install and Run
