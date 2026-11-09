@@ -9,7 +9,6 @@ if(PNG_FOUND AND TIFF_FOUND AND JPEG_FOUND)
   install(TARGETS boost.python_image_Image.cpp LIBRARY DESTINATION lib/python2.7/dist-packages/gz4d/image RUNTIME DESTINATION lib/python2.7/dist-packages/gz4d/image)
 
   install(FILES __init__.py DESTINATION lib/python2.7/dist-packages/gz4d/image)
-  add_subdirectory(CMakeFiles)
 else()
   message("skipping boost package image")
     message("    PNG_FOUND ${PNG_FOUND}")

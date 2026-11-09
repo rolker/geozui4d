@@ -8,4 +8,3 @@ set_target_properties(boost.python_utilities_Time.cpp PROPERTIES INSTALL_RPATH "
 install(TARGETS boost.python_utilities_Time.cpp LIBRARY DESTINATION lib/python2.7/dist-packages/gz4d/utilities RUNTIME DESTINATION lib/python2.7/dist-packages/gz4d/utilities)
 
 install(FILES __init__.py DESTINATION lib/python2.7/dist-packages/gz4d/utilities)
-add_subdirectory(CMakeFiles)

@@ -9,7 +9,6 @@ if(GDAL_FOUND)
   install(TARGETS boost.python_s57_S57.cpp LIBRARY DESTINATION lib/python2.7/dist-packages/gz4d/s57 RUNTIME DESTINATION lib/python2.7/dist-packages/gz4d/s57)
 
   install(FILES __init__.py DESTINATION lib/python2.7/dist-packages/gz4d/s57)
-  add_subdirectory(CMakeFiles)
 else()
   message("skipping boost package s57")
     message("    GDAL_FOUND ${GDAL_FOUND}")

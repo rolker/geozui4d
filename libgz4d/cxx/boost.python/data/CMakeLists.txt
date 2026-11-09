@@ -15,6 +15,5 @@ set_target_properties(boost.python_data_binary.cpp PROPERTIES INSTALL_RPATH "$OR
 install(TARGETS boost.python_data_binary.cpp LIBRARY DESTINATION lib/python2.7/dist-packages/gz4d/data RUNTIME DESTINATION lib/python2.7/dist-packages/gz4d/data)
 
 install(FILES __init__.py DESTINATION lib/python2.7/dist-packages/gz4d/data)
-add_subdirectory(CMakeFiles)
 add_subdirectory(nmea)
 add_subdirectory(test)

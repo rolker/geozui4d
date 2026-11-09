@@ -8,4 +8,3 @@ set_target_properties(boost.python_axis_Ocr.cpp PROPERTIES INSTALL_RPATH "$ORIGI
 install(TARGETS boost.python_axis_Ocr.cpp LIBRARY DESTINATION lib/python2.7/dist-packages/gz4d/axis RUNTIME DESTINATION lib/python2.7/dist-packages/gz4d/axis)
 
 install(FILES __init__.py DESTINATION lib/python2.7/dist-packages/gz4d/axis)
-add_subdirectory(CMakeFiles)

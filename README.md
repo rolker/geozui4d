@@ -103,8 +103,12 @@ sudo apt install \
   libavformat-dev libavcodec-dev libavutil-dev \
   libvorbis-dev \
   libbluetooth-dev \
-  libspnav-dev
+  libspnav-dev \
+  libgtest-dev
 ```
+
+`libgtest-dev` is needed only for the tests (`-DBUILD_GTESTS=ON`, which
+`scripts/build.sh` turns on).
 
 ### Build
 
@@ -113,6 +117,20 @@ mkdir -p build && cd build
 cmake ..
 make -j$(nproc)
 ```
+
+### Test
+
+The libgz4d unit tests (GoogleTest) are off by default. To build and run
+them, from the repository root (`cd ..` first if you are still in `build/`
+from the Build step):
+
+```sh
+cmake -S . -B build -DBUILD_GTESTS=ON
+cmake --build build --parallel "$(nproc)"
+(cd build && ctest --output-on-failure)
+```
+
+`scripts/build.sh` runs the first two steps.
 
 ### Install and Run
 

@@ -57,4 +57,3 @@ set_target_properties(boost.python_data_nmea_HDG.cpp PROPERTIES INSTALL_RPATH "$
 install(TARGETS boost.python_data_nmea_HDG.cpp LIBRARY DESTINATION lib/python2.7/dist-packages/gz4d/data/nmea RUNTIME DESTINATION lib/python2.7/dist-packages/gz4d/data/nmea)
 
 install(FILES __init__.py DESTINATION lib/python2.7/dist-packages/gz4d/data/nmea)
-add_subdirectory(CMakeFiles)

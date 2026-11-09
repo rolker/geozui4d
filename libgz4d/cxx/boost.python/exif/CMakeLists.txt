@@ -9,7 +9,6 @@ if(exif_FOUND)
   install(TARGETS boost.python_exif_Exif.cpp LIBRARY DESTINATION lib/python2.7/dist-packages/gz4d/exif RUNTIME DESTINATION lib/python2.7/dist-packages/gz4d/exif)
 
   install(FILES __init__.py DESTINATION lib/python2.7/dist-packages/gz4d/exif)
-  add_subdirectory(CMakeFiles)
 else()
   message("skipping boost package exif")
     message("    exif_FOUND ${exif_FOUND}")

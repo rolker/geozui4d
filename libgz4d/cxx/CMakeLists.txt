@@ -393,13 +393,36 @@ if(CMAKE_CROSSCOMPILING)
 endif()
 
 
-find_package(Subversion)
-if(Subversion_FOUND)
-    Subversion_WC_INFO(${CMAKE_CURRENT_SOURCE_DIR} ER)
-    set(SUBVERSION_REVISION ${ER_WC_REVISION})
-    message("revision: ${SUBVERSION_REVISION}")
+# Version from git: commit count (used as the CPack patch) and short sha.
+# Falls back to a count of 0 when git or the repository is not available.
+# The repository is not checked to be this project's: a tarball unpacked
+# inside another git checkout takes that checkout's count and sha, and a
+# shallow clone counts only the commits it has.
+set(GZ4D_COMMIT_COUNT 0)
+set(GZ4D_COMMIT_SHA "")
+find_package(Git QUIET)
+if(GIT_FOUND)
+    execute_process(COMMAND ${GIT_EXECUTABLE} rev-list --count HEAD
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT_VARIABLE gz4d_git_count
+        RESULT_VARIABLE gz4d_git_count_result
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET)
+    execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT_VARIABLE gz4d_git_sha
+        RESULT_VARIABLE gz4d_git_sha_result
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET)
+    if(gz4d_git_count_result EQUAL 0 AND gz4d_git_sha_result EQUAL 0)
+        set(GZ4D_COMMIT_COUNT ${gz4d_git_count})
+        set(GZ4D_COMMIT_SHA ${gz4d_git_sha})
+    endif()
+endif()
+if(GZ4D_COMMIT_SHA)
+    message("commit count: ${GZ4D_COMMIT_COUNT}, commit: ${GZ4D_COMMIT_SHA}")
 else()
-    message("subversion not found")
+    message("git version lookup unavailable; commit count 0")
 endif()
 
 add_subdirectory(include)
@@ -427,26 +450,10 @@ option(BUILD_GTESTS  "Enable gtest testing." OFF)
 
 if(BUILD_GTESTS)
 
-    option(GTESTS_NEED_PTHREADS "Enable if tests need to link agains pthreads" OFF)
-
-    find_path(gtest_INCLUDE_DIR gtest/test.h)
-    find_library(gtest_LIBRARY gtest)
-    find_library(gtest_main_LIBRARY gtest_main)
-
-    if(gtest_INCLUDE_DIR AND gtest_LIBRARY AND gtest_main_LIBRARY)
-        include_directories(${gtest_INCLUDE_DIR})
-        set(GTEST_LIBS ${GTEST_LIBS} ${gtest_LIBRARY} ${gtest_main_LIBRARY})
-    else()
-        message(FATAL_ERROR "gtest not found")
-    endif()
-
-    if(GTESTS_NEED_PTHREADS)
-        find_package(Threads)
-        if(CMAKE_THREAD_LIBS_INIT AND CMAKE_USE_PTHREADS_INIT)
-            set(GTEST_LIBS ${GTEST_LIBS} ${CMAKE_THREAD_LIBS_INIT})
-        else()
-            message(FATAL_ERROR "pthreads not found")
-        endif()
+    # GTest::GTest and GTest::Main carry the include path and Threads.
+    find_package(GTest REQUIRED)
+    if(GTest_DIR)
+        message("gtest: ${GTest_DIR}")
     endif()
 
     enable_testing()
@@ -479,7 +486,7 @@ set(CPACK_PACKAGE_VENDOR "Data Visualization Research Lab, Center for Coastal an
 set(CPACK_PACKAGE_CONTACT "roland@ccom.unh.edu")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
-set(CPACK_PACKAGE_VERSION_PATCH ${SUBVERSION_REVISION})
+set(CPACK_PACKAGE_VERSION_PATCH ${GZ4D_COMMIT_COUNT})
 if(MSVC OR CMAKE_CROSSCOMPILING)
     set(CPACK_GENERATOR "NSIS")
 else()

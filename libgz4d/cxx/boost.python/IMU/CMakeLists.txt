@@ -37,7 +37,6 @@ if(bluetooth_FOUND)
   install(TARGETS boost.python_IMU_BTSource.cpp LIBRARY DESTINATION lib/python2.7/dist-packages/gz4d/IMU RUNTIME DESTINATION lib/python2.7/dist-packages/gz4d/IMU)
 
   install(FILES __init__.py DESTINATION lib/python2.7/dist-packages/gz4d/IMU)
-  add_subdirectory(CMakeFiles)
   add_subdirectory(test)
 else()
   message("skipping boost package IMU")

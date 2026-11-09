@@ -92,4 +92,3 @@ set_target_properties(boost.python_gz4d_Pixel.cpp PROPERTIES INSTALL_RPATH "$ORI
 install(TARGETS boost.python_gz4d_Pixel.cpp LIBRARY DESTINATION lib/python2.7/dist-packages/gz4d/gz4d RUNTIME DESTINATION lib/python2.7/dist-packages/gz4d/gz4d)
 
 install(FILES __init__.py DESTINATION lib/python2.7/dist-packages/gz4d/gz4d)
-add_subdirectory(CMakeFiles)

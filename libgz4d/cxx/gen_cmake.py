@@ -6,10 +6,22 @@
 
 import os
 import glob
+import fnmatch
 import gz4d_deps
 
 
 deps = gz4d_deps.Headers()
+
+# Directories that are build output or version-control metadata, never
+# source modules; generating add_subdirectory() for them breaks a fresh clone.
+SKIP_DIR_PATTERNS = ('CMakeFiles', 'build*', '*.dir', '.svn', '.git')
+
+def skipDir(name):
+    name = os.path.basename(os.path.normpath(name))
+    for pattern in SKIP_DIR_PATTERNS:
+        if fnmatch.fnmatch(name, pattern):
+            return True
+    return False
 
 class FileUpdater:
     def __init__(self,path):
@@ -33,7 +45,7 @@ def genModules(path,mod_name,modules):
 
     sub_modules = []
     for sm in glob.glob(os.path.join(path,'*')):
-        if os.path.isdir(sm):
+        if os.path.isdir(sm) and not skipDir(sm):
             sub_modules.append(sm)
     sub_modules.sort()
 
@@ -158,7 +170,7 @@ def genBoostPython(path):
 
     sub_modules = []
     for sm in glob.glob(os.path.join(path,'*')):
-        if os.path.isdir(sm):
+        if os.path.isdir(sm) and not skipDir(sm):
             sub_modules.append(os.path.basename(sm))
     sub_modules.sort()
 
