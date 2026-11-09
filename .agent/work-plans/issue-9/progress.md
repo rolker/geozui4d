@@ -345,3 +345,24 @@ None open.
 
 ### False positives
 None.
+
+## Integrated Review
+**Status**: complete
+**When**: 2026-11-09 11:34 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Dispatch**: resumed (agent a04e61b75116074c0, resume 1 of 3)
+
+**PR**: #14 at `6c9c559`
+**Sources**: 3 (Copilot R1 @ `6c9c559`, Local Review (Pre-Push) R2 @ `68730e3` (covers `6c9c559` via bookkeeping), prior Integrated Review @ `4e57c56`; GitHub: 1 review, 0 inline comments, 0 conversation comments)
+**Cross-source confirmations**: 0
+**CI**: all-pass (no checks: the repository has no CI workflow, `.github/workflows/` does not exist; issue #12 proposes one)
+
+This entry replaces the previous Integrated Review's "Copilot absent". The owner requested a Copilot review, and it landed at 16:29:39Z against the current head `6c9c559`: a COMMENTED review by `copilot-pull-request-reviewer[bot]`, "Approval recommended ... No open issues", 0 inline comments. Its body only summarises the change file by file, and that summary matches the branch; it raises nothing to triage. The only check-run on the head is Copilot's own `copilot-pull-request-reviewer` (success). It is a review signal, not CI, and `merge_pr.sh` leaves it out of its CI check by name, so the `**CI**` line above is unchanged.
+
+Local timeline: `review_progress.sh sources` at `6c9c559` returns no open local findings. Round 2's placeholder box ("No issues found. LGTM.") is listed as superseded by the Integrated Review at `4e57c56`, which ruled it a non-finding. `68730e3..6c9c559` touches only `.agent/work-plans/issue-9/progress.md`, so round 2's approval (no must-fix, no suggestions) still covers the head. Since the last entry, `progress.md` has gained only that Integrated Review.
+
+### Findings
+None open.
+
+### False positives
+None.
