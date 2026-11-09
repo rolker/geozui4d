@@ -153,3 +153,15 @@ The plan carries out the owner's decisions correctly and lists every stale refer
 - [ ] Record the `AGENTS.md`/`CLAUDE.md` build-step item (including the double `cd build` at L46-49) as out of scope or a follow-up.
 - [ ] Extend the `git log` recency hint to the IVS files, and include new dependencies in the CMake build-impact rule.
 - [ ] Place `.agent/work-plans/` at the top level of the layout diagram, and bump the guide's verified date.
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-09 12:02 -05:00
+**By**: Claude Code Agent (claude-fable-5-1)
+**Decided-by**: host (plan review verdict needs-work with one must-fix wording correction and seven suggestions, none changing scope; /orchestrator's table lets the host answer revise at plan)
+**After**: plan
+**Decision**: revise
+
+Plan Review 14c7620 on plan 8679c61. The plan-task re-run takes the must-fix (AGENTS.md and CLAUDE.md must not claim the research skill reaches gz4d sessions from the workspace while rolker/agent_workspace#331 is open; the "loop skills come from the workspace" sentences apply only when the repository is worked from the workspace) and all seven suggestions: the work-plans convention is marked provisional pending rolker/agent_workspace#393, matching the roadmap deferral; the .gitignore reasoning is corrected (libgz4d/cxx/build/ and GeoZui4D/main/build/ exist and stay ignored through their own nested .gitignore files); the git-log recency hint covers the IVS files too; the build-impact rule also asks about new or changed dependencies; .agent/work-plans/ sits at the top level of the layout diagram, the "checked against the source" date is updated, and the phrase "this guide stands on its own" is kept.
+
+Two host decisions, listed for the owner's veto: (a) the build skill, when committed, has its commands point at scripts/build.sh, the project's tracked build script, so the "full build in any audit" line includes the test suite; this stays within "commit the build skill with the audit note" since the skill otherwise describes a build that skips the tests the project now has. (b) The duplicate `cd build` in AGENTS.md lines 46-49 is fixed in the same AGENTS.md commit; the Issue Review listed the build-step text and the owner approved AGENTS.md edits for the items the review lists.
