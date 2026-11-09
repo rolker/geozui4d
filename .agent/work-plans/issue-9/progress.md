@@ -274,3 +274,20 @@ Dismissed: Gemini's numeric check on rev-list output (result code already checke
 The pre-push Local Review (7f2a84e) approved the branch: 0 must-fix, 4 suggestions, Ship recommended. Suggestion 4 needed the owner: the branch hardcodes 8 build jobs in README.md, scripts/build.sh and the .agents/README.md comment, from his "use 8 for the work in this project" (2026-11-09), while AGENTS.md, CLAUDE.md and the audit skill say -j$(nproc). Asked which the published commands should say, he answered: "Core count in published text". So README.md, scripts/build.sh, the .agents/README.md comment and the plan line go back to $(nproc) / --parallel "$(nproc)"; the three instruction files are untouched; 8 jobs remains the rule for the agents' own builds on this machine only. Because that changes tracked files, the checkpoint is answered address rather than publish, and the fix pass also takes the three documentation suggestions: README.md:126 says the Test block runs from the repository root; the git version text in .agents/README.md:201 is qualified (a tarball unpacked inside another checkout takes that checkout's count and sha; a shallow clone gives patch 1); .agents/README.md:150-152 says the GTest_DIR advice applies on CMake 3.20 and later, with GTEST_ROOT the setting on 3.14 to 3.19.
 
 Also decided by the owner at this checkpoint: open a gz4d issue for URI.h:274 (URI::encode has an empty body and returns nothing), separate from this drive.
+
+## Implementation
+**Status**: complete
+**When**: 2026-11-09 10:57 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+
+**Branch**: feature/issue-9 at `7182a5f`
+**Addressed**: Local Review (Pre-Push) at `09157ea` (2026-11-09 10:49 -05:00)
+**Commits**: 785ee42, 7738a1f, e78b5b2, 7182a5f
+
+### Actions
+- [x] Test block says it runs from the repository root (`cd ..` first if still in `build/`) and runs ctest in a subshell — `README.md:122-131` (785ee42)
+- [x] Git version fallback qualified as a text change, not a CMake change (the owner's checkpoint asked for the qualified sentence): a tarball unpacked inside another git checkout takes that checkout's count and sha, a shallow clone counts only its commits (1 for `--depth 1`); same note added to the comments above the lookup in both CMakeLists files, comment-only — `.agents/README.md:203`, `libgz4d/cxx/CMakeLists.txt:396`, `GeoZui4D/main/CMakeLists.txt:268` (7738a1f)
+- [x] `-DGTest_DIR=...` advice and the `gtest: <GTest_DIR>` message stated for CMake 3.20 and later; on 3.14 to 3.19 FindGTest searches itself and `-DGTEST_ROOT=...` chooses — `.agents/README.md:149-155` (e78b5b2)
+- [x] Owner decision "Core count in published text": README `make -j$(nproc)` (three places) and `cmake --build build --parallel "$(nproc)"`; `scripts/build.sh` back to main's `--parallel "$(nproc 2>/dev/null || echo 4)"` with its comment updated; `.agents/README.md` comment echoes build.sh; plan stage 1 check says `--parallel "$(nproc)"`. AGENTS.md, CLAUDE.md and the audit-project skill untouched — `README.md:118` (7182a5f)
+
+Verification (this worktree, CMake 3.28.3, 8 jobs): `cmake -S . -B build -DBUILD_GTESTS=ON` ok (gtest: `/home/roland/.local/lib/cmake/GTest`, version `4.0.81-g7182a5f`); `cmake --build build --parallel 8` exit 0; `(cd build && ctest --output-on-failure)` 1 of 1 passed; `bash -n scripts/build.sh` ok. No CMake logic changed, so the version-lookup probes were not re-run. Nothing pushed.
