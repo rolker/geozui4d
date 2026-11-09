@@ -409,3 +409,30 @@ Round-2 findings, checked against the files: the six protected files are listed 
 **Decision**: address
 
 Round-3 Local Review (Pre-Push) 453803d: the round-2 fixes hold; one new must-fix in wording, the clause "without the owner's approval" added to the guide's "Never modify the IVS files" bullet, which turns AGENTS.md's hard stop into an Ask First rule (the clause came from the host's own round-2 handoff wording "untouched without approval", so this is the host's slip). One suggestion: the "no IVS line anywhere in its history" claim holds only since the 2026-02-27 import (e76de6a), and the file's "Mark Paton" credit is the reason the origin stays open. Both are a one-pass text fix, cheaper than publishing and fixing in PR mode; the host answers address. The older CLAUDE.md "without explicit approval" wording for the IVS files conflicts with AGENTS.md's Never the same way; that predates this branch and is listed for the owner as a gap in the PR description.
+
+## Implementation
+**Status**: complete
+**When**: 2026-11-09 12:31 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Dispatch**: resumed (agent aedb35908270466e6, resume 2 of 3)
+
+**Branch**: feature/issue-7 at `97044a0`
+**Addressed**: Local Review (Pre-Push) at `23b0a72` (2026-11-09 12:29 -05:00)
+**Commits**: `bd3ace7`, `97044a0`
+
+### Actions
+- [x] (must-fix) "without the owner's approval" dropped from the "Never modify the IVS files" bullet; the six-file list, the header facts and "the owner's to settle" stay — `.agents/README.md:190-191` (`bd3ace7`)
+- [x] (suggestion) The history claim now holds for the git history that begins with the 2026-02-27 import (`e76de6a`), and the bullet cites `Sv_Raster.cpp`'s credit to Mark Paton for "various additions & mods." (checked at `Sv_Raster.cpp:12`) as why the origin stays open; the four IVS files' AUTHOR(S) line "Paton, Mark A." checked too. Bullet rewrapped after the previous edit — `.agents/README.md:190-203` (`97044a0`)
+
+Verification: `sitrep_checks.sh --root .` exit 0, all nine rows parse; "this guide stands on its own" still verbatim at `.agents/README.md:16`. No build: text-only changes.
+
+### Decision summary
+- Conventions live in `.agents/README.md`; `AGENTS.md` points at them and does not repeat them (owner).
+- The four duplicate skills are removed; the workspace `research` skill does not reach project sessions while rolker/agent_workspace#331 is open, stated in `AGENTS.md` and `CLAUDE.md` (owner accepted the gap). No claim about skill shadowing is made.
+- The build skill runs `scripts/build.sh` plus ctest, so the audit's full build includes the tests (host decision, for the owner's veto); its job-limit hint uses a placeholder `<N>`, not a machine-specific number.
+- The duplicate `cd build` is fixed in both `AGENTS.md` and `CLAUDE.md`, whose build blocks now match (host decision, for the owner's veto).
+- The work-plans location is recorded as provisional pending rolker/agent_workspace#393.
+- The guide treats six widget files as protected under AGENTS.md's Never rule, `Sv_Raster.cpp` included, reading the Never entry "Sv_Raster" conservatively; whether the two `Sv_Raster` files share the IVS origin is the owner's to settle (host decision, for the owner's veto).
+- Gap for the PR description: the AGENTS.md and CLAUDE.md build blocks still omit -DBUILD_GTESTS=ON and the test step; a follow-up, since editing them further is outside this issue's approval.
+- Gap for the PR description: the same two blocks' `cmake --install` needs CMake 3.15, above the 3.14 minimum (ADR-0001), unnoted there for the same reason.
+- Gap for the PR description: CLAUDE.md's "without explicit approval" wording for the IVS files conflicts with AGENTS.md's Never; it predates this branch and is the owner's to settle.
