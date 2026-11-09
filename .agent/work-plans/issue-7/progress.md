@@ -98,3 +98,58 @@ Dependency check by the host: rolker/agent_workspace#332 is closed and this proj
 **Plan**: `.agent/work-plans/issue-7/plan.md` at `8679c61`
 
 Nine-step plan in one PR: anchor .gitignore and track the build skill, port the audit-build line, delete the four duplicate skills, fix brand-guidelines, complete the conventions in .agents/README.md, point AGENTS.md at it with the work-plans convention, refresh CLAUDE.md and the roadmap line.
+
+## Plan Review
+**Status**: complete
+**When**: 2026-11-09 12:01 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Verdict**: needs-work
+
+**Issue**: #7 — Agent-workspace readiness: remove duplicated skills, port gz4d conventions to AGENTS.md, track the build skill, accept .agent/work-plans/
+**Plan**: `.agent/work-plans/issue-7/plan.md` at `8679c61`
+**Branch**: `feature/issue-7`
+
+### Evaluation
+
+| Dimension | Verdict | Notes |
+|---|---|---|
+| Scope | Good | One PR of about 8 atomic commits, docs, skill files and `.gitignore` only. It is limited to what the owner approved at the checkpoint. |
+| Issue alignment | Good | It covers all four issue sections and the owner decisions: rules in `.agents/README.md` with a pointer from `AGENTS.md`, `research` removed now, Direction line reworded. Serves: "The goal of staying usable with or without the workspace (`docs/roadmap.md`); gz4d has no separate design document." One Issue Review action is not addressed (finding 5). |
+| File targeting | Good | Every stale reference the removals create is listed. A grep of `CLAUDE.md`, `AGENTS.md`, `.agents/README.md`, `README.md` and `docs/` for plan-task, research, review-pr, audit-project, docs/work-plans, "project's own skills" and "issue #7" finds only `CLAUDE.md` L85-88 and `.agents/README.md` L64, L173-174, L196, L210-214, plus roadmap L34. Steps 5, 6, 8 and 9 cover all of them. |
+| Consequences | Needs work | The `.gitignore` row is wrong on the facts, though its conclusion holds (finding 3). |
+| Principle alignment | Needs work | One planned sentence would document something false (finding 1). The plan says there are no tests because the change is docs-only, and it checks `.gitignore` with `git check-ignore`. Prior art and design picture are both stated. |
+| ADR compliance | Good | gz4d ADR-0002 is kept and cited. ADR-0003 is named in the license-header check. Workspace ADR-0013 is covered by the work-plans convention. |
+| ROS conventions | N/A | Not a ROS project. |
+
+### Verified against the files
+
+- **Ported content is complete.** Nothing gz4d-specific is lost. The audit-project license-header step (§1) goes to step 5, the always-build step (§2) to step 2, and the vendored `git log` recency check (§5) to step 5. review-pr §3 is already in `.agents/README.md` (vendored, IVS, `std::filesystem`) and its §5 build impact goes to step 5. plan-task and research hold no gz4d rules. research's only gz4d-specific item is `docs/research_digest.md`, which was never created.
+- **`brand-guidelines`.** After step 4 the file is byte-identical to `$WS_ROOT/.claude/skills/brand-guidelines/SKILL.md` (clean on the workspace `main`). `diff` shows L84 as the only difference.
+- **`.gitignore` anchoring is safe.** I applied the anchored rules to the main checkout. The nested `libgz4d/cxx/build/`, `GeoZui4D/main/build/` and the build dirs under the dead dirs stay ignored through `libgz4d/.gitignore:3` and `GeoZui4D/main/.gitignore:1` (both `build/`), and through the root's dead-directory entries. The only path whose state changes is `.claude/skills/build/`. No path named `install` exists below the top level, and no tracked path has a `build` or `install` component.
+- **Roadmap line.** A scratch copy with the step 9 wording, run through `sitrep_checks.sh --root .`, parses as a `line` row with check `gh-issue 7 closed` and leaves every other row unchanged.
+- **Build skill in the main checkout.** Its last change is 2026-03-11, before #9 and #14. It says nothing false: `mkdir -p build && cd build && cmake .. && make -j$(nproc)` still builds, and `install/bin/GeoZui4D` is still correct. It does not mention `scripts/build.sh`, the gtest suite or `ctest` (finding 4).
+
+### Findings
+
+1. **[Principle alignment, must-fix]** Step 7 would write into `AGENTS.md` that "the loop skills (plan, review, audit, research) come from the agent workspace". That is false today. rolker/agent_workspace#331 is open, and the workspace `research` skill has no `session_scope`, so it does not reach gz4d sessions; the owner accepted that gap. This breaks AGENTS.md Never "Document from assumptions". Drop `research` from the list, or say it is unavailable until #331 lands. Phrase the sentence as conditional ("when this repository is worked from the agent workspace, ..."), because the project stands without the workspace (`.agents/README.md` L12-17) and its registration is local to one machine. The same conditional wording applies to the step 8 `CLAUDE.md` line.
+2. **[Issue alignment, suggestion]** The work-plans convention in step 7 should agree with the roadmap Deferral row, which says the location is "the workspace's provisional default" until rolker/agent_workspace#393. Say it is provisional or point at that row, so `AGENTS.md` does not state a permanent rule that the roadmap marks as open.
+3. **[Consequences, suggestion]** Correct the `.gitignore` Consequences row and the step 1 "verified" note. Nested build dirs do exist in the main checkout (`libgz4d/cxx/build/`, `GeoZui4D/main/build/`). They stay ignored through the nested `.gitignore` files' own `build/` rules, so the change is safe for that reason and not because none exist. Without the correction, the PR text may repeat the wrong claim.
+4. **[File targeting, suggestion]** The build skill copied in step 1 predates #9. It configures without `-DBUILD_GTESTS=ON` and runs no tests, so step 2's "run the full build as part of any audit" points at a build that skips the test suite that `scripts/build.sh` builds. Changing the skill beyond the audit note is outside the owner's grant, so ask him at implementation, or open a follow-up, rather than editing it silently.
+5. **[Issue alignment, suggestion]** The Issue Review action item also lists "`AGENTS.md`/`CLAUDE.md` mentions of build steps". The plan neither handles it nor says why it is dropped. Those steps are still accurate, apart from `AGENTS.md` L49's second `cd build` after L46 has already entered `build/`. Editing them is outside the owner's grant, so record it as out of scope or a follow-up in the PR's gaps list.
+6. **[Issue alignment, suggestion]** audit-project §6 also checked IVS files with `git log`. Step 5 adds the recency hint only for vendored code. Make the one sentence cover both lists.
+7. **[Issue alignment, suggestion]** review-pr §5 also asked "are new dependencies introduced?" Step 5's CMake rule ("build-impact note") should name new or changed dependencies, so that part of the ported check is not lost.
+8. **[File targeting, suggestion]** In step 6, the `.agent/work-plans/` entry belongs at the top level of the layout diagram, not inside the `docs/` subtree where `docs/work-plans/` sits now (L64). Also update `.agents/README.md`'s "checked against the source on 2026-11-02" date (L19), since steps 5 and 6 add new claims. Keep the "this guide stands on its own" phrase intact, because Direction line 5 checks for it.
+
+### Summary
+
+The plan carries out the owner's decisions correctly and lists every stale reference. The `.gitignore`, brand-guidelines and roadmap changes all check out against the files. One planned sentence would write a false claim about `research` into `AGENTS.md`. Fix that, and it is ready; the other findings can be folded into implementation.
+
+### Recommended Actions
+
+- [ ] Reword step 7 (and the step 8 `CLAUDE.md` line) so it does not claim `research` comes from the workspace, and phrase both conditionally on the workspace being used.
+- [ ] Mark the work-plans convention as provisional per the roadmap Deferral row (rolker/agent_workspace#393).
+- [ ] Correct the `.gitignore` Consequences row: nested build dirs exist but stay ignored through the nested `.gitignore` files.
+- [ ] Ask the owner whether the build skill should run `scripts/build.sh` and `ctest`, or open a follow-up.
+- [ ] Record the `AGENTS.md`/`CLAUDE.md` build-step item (including the double `cd build` at L46-49) as out of scope or a follow-up.
+- [ ] Extend the `git log` recency hint to the IVS files, and include new dependencies in the CMake build-impact rule.
+- [ ] Place `.agent/work-plans/` at the top level of the layout diagram, and bump the guide's verified date.
