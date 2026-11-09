@@ -22,15 +22,27 @@ rolker/agent_workspace#331; #332 is closed, so the footprint dependency is met.
 One PR, atomic commits, in this order:
 
 1. **Anchor `.gitignore` and track the build skill** — `build/` -> `/build/`,
-   `install/` -> `/install/` (lines 2-3). Verified: no `build`/`install`
-   directory is tracked or present below the top level in the tree. Copy
+   `install/` -> `/install/` (lines 2-3). Copy
    `SKILL.md` from the main checkout (`/home/roland/src/gz4d/.claude/skills/build/SKILL.md`)
    to the worktree and `git add` it. Check with `git check-ignore -v` that
    the skill is no longer ignored and `build/`, `install/` still are.
+   Verified: no tracked path has a `build` or `install` component and no
+   `install` path exists below the top level. Nested `build/` directories do
+   exist in the main checkout (`libgz4d/cxx/build/`, `GeoZui4D/main/build/`)
+   and stay ignored through their own nested `.gitignore` files
+   (`libgz4d/.gitignore`, `GeoZui4D/main/.gitignore`, both `build/`), so
+   anchoring is safe for that reason; only `.claude/skills/build/` changes
+   state.
 2. **Port the always-build audit step into the build skill** — add a
    Guidelines line to `.claude/skills/build/SKILL.md`: "Run the full build
    as part of any audit (a project audit always includes it)", taken from
-   audit-project step 2. Separate commit so the port precedes the deletion.
+   audit-project step 2. In the same edit, point the skill's commands at
+   `scripts/build.sh` (the project's tracked build script: configures with
+   `-DBUILD_GTESTS=ON`, builds all targets; tests run with
+   `cd build && ctest --output-on-failure`), so "the full build" includes the
+   test suite. The copied skill otherwise describes a build that skips the
+   tests (it predates #9). Host decision, within "commit the build skill with
+   the audit note". Separate commit so the port precedes the deletion.
 3. **Delete the four duplicate skills** — `git rm -r` of
    `.claude/skills/{plan-task,research,review-pr,audit-project}`. Commit
    message notes the `research` gap is accepted by the owner and that
@@ -42,32 +54,53 @@ One PR, atomic commits, in this order:
    file is then identical.
 5. **Complete the conventions in `.agents/README.md`** — conventions 1-3 are
    already present (Common Pitfalls); only add or complete:
-   - vendored code: append the `git log -- <path>` recency hint;
+   - vendored code and the IVS files: append one `git log -- <path>`
+     recency hint covering both lists (old audit-project section 6 checked
+     both);
    - CMake: replace the `/review-pr ... issue #7 ports the rule` text with
      the rule itself: a change to any `CMakeLists.txt` gets a build-impact
-     note in the PR;
+     note in the PR, which also says whether dependencies are new or changed
+     (old review-pr section 5);
    - new bullet: license-header coverage check, periodic and manual, across
      `.cpp/.h/.tcl`, classifying Apache 2.0 (ADR-0003) vs IVS vs none and
      excluding vendored code;
    - keep `std::filesystem` (ADR-0002) and IVS entries as they are.
 6. **Remove stale text in `.agents/README.md`** — the `docs/work-plans/`
-   layout entry becomes `.agent/work-plans/` (tracked, one `issue-<N>/`
+   layout entry is removed from under `docs/` and `.agent/work-plans/` is
+   added at the top level of the layout diagram (tracked, one `issue-<N>/`
    directory per issue, plan and progress timeline); delete the
    "issue #7 tracks the fix" sentence in the build-dir bullet and make
    it say the ignore rule is `/build/`; delete the "project's own skills"
    bullet, or replace it with one line saying the loop skills come from the
-   workspace. (Commits 5 and 6 may be one if the diff is small; keep the
+   workspace. Also update "Every claim here was checked against the source on
+   2026-11-02" to the implementation date, after verifying the new claims;
+   keep the phrase "this guide stands on its own" verbatim (a roadmap check
+   depends on it). (Commits 5 and 6 may be one if the diff is small; keep the
    convention additions and the stale-text removal in separate commits if not.)
 7. **`AGENTS.md`** — keep Boundaries as is; add a short "Conventions" section
    with a pointer to `.agents/README.md` (without repeating the five rules)
    and the work-plans convention: each issue's plan and progress timeline are
    committed under `.agent/work-plans/issue-<N>/` on that issue's branch;
-   the loop skills (plan, review, audit, research) come from the agent
-   workspace, not from this repository.
+   the convention is provisional, pending rolker/agent_workspace#393, as the
+   roadmap Deferral row says. One sentence, conditional: when this repository
+   is worked from the agent workspace, the loop skills `plan-task`,
+   `review-issue`, `review-plan`, `review-code`, `triage-reviews`,
+   `address-findings`, `audit-project`, `run-issue`, `orchestrator`,
+   `start-task`, `sitrep`, `onboard-project`, `document-project` and
+   `test-engineering` come from it (verified from `session_scope: both` or
+   `project` in `$WS_ROOT/.claude/skills/*/SKILL.md`); the workspace
+   `research` skill does not reach project sessions (rolker/agent_workspace#331
+   is open), so there is no research skill here for now. In the same commit,
+   fix the duplicate `cd build` in the Build & Test block (lines 46-49: line
+   46 already enters `build/`, so the install line should not `cd build`
+   again), a host decision.
 8. **`CLAUDE.md` Skills table** — drop `/plan-task`, `/review-pr`,
    `/audit-project`, `/research`; keep `/brand-guidelines` and `/build`;
-   add a line saying plan, review and audit come from the workspace
-   (`agent-workspace:plan-task`, `review-code`, `audit-project`).
+   add one conditional line: when the repository is worked from the agent
+   workspace, plan, review and audit are the workspace skills
+   (`agent-workspace:plan-task`, `review-code`, `audit-project`); the
+   workspace `research` skill is not available to project sessions yet
+   (rolker/agent_workspace#331).
 9. **`docs/roadmap.md` line 34** — reword the Direction text to "The skills
    that duplicate workspace skills are gone and the gz4d conventions live
    in `.agents/README.md`, with `AGENTS.md` pointing at them (#7)"; the
@@ -84,12 +117,12 @@ One PR, atomic commits, in this order:
 | File | Change |
 |------|--------|
 | `.gitignore` | Anchor `/build/`, `/install/` |
-| `.claude/skills/build/SKILL.md` | New tracked file; add the audit-build line |
+| `.claude/skills/build/SKILL.md` | New tracked file; commands point at `scripts/build.sh`; add the audit-build line |
 | `.claude/skills/{plan-task,research,review-pr,audit-project}/` | Deleted |
 | `.claude/skills/brand-guidelines/SKILL.md` | Line 84 fix |
-| `.agents/README.md` | Recency hint, CMake rule, license-header check; remove stale lines (layout, build-dir bullet, skills bullet) |
-| `AGENTS.md` | Pointer to `.agents/README.md`; work-plans convention |
-| `CLAUDE.md` | Skills table |
+| `.agents/README.md` | Recency hint (vendored and IVS), CMake rule (with dependencies), license-header check; remove stale lines; `.agent/work-plans/` at top level of layout; bump verified date |
+| `AGENTS.md` | Pointer to `.agents/README.md`; provisional work-plans convention; conditional workspace-skills sentence; fix duplicate `cd build` |
+| `CLAUDE.md` | Skills table; conditional workspace line |
 | `docs/roadmap.md` | Direction line 34 |
 
 ## Prior Art
@@ -129,7 +162,7 @@ No change to the design picture (gz4d keeps no design document).
 | If we change... | Also update... | Included in plan? |
 |---|---|---|
 | Delete the skills | `CLAUDE.md` Skills table, `.agents/README.md` mentions | Yes (steps 6, 8) |
-| `.gitignore` anchoring | Sub-project builds in a nested `build/` are no longer ignored | Noted as a risk; none exist in the tree |
+| `.gitignore` anchoring | Nested `build/` dirs (`libgz4d/cxx/build/`, `GeoZui4D/main/build/`) | Safe: they stay ignored via their own nested `.gitignore` files; only `.claude/skills/build/` changes state |
 | Roadmap line | Sit-rep Direction check | Yes (step 9) |
 
 ## Open Questions
