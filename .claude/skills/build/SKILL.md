@@ -45,6 +45,9 @@ scripts/build.sh
 cmake --install build --prefix install
 ```
 
+`cmake --install` needs CMake 3.15, one above the project's 3.14 minimum
+(ADR-0001).
+
 Report:
 - Build, test and install status
 - Install location: `install/bin/GeoZui4D`
