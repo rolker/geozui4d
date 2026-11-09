@@ -165,3 +165,11 @@ The plan carries out the owner's decisions correctly and lists every stale refer
 Plan Review 14c7620 on plan 8679c61. The plan-task re-run takes the must-fix (AGENTS.md and CLAUDE.md must not claim the research skill reaches gz4d sessions from the workspace while rolker/agent_workspace#331 is open; the "loop skills come from the workspace" sentences apply only when the repository is worked from the workspace) and all seven suggestions: the work-plans convention is marked provisional pending rolker/agent_workspace#393, matching the roadmap deferral; the .gitignore reasoning is corrected (libgz4d/cxx/build/ and GeoZui4D/main/build/ exist and stay ignored through their own nested .gitignore files); the git-log recency hint covers the IVS files too; the build-impact rule also asks about new or changed dependencies; .agent/work-plans/ sits at the top level of the layout diagram, the "checked against the source" date is updated, and the phrase "this guide stands on its own" is kept.
 
 Two host decisions, listed for the owner's veto: (a) the build skill, when committed, has its commands point at scripts/build.sh, the project's tracked build script, so the "full build in any audit" line includes the test suite; this stays within "commit the build skill with the audit note" since the skill otherwise describes a build that skips the tests the project now has. (b) The duplicate `cd build` in AGENTS.md lines 46-49 is fixed in the same AGENTS.md commit; the Issue Review listed the build-step text and the owner approved AGENTS.md edits for the items the review lists.
+
+## Plan Authored
+**Status**: complete
+**When**: 2026-11-09 12:03 -05:00
+**By**: Claude Code Agent (claude-sonnet-5-5)
+**Plan**: `.agent/work-plans/issue-7/plan.md` at `48e7b4d`
+
+Revision after plan review 14c7620: conditional workspace-skill wording (research gap named), provisional work-plans convention, corrected .gitignore reasoning, build skill pointed at scripts/build.sh, cd build fix in AGENTS.md, IVS recency hint, dependency rule, README layout and date.
