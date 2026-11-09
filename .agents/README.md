@@ -187,9 +187,8 @@ What to know:
 
 - **Do not modify vendored code**: `GeoZui4D/main/Togl/`, `Togl2.0/`,
   `BWidget-1.7.0/`, `libgz4d/cxx/include/gz4d/util/rapidxml/`.
-- **Never modify the IVS files** in `GeoZui4D/main/widgets/` without the
-  owner's approval; `AGENTS.md` lists `Sv_Matrix4`, `Sv_Quaternion` and
-  `Sv_Raster` under Never. These six files are covered: `Sv_Matrix4.h`,
+- **Never modify the IVS files** in `GeoZui4D/main/widgets/`; `AGENTS.md`
+  lists `Sv_Matrix4`, `Sv_Quaternion` and `Sv_Raster` under Never. These six files are covered: `Sv_Matrix4.h`,
   `Sv_Matrix4.cpp`, `Sv_Quaternion.h`, `Sv_Quaternion.cpp`, `Sv_Raster.h`
   and `Sv_Raster.cpp`. The two `Sv_Matrix4` and two `Sv_Quaternion` files
   carry the Interactive Visualization Systems Inc. copyright line.

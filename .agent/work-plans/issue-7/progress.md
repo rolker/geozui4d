@@ -397,7 +397,7 @@ Scope: the round-2 findings and the fix diff `c38ac4d..384b735`. Cross-model: sk
 Round-2 findings, checked against the files: the six protected files are listed at `.agents/README.md:190-201` with each header fact true (IVS line in the four Matrix4/Quaternion files; none in `Sv_Raster.h`; `Sv_Raster.cpp`'s Apache-2.0 header from `11a46d7`; `git log -p --follow` finds no IVS line in it) and the Sv_Raster origin left to the owner; the layout line at :56 points at the list; `SKILL.md:58` reads as one sentence. Fix commits carry the agent identity and trailer; `sitrep_checks.sh --root .` exits 0.
 
 ### Findings
-- [ ] (must-fix) New text "Never modify the IVS files ... without the owner's approval" turns the AGENTS.md Never hard stop (AGENTS.md:27, 33-34, no approval path) into an Ask First rule while citing Never; the old guide text had no approval clause. Drop "without the owner's approval" (the CLAUDE.md "without explicit approval" conflict stays pre-existing and the owner's) — `.agents/README.md:190-191`
+- [x] (must-fix) New text "Never modify the IVS files ... without the owner's approval" turns the AGENTS.md Never hard stop (AGENTS.md:27, 33-34, no approval path) into an Ask First rule while citing Never; the old guide text had no approval clause. Drop "without the owner's approval" (the CLAUDE.md "without explicit approval" conflict stays pre-existing and the owner's) — `.agents/README.md:190-191`
 - [ ] (suggestion) "no IVS line appears anywhere in its history" holds only for git history since the 2026-02-27 import (e76de6a); say so, and note the file's "Mark Paton - various additions & mods." credit (Paton is the author of the IVS Sv_Matrix4/Sv_Quaternion files) as why the origin is open — `.agents/README.md:198`
 
 ## Checkpoint
