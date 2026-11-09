@@ -149,3 +149,51 @@ The plan-task re-run carries the four must-fix items (skip CMakeFiles in both ge
 **Plan**: `.agent/work-plans/issue-9/plan.md` at `265869e`
 
 Revision after the plan review (465ab4c): generator skip in both genModules and genBoostPython; git commit-count version scheme (CPack patch = count, gz4d_version 4.0.<count>-g<sha>, unknown/0 fallback) in both CMakeLists; libgtest-dev in the README; .agents/README.md added; ctest via cd build for CMake 3.14; find_package(GTest); stage 2 is build-file work only, no passing test edited.
+
+## Plan Review
+**Status**: complete
+**When**: 2026-11-09 10:13 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Verdict**: ready
+
+**Issue**: #9 — A fresh checkout does not configure: stub CMakeFiles subdirectories, Subversion lookup, gtest header name
+**Plan**: `.agent/work-plans/issue-9/plan.md` at `265869e`
+**Branch**: `feature/issue-9`
+
+Round 2. It checks the revision against the first review (465ab4c, four must-fix and four suggestions) and the host's version-scheme decision (Checkpoint, 10:10). The scheme is the owner's to veto and is not re-opened here.
+
+### Evaluation
+
+| Dimension | Verdict | Notes |
+|---|---|---|
+| Scope | Good | One PR, two stages. Stage 2 is build files and docs only. No scope change since round 1. |
+| Issue alignment | Good | All three defects, `enable_testing()` and both acceptance lines are covered. Serves: Project goal "usable on modern systems" (`docs/roadmap.md`), Direction line "A fresh clone configures, builds and runs its tests by hand (#9)". The project has no design document. Checked: `docs/roadmap.md` lines 5 and 29. |
+| File targeting | Good | The first review's findings 1 and 4 are carried. `gen_cmake.py`: `genModules` has its `isdir` loop at line 36 and writes at line 91. `genBoostPython` spans lines 149-213, with its `isdir` loop at line 161 and its write at line 213. The plan's line references match. `.agents/README.md` 144-160 and 196-205 are in Files to Change and match the text there. 19 stub files outside `.agent/` (1 `src/x3d`, 18 `boost.python`); no tracked directory under `libgz4d/cxx` matches `build*`, `*.dir` or `CMakeFiles`, so the skip predicate drops nothing real. |
+| Consequences | Good | Finding 2 is carried. The version blocks are at `libgz4d/cxx/CMakeLists.txt:396-403` and `GeoZui4D/main/CMakeLists.txt:268-277`. CPack patch is set at lines 482 and 321, and `CPACK_PACKAGE_FILE_NAME` at 488 and 327. The plan sets both patches to the commit count (0 on fallback) and `gz4d_version` to `4.0.<count>-g<sha>` (`unknown` on fallback), as the host decided. The only `GZ4D_VERSION` reader is `main.cpp:9`, a plain `char const *`, so the new string form is safe. The two subdirectories are siblings, so each needs its own lookup, and the plan does one in each. Finding 3 is carried: `libgtest-dev` goes into `README.md:93-106`. |
+| Principle alignment | Good | The only top-level edit is `enable_testing()` (owner-approved). Verification is in a fresh worktree. No vendored or IVS files are touched. No passing test is edited. |
+| ADR compliance | Good | ADR-0001: `find_package(Git)`, `execute_process(... RESULT_VARIABLE WORKING_DIRECTORY)` and FindGTest's `GTest::GTest`/`GTest::Main` all exist in 3.14. FindGTest documents the two targets as "available since 3.5", deprecated in 3.20 but still defined. Probed on CMake 3.28.3 with a `cmake_minimum_required(VERSION 3.14)` project against `libgtest-dev` 1.14's `GTestConfig.cmake`: both targets exist, `GTest::gtest` carries `Threads::Threads`, and a test linked with them builds and passes under `cd b && ctest`. ADR-0002 and ADR-0003 are not triggered. |
+| ROS conventions | N/A | Not a ROS project. |
+
+### Findings
+
+None must-fix. All suggestions, each a one-line fix during implementation:
+
+1. **[Approach] suggestion**: Step 1 says to find the files with `git grep -l 'add_subdirectory(CMakeFiles)'`, but that also matches `.agent/work-plans/issue-9/plan.md` and `progress.md` (21 hits, not 19). Limit it to `-- libgz4d/` so a scripted delete cannot rewrite the plan or the timeline.
+2. **[File targeting] suggestion**: `.agents/README.md:137` (the command block) still says `ctest --test-dir build --output-on-failure`. That is outside the cited ranges, but the plan says "`cd build && ctest` everywhere". Include it in step 10.
+3. **[Issue alignment] suggestion**: `README.md` has no test step today (no `ctest` or `gtest` anywhere in it). Step 9 should *add* one, and it needs the `-DBUILD_GTESTS=ON` configure as well as `cd build && ctest --output-on-failure`, because the README's own build (`cmake ..`) leaves gtest off.
+4. **[Approach] suggestion**: Step 4's "remove `message(${GTEST_LIBS})` only if it errors when empty" settles itself. Once `GTEST_LIBS` is no longer set, `message()` with no arguments is a CMake error ("message called with incorrect number of arguments", checked), so remove it. Also say whether the now-unused `GTESTS_NEED_PTHREADS` option is removed or kept.
+5. **[Approach] suggestion**: This machine has a second GoogleTest in `~/.local/lib/cmake/GTest` (1.13.0), and `find_package(GTest)` picks it ahead of the system `libgtest-dev` (1.14.0). The fresh-worktree acceptance therefore does not prove the README's `libgtest-dev` claim. Record in the progress entry which `GTestConfig.cmake` configure reported, or run once with `-DGTest_DIR=/usr/lib/x86_64-linux-gnu/cmake/GTest`.
+6. **[Plan text] suggestion**: The revision introduced two text slips. Prior Art is cut off mid-sentence ("alternative to hand-rolled x") and still calls the version lookup "the common `git describe` idiom", which step 3 now rules out. The Principles Self-Check still lists a "test fixes" commit, which stage 2 now rules out. Neither affects implementation.
+
+### Summary
+
+All eight items from the first review are carried correctly, and the host's version scheme is put into the plan as decided, in both CMakeLists files. The line references check out against the source, and the GTest target names work on CMake 3.14 semantics and on Ubuntu's `libgtest-dev`. The remaining findings are small suggestions. The plan is ready for implementation.
+
+### Recommended Actions
+
+- [ ] Optional: scope the step-1 grep to `libgz4d/`.
+- [ ] Optional: also fix `.agents/README.md:137` (`ctest --test-dir`).
+- [ ] Optional: add a README test step that configures with `-DBUILD_GTESTS=ON`.
+- [ ] Optional: drop `message(${GTEST_LIBS})` unconditionally; decide on `GTESTS_NEED_PTHREADS`.
+- [ ] Optional: record which GTest the acceptance run found (a `~/.local` copy shadows `libgtest-dev` here).
+- [ ] Optional: repair the truncated Prior Art and the stale "test fixes" row.
