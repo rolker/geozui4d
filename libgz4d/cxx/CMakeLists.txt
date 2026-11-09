@@ -393,13 +393,33 @@ if(CMAKE_CROSSCOMPILING)
 endif()
 
 
-find_package(Subversion)
-if(Subversion_FOUND)
-    Subversion_WC_INFO(${CMAKE_CURRENT_SOURCE_DIR} ER)
-    set(SUBVERSION_REVISION ${ER_WC_REVISION})
-    message("revision: ${SUBVERSION_REVISION}")
+# Version from git: commit count (used as the CPack patch) and short sha.
+# Falls back to a count of 0 when git or the repository is not available.
+set(GZ4D_COMMIT_COUNT 0)
+set(GZ4D_COMMIT_SHA "")
+find_package(Git QUIET)
+if(GIT_FOUND)
+    execute_process(COMMAND ${GIT_EXECUTABLE} rev-list --count HEAD
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT_VARIABLE gz4d_git_count
+        RESULT_VARIABLE gz4d_git_count_result
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET)
+    execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT_VARIABLE gz4d_git_sha
+        RESULT_VARIABLE gz4d_git_sha_result
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET)
+    if(gz4d_git_count_result EQUAL 0 AND gz4d_git_sha_result EQUAL 0)
+        set(GZ4D_COMMIT_COUNT ${gz4d_git_count})
+        set(GZ4D_COMMIT_SHA ${gz4d_git_sha})
+    endif()
+endif()
+if(GZ4D_COMMIT_SHA)
+    message("commit count: ${GZ4D_COMMIT_COUNT}, commit: ${GZ4D_COMMIT_SHA}")
 else()
-    message("subversion not found")
+    message("git version lookup unavailable; commit count 0")
 endif()
 
 add_subdirectory(include)
@@ -479,7 +499,7 @@ set(CPACK_PACKAGE_VENDOR "Data Visualization Research Lab, Center for Coastal an
 set(CPACK_PACKAGE_CONTACT "roland@ccom.unh.edu")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
-set(CPACK_PACKAGE_VERSION_PATCH ${SUBVERSION_REVISION})
+set(CPACK_PACKAGE_VERSION_PATCH ${GZ4D_COMMIT_COUNT})
 if(MSVC OR CMAKE_CROSSCOMPILING)
     set(CPACK_GENERATOR "NSIS")
 else()

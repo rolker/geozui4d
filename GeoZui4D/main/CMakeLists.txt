@@ -265,16 +265,35 @@ if(CMAKE_CROSSCOMPILING)
 
 endif()
 
-find_package(Subversion)
-if(Subversion_FOUND)
-    Subversion_WC_INFO(${CMAKE_CURRENT_SOURCE_DIR} ER)
-    set(SUBVERSION_REVISION ${ER_WC_REVISION})
-    message("revision: ${SUBVERSION_REVISION}")
-    set(gz4d_version "4.0.${SUBVERSION_REVISION}")
+# Version from git: commit count (used as the CPack patch) and short sha.
+# Falls back to a count of 0 when git or the repository is not available.
+set(GZ4D_COMMIT_COUNT 0)
+set(GZ4D_COMMIT_SHA "")
+find_package(Git QUIET)
+if(GIT_FOUND)
+    execute_process(COMMAND ${GIT_EXECUTABLE} rev-list --count HEAD
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT_VARIABLE gz4d_git_count
+        RESULT_VARIABLE gz4d_git_count_result
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET)
+    execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT_VARIABLE gz4d_git_sha
+        RESULT_VARIABLE gz4d_git_sha_result
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET)
+    if(gz4d_git_count_result EQUAL 0 AND gz4d_git_sha_result EQUAL 0)
+        set(GZ4D_COMMIT_COUNT ${gz4d_git_count})
+        set(GZ4D_COMMIT_SHA ${gz4d_git_sha})
+    endif()
+endif()
+if(GZ4D_COMMIT_SHA)
+    set(gz4d_version "4.0.${GZ4D_COMMIT_COUNT}-g${GZ4D_COMMIT_SHA}")
 else()
-    message("subversion not found")
     set(gz4d_version "unknown")
 endif()
+message("version: ${gz4d_version}")
 
 add_definitions(-DGZ4D_VERSION="${gz4d_version}")
 
@@ -318,7 +337,7 @@ set(CPACK_PACKAGE_CONTACT "roland@ccom.unh.edu")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/license.txt")
 set(CPACK_PACKAGE_VERSION_MAJOR "4")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
-set(CPACK_PACKAGE_VERSION_PATCH ${SUBVERSION_REVISION})
+set(CPACK_PACKAGE_VERSION_PATCH ${GZ4D_COMMIT_COUNT})
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "GeoZui4D")
 if(NOT CMAKE_CROSSCOMPILING)
     set(CPACK_GENERATOR "DEB")
