@@ -90,3 +90,11 @@ Owner's answers at the issue-actions checkpoint (AskUserQuestion, 2026-11-09):
 - Ask First: "Yes, all of them". For this issue only, the plan and implementation may edit AGENTS.md (the pointer and the work-plans convention), CLAUDE.md (the Skills table) and the skill files (delete plan-task, research, review-pr, audit-project; commit the build skill with the audit note; fix the broken table row in brand-guidelines). Anything beyond what the issue and the Issue Review list comes back to him.
 
 Dependency check by the host: rolker/agent_workspace#332 is closed and this project was onboarded through it (#10), so the 2026-10-13 direction that footprint items wait on #332 is satisfied; the footprint answers are in the tree (.agents/README.md exists, .agent/work-plans/ is committed). The research skill may be removed without waiting on rolker/agent_workspace#331 (owner, 2026-09-23 update).
+
+## Plan Authored
+**Status**: complete
+**When**: 2026-11-09 11:58 -05:00
+**By**: Claude Code Agent (claude-sonnet-5-5)
+**Plan**: `.agent/work-plans/issue-7/plan.md` at `8679c61`
+
+Nine-step plan in one PR: anchor .gitignore and track the build skill, port the audit-build line, delete the four duplicate skills, fix brand-guidelines, complete the conventions in .agents/README.md, point AGENTS.md at it with the work-plans convention, refresh CLAUDE.md and the roadmap line.
