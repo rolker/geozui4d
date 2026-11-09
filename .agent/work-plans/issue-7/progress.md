@@ -240,3 +240,36 @@ The revision carries the must-fix and all seven round-1 suggestions, and it impl
 **Decision**: proceed
 
 Round-2 Plan Review b2f1037 on plan 48e7b4d: ready; the 14 skills named in step 7 match the workspace's session_scope frontmatter; the research gap is stated. Four suggestions go into the implement handoff rather than a third plan round: the "project's own skills" bullet in .agents/README.md is deleted or reworded conditionally like step 7, never an unconditional "the loop skills come from the workspace"; the CLAUDE.md Build Commands block (lines 20-29) gets the same duplicate-cd-build fix as AGENTS.md and its run line made correct from the repository root (host decision, listed for the owner's veto: CLAUDE.md imports AGENTS.md and the two blocks would otherwise disagree; CLAUDE.md edits are approved for this issue); the build skill's install command becomes the repo-root form `cmake --install build --prefix install` since scripts/build.sh does not install, and .agents/README.md lines 7-10, which say the rules are in AGENTS.md, are corrected to match the owner's decision; the build skill's commands are run once before the skill is committed, with 8 jobs.
+
+## Implementation
+**Status**: complete
+**When**: 2026-11-09 12:13 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Branch**: feature/issue-7 at `726f2cf`
+
+Nine commits, one per plan step (steps 5 and 6 kept separate):
+
+- `fbc31c1` `.gitignore` anchors `/build/` and `/install/`; the build skill is copied from the main checkout and tracked. `git check-ignore -v`: `build/`, `install/` ignored by the root rules, `libgz4d/cxx/build/` and `GeoZui4D/main/build/` by their nested `.gitignore` files, the skill no longer ignored.
+- `9ed93bd` Build skill runs `scripts/build.sh` then `(cd build && ctest --output-on-failure)`; `--install` uses `cmake --install build --prefix install`; Guidelines gain "Run the full build as part of any audit" and a note on running the script's two cmake steps by hand with `--parallel 8` to limit jobs.
+- `2c3f134` Deletes `.claude/skills/{plan-task,research,review-pr,audit-project}`.
+- `3b2005b` `brand-guidelines` line 84 fixed; `cmp` with the workspace copy: identical.
+- `234f754` `.agents/README.md` Common Pitfalls: `git log --oneline -5 -- <path>` recency check for vendored and IVS paths; CMake build-impact note in the PR including new or changed dependencies; periodic manual license-header check (Apache 2.0 / IVS / none, vendored excluded).
+- `cf7323b` `.agents/README.md` stale text: opening lines now say the conventions are in this guide and `AGENTS.md` points here; `.agent/work-plans/` at top level of the layout, `docs/work-plans/` removed; build-dir bullet gives `/build/`; "project's own skills" bullet deleted (not reworded); checked-on line now "2026-11-02, and the conventions and layout changes added since on 2026-11-09" (only the new claims were re-verified). "this guide stands on its own" kept verbatim.
+- `f81975d` `AGENTS.md` Conventions section (pointer, provisional work-plans convention citing rolker/agent_workspace#393, conditional list of the 14 workspace loop skills, `research` gap with rolker/agent_workspace#331); Build & Test: no second `cd build`, run line `cd .. && ./install/bin/GeoZui4D [files...]`.
+- `771155f` `CLAUDE.md` Skills table reduced to `/brand-guidelines` and `/build` plus the conditional workspace line; Build Commands block made identical to `AGENTS.md`'s.
+- `726f2cf` Roadmap Direction line reworded exactly as the owner's wording; check unchanged.
+
+Verification:
+- Build, run by hand with 8 jobs (not `scripts/build.sh`): `cmake -S . -B build -DBUILD_GTESTS=ON && cmake --build build --parallel 8` succeeded (exit 0; 467 `warning:` lines, mostly the Boost bind deprecation message and existing code warnings); `(cd build && ctest --output-on-failure)`: 1/1 passed (`test_libgz4d`); `cmake --install build --prefix install`: succeeded, `install/bin/GeoZui4D` present.
+- `sitrep_checks.sh --root .`: every row parses; the #7 line reports `false` (issue still open), all others unchanged.
+- `git grep` for plan-task, research, review-pr, audit-project, docs/work-plans, "project's own skills", "issue #7" over `CLAUDE.md`, `AGENTS.md`, `.agents/README.md`, `README.md`, `docs/`: the only hits are the intended workspace-skill and research-gap sentences in `AGENTS.md` and `CLAUDE.md`, and unrelated uses of "research" in `README.md` and ADR-0003.
+- No file under `libgz4d/`, `GeoZui4D/` or any `CMakeLists.txt` changed.
+
+Departure: two commit subjects were lost through a shell heredoc mistake; the two local, unpushed commits were rebuilt with `git commit-tree` with the intended messages (no hooks are installed, so no check was bypassed).
+
+### Decision summary
+- Conventions live in `.agents/README.md`; `AGENTS.md` points at them and does not repeat them (owner).
+- The four duplicate skills are removed; the workspace `research` skill does not reach project sessions while rolker/agent_workspace#331 is open, stated in `AGENTS.md` and `CLAUDE.md` (owner accepted the gap). No claim about skill shadowing is made.
+- The build skill runs `scripts/build.sh` plus ctest, so the audit's full build includes the tests (host decision, for the owner's veto).
+- The duplicate `cd build` is fixed in both `AGENTS.md` and `CLAUDE.md`, whose build blocks now match (host decision, for the owner's veto).
+- The work-plans location is recorded as provisional pending rolker/agent_workspace#393.
