@@ -238,3 +238,27 @@ Departures: `scripts/build.sh` now builds with 8 jobs instead of `nproc` (owner 
 - GoogleTest through `find_package(GTest)` and its imported targets; the pthreads option is gone.
 - `enable_testing()` at the top level is the only top-level edit; tests run with `cd build && ctest` (3.14-compatible).
 - `scripts/build.sh` enables the gtest suite, so `libgtest-dev` is a documented prerequisite; builds use 8 jobs.
+
+## Local Review (Pre-Push)
+**Status**: complete
+**When**: 2026-11-09 10:49 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Verdict**: approved
+
+**Branch**: feature/issue-9 at `09157ea`
+**Base**: main
+**Depth**: Deep (reason: 29 files, +549 -104)
+**Must-fix**: 0 | **Suggestions**: 4
+**Round**: 1 | **Ship**: recommended — no must-fix findings; remaining suggestions can be applied or tracked
+
+Specialists: static analysis (bash -n and flake8 only; shellcheck not installed; no CMake linter), governance, plan drift, Claude adversarial (fresh subagent, configured and built test_libgz4d with 8 jobs against both GoogleTest 1.13 under ~/.local and the system libgtest-dev 1.14; ctest from build/ passes), cross-model Gemini (complete, EXIT=0) and Codex (complete, EXIT=0).
+
+Verified by the lead: the 19 deletions are exactly the stub lines and none remains; skipDir() is used in both directory loops of gen_cmake.py (genModules line 48, genBoostPython line 173) and no tracked directory matches its patterns; no test source changed; nothing still reads SUBVERSION_REVISION, GTEST_LIBS or GTESTS_NEED_PTHREADS; the only add_test is test_libgz4d; the top-level edit is the single enable_testing() line; FindGTest 3.28 defines GTest::GTest/GTest::Main in config and module mode; scripts/build.sh no longer uses nproc. Git lookup probed in a minimal 3.14-minimum project: worktree 4.0.75-g09157ea; no repository, git executable missing, find disabled all give unknown / patch 0; a shallow clone gives patch 1; a directory inside another git repository takes that repository's count and sha.
+
+Dismissed: Gemini's numeric check on rev-list output (result code already checked); the broad `build*` skip pattern (no such directory exists); the pre-existing URI.h:274 missing return (not this branch; worth its own issue).
+
+### Findings
+- [ ] (suggestion) The new Test block starts with `cmake -S . -B build` from the repository root, but the Build block just before it leaves the shell in build/; say "from the repository root" or use a subshell — `README.md:126`
+- [ ] (suggestion) The git lookup does not check that the repository is this project's: a tarball unpacked inside another git checkout takes that checkout's count and sha, and a shallow clone gives patch = depth; the doc's "a source tarball ... count is 0" is not always true. Qualify the sentence or compare `git rev-parse --show-toplevel` — `.agents/README.md:201`
+- [ ] (suggestion) The `-DGTest_DIR=...` advice and the `gtest: <GTest_DIR>` message apply only on CMake 3.20+ (FindGTest is module-only on 3.14-3.19 and ignores GTest_DIR; GTEST_ROOT there); state the version — `.agents/README.md:150`
+- [ ] (suggestion) README now publishes `make -j8` and build.sh hardcodes `--parallel 8`, while AGENTS.md, CLAUDE.md and the audit-project skill still say `-j$(nproc)`; confirm with the owner that the 8-job rule belongs in the published commands, then align the instruction files (Ask First) or revert — `README.md:118`
