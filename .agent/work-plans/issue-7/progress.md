@@ -399,3 +399,13 @@ Round-2 findings, checked against the files: the six protected files are listed 
 ### Findings
 - [ ] (must-fix) New text "Never modify the IVS files ... without the owner's approval" turns the AGENTS.md Never hard stop (AGENTS.md:27, 33-34, no approval path) into an Ask First rule while citing Never; the old guide text had no approval clause. Drop "without the owner's approval" (the CLAUDE.md "without explicit approval" conflict stays pre-existing and the owner's) — `.agents/README.md:190-191`
 - [ ] (suggestion) "no IVS line appears anywhere in its history" holds only for git history since the 2026-02-27 import (e76de6a); say so, and note the file's "Mark Paton - various additions & mods." credit (Paton is the author of the IVS Sv_Matrix4/Sv_Quaternion files) as why the origin is open — `.agents/README.md:198`
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-09 12:29 -05:00
+**By**: Claude Code Agent (claude-fable-5-1)
+**Decided-by**: host (round 3 reached MAX_ROUNDS with one mechanical must-fix, Ship recommended; /orchestrator's table lets the host answer address at rounds; first host address answer at this checkpoint)
+**After**: rounds
+**Decision**: address
+
+Round-3 Local Review (Pre-Push) 453803d: the round-2 fixes hold; one new must-fix in wording, the clause "without the owner's approval" added to the guide's "Never modify the IVS files" bullet, which turns AGENTS.md's hard stop into an Ask First rule (the clause came from the host's own round-2 handoff wording "untouched without approval", so this is the host's slip). One suggestion: the "no IVS line anywhere in its history" claim holds only since the 2026-02-27 import (e76de6a), and the file's "Mark Paton" credit is the reason the origin stays open. Both are a one-pass text fix, cheaper than publishing and fixing in PR mode; the host answers address. The older CLAUDE.md "without explicit approval" wording for the IVS files conflicts with AGENTS.md's Never the same way; that predates this branch and is listed for the owner as a gap in the PR description.
