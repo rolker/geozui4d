@@ -294,7 +294,7 @@ Dropped as false positives: adversarial "109 files become untracked under nested
 
 ### Findings
 - [x] (must-fix) Tracked build skill hardcodes `--parallel 8`, contradicting the owner's #9 decision that published commands say the core count (7182a5f); 8 jobs is the agents' local rule. Use a placeholder, e.g. `cmake --build build --parallel <N>` (or `scripts/build.sh --parallel <N>`: the script appends its args and the last `--parallel` wins, checked on CMake 3.28); not `$(nproc)`, which defeats a bullet about limiting jobs — `.claude/skills/build/SKILL.md:57-58`
-- [ ] (suggestion) "(a project audit always includes it)" is false now: the workspace `audit-project` that replaces gz4d's runs no build; drop the parenthetical — `.claude/skills/build/SKILL.md:56`
+- [x] (suggestion) "(a project audit always includes it)" is false now: the workspace `audit-project` that replaces gz4d's runs no build; drop the parenthetical — `.claude/skills/build/SKILL.md:56`
 - [ ] (suggestion) Name the five IVS files the deleted audit-project listed (`Sv_Matrix4.{h,cpp}`, `Sv_Quaternion.{h,cpp}`, `Sv_Raster.h`); "Sv_Raster" also covers `Sv_Raster.cpp`, which is CCOM Apache-2.0, and the new recency hint says "each IVS file" with no list — `.agents/README.md:190-195`
 - [ ] (suggestion) Skill description still says "Build and optionally install ... verify compilation"; align with the tests it now runs and CLAUDE.md's "Build, test and optionally install" — `.claude/skills/build/SKILL.md:3`
 - [ ] (suggestion) `cmake --install` needs CMake 3.15, above the 3.14 minimum (ADR-0001); new in the skill, pre-existing in `AGENTS.md:70`, `CLAUDE.md:25`, `.agents/README.md:140`; note it or open a follow-up — `.claude/skills/build/SKILL.md:45`

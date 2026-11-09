@@ -52,7 +52,8 @@ Report:
 ## Guidelines
 
 - Always build from the repository root using the top-level CMakeLists.txt
-- Run the full build as part of any audit (a project audit always includes it)
+- Run the full build, with the tests, as part of any audit: this project's
+  rule
 - To limit the number of parallel jobs (for example on a machine short of
   memory), run `scripts/build.sh --parallel <N>`: the script passes its
   arguments to the build step, and the last `--parallel` wins. Pick N for
