@@ -4,10 +4,11 @@
 > ocean mapping, marine navigation and underwater exploration, from the Data
 > Visualization Research Lab at CCOM, University of New Hampshire.
 
-This guide is for agents working in this repository. The rules agents must
-follow are in [`AGENTS.md`](../AGENTS.md); the Claude Code adapter is
-[`CLAUDE.md`](../CLAUDE.md). This file says what the code is and where to
-look.
+This guide is for agents working in this repository. It says what the code
+is, where to look, and which gz4d conventions to follow (under Common
+Pitfalls). [`AGENTS.md`](../AGENTS.md) holds the boundaries (what agents do
+on their own, ask about first, or never do) and points here for the
+conventions; the Claude Code adapter is [`CLAUDE.md`](../CLAUDE.md).
 
 GeoZui4D can be used with the
 [agent workspace](https://github.com/rolker/agent_workspace), a separate
@@ -16,8 +17,9 @@ this guide stands on its own. See that repository for what it does and how
 to set a project up with it. The adapter commands under Build & Test apply
 once that is done.
 
-Every claim here was checked against the source on 2026-11-02; when the
-code and this guide disagree, the code wins, and this guide is wrong.
+Every claim here was checked against the source on 2026-11-02, and the
+conventions and layout changes added since on 2026-11-09; when the code and
+this guide disagree, the code wins, and this guide is wrong.
 
 ## Package Inventory
 
@@ -31,6 +33,7 @@ code and this guide disagree, the code wins, and this guide is wrong.
 
 ```
 gz4d/
+├── .agent/work-plans/        # Tracked; one issue-<N>/ directory per issue: plan.md and the progress.md timeline
 ├── CMakeLists.txt            # Top level: builds libgz4d/cxx, then GeoZui4D/main
 ├── scripts/build.sh          # Configure + build, as the workspace adapter runs it
 ├── libgz4d/
@@ -60,8 +63,7 @@ gz4d/
 │   └── bitmaps/              # Images installed with the app
 └── docs/
     ├── decisions/            # ADRs 0001-0003 and their index
-    ├── roadmap.md            # Direction section read by the workspace sit-rep
-    └── work-plans/           # Not tracked until a plan lands; the project's own /plan-task skill writes plans here
+    └── roadmap.md            # Direction section read by the workspace sit-rep
 ```
 
 ## Architecture Overview
@@ -169,9 +171,8 @@ What to know:
 - Ubuntu package prerequisites are listed in the README under Building.
 - The install step is required to run the app (see Architecture Overview).
 - The build directory is `build/` at the repository root, which `.gitignore`
-  ignores with the rule `build/`. That rule also matches
-  `.claude/skills/build/`, so that skill is not under version control
-  (issue #7 tracks the fix).
+  ignores with the rule `/build/` (and `install/` with `/install/`). The
+  rules are anchored to the root, so `.claude/skills/build/` is tracked.
 
 ## Dependencies
 
@@ -215,8 +216,3 @@ What to know:
   checkout takes that checkout's count and sha, and a shallow clone counts
   only the commits it has (1 for `--depth 1`). The repository has no tags,
   so `git describe` is not used.
-- **The project's own skills** (`.claude/skills/`) include four that
-  duplicate agent-workspace skills by name; in a workspace session the bare
-  `/plan-task`, `/research`, `/audit-project` and `/brand-guidelines` are
-  the project's copies and `/agent-workspace:<skill>` the workspace's.
-  Issue #7 tracks removing the duplicates.
