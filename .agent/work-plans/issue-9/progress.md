@@ -56,3 +56,19 @@ issue: 9
 - [ ] Split point 3 into two stages in the plan: (a) fix the header lookup and `enable_testing()`, then (b) make the nine gtest sources compile and pass. If (b) is large, open a follow-up issue and keep acceptance line 1 on the build.
 - [ ] Verify with a fresh `git worktree` configure and build as the acceptance line says, not in the main checkout.
 - [ ] Consider a follow-up issue for a CI build workflow, since no fresh build has ever run.
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-09 10:06 -05:00
+**By**: Claude Code Agent (claude-fable-5-1)
+**Decided-by**: owner
+**After**: issue-actions
+**Decision**: proceed
+
+Owner's answers at the issue-actions checkpoint (AskUserQuestion, 2026-11-09), to the three questions the Issue Review raised:
+
+- Ask First, top-level `CMakeLists.txt`: "Yes, allow it". The plan and the implementation may add `enable_testing()` to the top-level `CMakeLists.txt`; no other top-level change without asking again.
+- Scope of point 3 (gtest): "Whole thing in this issue". Fix the header lookup and make `test_libgz4d` build and pass here; if the tests need large code changes, the plan review raises it again.
+- CI build workflow follow-up: "Yes, open the issue". Opened as #12 (Add a CI build workflow so a fresh clone is configured and built on every push); not part of this drive.
+
+The review's other two actions (verify in a fresh worktree, not the main checkout; split point 3 into lookup then tests in the plan) are mechanism and go into the plan-task handoff.
