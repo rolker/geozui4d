@@ -197,3 +197,13 @@ All eight items from the first review are carried correctly, and the host's vers
 - [ ] Optional: drop `message(${GTEST_LIBS})` unconditionally; decide on `GTESTS_NEED_PTHREADS`.
 - [ ] Optional: record which GTest the acceptance run found (a `~/.local` copy shadows `libgtest-dev` here).
 - [ ] Optional: repair the truncated Prior Art and the stale "test fixes" row.
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-09 10:14 -05:00
+**By**: Claude Code Agent (claude-fable-5-1)
+**Decided-by**: host (round-2 plan review verdict ready, no must-fix; /orchestrator's table lets the host answer proceed at plan)
+**After**: plan
+**Decision**: proceed
+
+The round-2 Plan Review (50ce5ab) found all eight round-1 items carried correctly and the host's version scheme implemented in both CMakeLists files; it tested the GTest::GTest and GTest::Main targets against a 3.14-minimum project on the system libgtest-dev. Six suggestions remain and go into the implement handoff, not back to the plan: limit the stub grep to libgz4d/ so the plan and timeline are never rewritten; also fix .agents/README.md line 137 (ctest --test-dir); the README gets a test step that configures with -DBUILD_GTESTS=ON and runs cd build && ctest; remove message(${GTEST_LIBS}) in libgz4d/cxx/gtest/CMakeLists.txt and drop the unused GTESTS_NEED_PTHREADS option; record which GTestConfig.cmake configure found, since this machine also has GoogleTest 1.13 under ~/.local, or run once with -DGTest_DIR=/usr/lib/x86_64-linux-gnu/cmake/GTest; fix the two plan text slips (Prior Art cut off and still saying git describe; the Principles Self-Check listing a test-fixes commit) in the same pass.
