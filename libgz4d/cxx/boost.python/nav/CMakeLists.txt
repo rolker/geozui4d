@@ -36,4 +36,3 @@ set_target_properties(boost.python_nav_Track.cpp PROPERTIES INSTALL_RPATH "$ORIG
 install(TARGETS boost.python_nav_Track.cpp LIBRARY DESTINATION lib/python2.7/dist-packages/gz4d/nav RUNTIME DESTINATION lib/python2.7/dist-packages/gz4d/nav)
 
 install(FILES __init__.py DESTINATION lib/python2.7/dist-packages/gz4d/nav)
-add_subdirectory(CMakeFiles)

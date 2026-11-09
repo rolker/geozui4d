@@ -113,4 +113,3 @@ set_target_properties(boost.python_sonar_simrad_ParameterManager.cpp PROPERTIES 
 install(TARGETS boost.python_sonar_simrad_ParameterManager.cpp LIBRARY DESTINATION lib/python2.7/dist-packages/gz4d/sonar/simrad RUNTIME DESTINATION lib/python2.7/dist-packages/gz4d/sonar/simrad)
 
 install(FILES __init__.py DESTINATION lib/python2.7/dist-packages/gz4d/sonar/simrad)
-add_subdirectory(CMakeFiles)

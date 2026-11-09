@@ -30,7 +30,6 @@ if(v4l_FOUND)
   install(TARGETS boost.python_v4l_Capability.cpp LIBRARY DESTINATION lib/python2.7/dist-packages/gz4d/v4l RUNTIME DESTINATION lib/python2.7/dist-packages/gz4d/v4l)
 
   install(FILES __init__.py DESTINATION lib/python2.7/dist-packages/gz4d/v4l)
-  add_subdirectory(CMakeFiles)
 else()
   message("skipping boost package v4l")
     message("    v4l_FOUND ${v4l_FOUND}")

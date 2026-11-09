@@ -29,4 +29,3 @@ set_target_properties(boost.python_geo_GeoPoint.cpp PROPERTIES INSTALL_RPATH "$O
 install(TARGETS boost.python_geo_GeoPoint.cpp LIBRARY DESTINATION lib/python2.7/dist-packages/gz4d/geo RUNTIME DESTINATION lib/python2.7/dist-packages/gz4d/geo)
 
 install(FILES __init__.py DESTINATION lib/python2.7/dist-packages/gz4d/geo)
-add_subdirectory(CMakeFiles)

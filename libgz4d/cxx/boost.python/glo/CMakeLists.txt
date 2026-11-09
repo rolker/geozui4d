@@ -36,4 +36,3 @@ set_target_properties(boost.python_glo_Texture.cpp PROPERTIES INSTALL_RPATH "$OR
 install(TARGETS boost.python_glo_Texture.cpp LIBRARY DESTINATION lib/python2.7/dist-packages/gz4d/glo RUNTIME DESTINATION lib/python2.7/dist-packages/gz4d/glo)
 
 install(FILES __init__.py DESTINATION lib/python2.7/dist-packages/gz4d/glo)
-add_subdirectory(CMakeFiles)

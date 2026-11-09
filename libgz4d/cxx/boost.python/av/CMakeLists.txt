@@ -16,7 +16,6 @@ if(avcodec_FOUND AND avformat_FOUND AND avutil_FOUND AND avcore_FOUND)
   install(TARGETS boost.python_av_AVWriter.cpp LIBRARY DESTINATION lib/python2.7/dist-packages/gz4d/av RUNTIME DESTINATION lib/python2.7/dist-packages/gz4d/av)
 
   install(FILES __init__.py DESTINATION lib/python2.7/dist-packages/gz4d/av)
-  add_subdirectory(CMakeFiles)
 else()
   message("skipping boost package av")
     message("    avcodec_FOUND ${avcodec_FOUND}")

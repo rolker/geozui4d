@@ -36,4 +36,3 @@ set_target_properties(boost.python_socket_Address.cpp PROPERTIES INSTALL_RPATH "
 install(TARGETS boost.python_socket_Address.cpp LIBRARY DESTINATION lib/python2.7/dist-packages/gz4d/socket RUNTIME DESTINATION lib/python2.7/dist-packages/gz4d/socket)
 
 install(FILES __init__.py DESTINATION lib/python2.7/dist-packages/gz4d/socket)
-add_subdirectory(CMakeFiles)
