@@ -81,7 +81,7 @@ CCOM/JHC follows **AP Stylebook** with UNH-specific exceptions:
 | Rule | Standard |
 |------|----------|
 | Serial/Oxford comma | Permitted for clarity |
-| Em dashes | With spaces: ` -- ` (not `---` or `---`) |
+| Em dashes | With spaces: ` -- ` (not `---` or `—`) |
 | Numbers | Spell out one through nine; numerals for 10+ |
 | Times | Lowercase with periods: 3:30 p.m. |
 | Months with dates | With a specific date, abbreviate Jan., Feb., Aug., Sept., Oct., Nov., Dec.; spell out March, April, May, June, July. Spell out all months when they stand alone. |
