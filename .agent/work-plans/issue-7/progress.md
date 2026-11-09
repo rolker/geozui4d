@@ -490,3 +490,13 @@ None open.
 
 ### False positives
 None.
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-09 12:40 -05:00
+**By**: Claude Code Agent (claude-fable-5-1)
+**Decided-by**: owner
+**After**: merge
+**Decision**: merge
+
+Owner's answer at the merge checkpoint (AskUserQuestion, 2026-11-09): "Merge, skipping the CI wait". Presented: the Decision summary and the three gaps left for him; reviews (plan approved at round 2; pre-push code review four rounds, approved at round 4; Gemini and Codex on rounds 1 and 2 with nothing of substance; Copilot failed on quota; no CI in the repository); GitHub mergeable and clean; merge method a merge commit. His answer grants --no-wait for this merge, since the repository has no workflow files and merge_pr.sh would otherwise wait 120 s for checks that never come (as on pull request 14). Integrated Review efc2e0f has no open findings.
