@@ -230,3 +230,13 @@ The revision carries the must-fix and all seven round-1 suggestions, and it impl
 - [ ] Fix or record the `CLAUDE.md` Build Commands block (duplicate `cd build`, Run path).
 - [ ] State the build skill's install command, and adjust `.agents/README.md` L7-10 to match the new split.
 - [ ] Run the rewritten build skill's commands once before committing it.
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-09 12:05 -05:00
+**By**: Claude Code Agent (claude-fable-5-1)
+**Decided-by**: host (round-2 plan review verdict ready, no must-fix; /orchestrator's table lets the host answer proceed at plan)
+**After**: plan
+**Decision**: proceed
+
+Round-2 Plan Review b2f1037 on plan 48e7b4d: ready; the 14 skills named in step 7 match the workspace's session_scope frontmatter; the research gap is stated. Four suggestions go into the implement handoff rather than a third plan round: the "project's own skills" bullet in .agents/README.md is deleted or reworded conditionally like step 7, never an unconditional "the loop skills come from the workspace"; the CLAUDE.md Build Commands block (lines 20-29) gets the same duplicate-cd-build fix as AGENTS.md and its run line made correct from the repository root (host decision, listed for the owner's veto: CLAUDE.md imports AGENTS.md and the two blocks would otherwise disagree; CLAUDE.md edits are approved for this issue); the build skill's install command becomes the repo-root form `cmake --install build --prefix install` since scripts/build.sh does not install, and .agents/README.md lines 7-10, which say the rules are in AGENTS.md, are corrected to match the owner's decision; the build skill's commands are run once before the skill is committed, with 8 jobs.
