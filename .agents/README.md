@@ -187,15 +187,20 @@ What to know:
 
 - **Do not modify vendored code**: `GeoZui4D/main/Togl/`, `Togl2.0/`,
   `BWidget-1.7.0/`, `libgz4d/cxx/include/gz4d/util/rapidxml/`.
-- **Never modify the IVS files** in `GeoZui4D/main/widgets/`, these five:
-  `Sv_Matrix4.h`, `Sv_Matrix4.cpp`, `Sv_Quaternion.h`, `Sv_Quaternion.cpp`
-  and `Sv_Raster.h`; `AGENTS.md` lists this under Never. The first four
-  carry the Interactive Visualization Systems Inc. copyright; `Sv_Raster.h`
-  has no copyright header. `Sv_Raster.cpp` carries the CCOM Apache-2.0
-  header and is not one of them.
+- **Never modify the IVS files** in `GeoZui4D/main/widgets/` without the
+  owner's approval; `AGENTS.md` lists `Sv_Matrix4`, `Sv_Quaternion` and
+  `Sv_Raster` under Never. These six files are covered: `Sv_Matrix4.h`,
+  `Sv_Matrix4.cpp`, `Sv_Quaternion.h`, `Sv_Quaternion.cpp`, `Sv_Raster.h`
+  and `Sv_Raster.cpp`. The two `Sv_Matrix4` and two `Sv_Quaternion` files
+  carry the Interactive Visualization Systems Inc. copyright line.
+  `Sv_Raster.h` carries no copyright header. `Sv_Raster.cpp` carries the
+  CCOM Apache-2.0 header added by the 2026-03-11 relicensing commit
+  (`11a46d7`), and no IVS line appears anywhere in its history. Whether the
+  two `Sv_Raster` files share the IVS origin is unverified and is the
+  owner's to settle; until then they are treated like the other four.
 - **Check that neither list has been touched**:
   `git log --oneline -5 -- <path>` on each vendored directory and each of
-  the five IVS files above shows the commits that last changed it.
+  the six files above shows the commits that last changed it.
 - **`std::filesystem`, never `boost::filesystem`** (ADR-0002). Boost
   Filesystem is no longer linked; a stray use fails at link time.
 - **Headers are `.h`**, even for C++ (four `.hpp` files exist; new headers use `.h`).
