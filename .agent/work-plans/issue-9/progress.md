@@ -141,3 +141,11 @@ The Plan Review (465ab4c) found four must-fix corrections and four suggestions, 
 Host decision on must-fix 2 (what replaces the Subversion revision), listed for the owner's veto: the version patch becomes the commit count (`git rev-list --count HEAD`), an integer that grows like the old revision did, so CPack's `4.0.<patch>` keeps its shape; `gz4d_version` becomes `4.0.<count>-g<short sha>` from `git describe --always`; when git is missing or the tree is not a repository, both fall back to the existing `unknown` and patch 0, checking RESULT_VARIABLE and setting WORKING_DIRECTORY (suggestion 6). The repository has no tags, so a bare `git describe` is not usable on its own.
 
 The plan-task re-run carries the four must-fix items (skip CMakeFiles in both genModules and genBoostPython of gen_cmake.py; the version scheme above; libgtest-dev added to the README's Ubuntu package list; .agents/README.md lines 144-160 and 196-205 added to Files to Change) and the four suggestions (ctest step compatible with CMake 3.14, `cd build && ctest`; the git describe fallback above; find_package(GTest); do not edit tests that already pass).
+
+## Plan Authored
+**Status**: complete
+**When**: 2026-11-09 10:12 -05:00
+**By**: Claude Code Agent (claude-sonnet-5-5)
+**Plan**: `.agent/work-plans/issue-9/plan.md` at `265869e`
+
+Revision after the plan review (465ab4c): generator skip in both genModules and genBoostPython; git commit-count version scheme (CPack patch = count, gz4d_version 4.0.<count>-g<sha>, unknown/0 fallback) in both CMakeLists; libgtest-dev in the README; .agents/README.md added; ctest via cd build for CMake 3.14; find_package(GTest); stage 2 is build-file work only, no passing test edited.
