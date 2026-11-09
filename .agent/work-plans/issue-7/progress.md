@@ -75,3 +75,18 @@ issue: 7
 - [ ] Anchor `/build/` and `/install/` in `.gitignore`, commit the `build` skill with the "run the full build in any audit" line.
 - [ ] Update `CLAUDE.md` Skills table and the stale `.agents/README.md` statements in the same PR.
 - [ ] Verify the shadowing claim or drop it from the PR description (already raised in the earlier review).
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-09 11:57 -05:00
+**By**: Claude Code Agent (claude-fable-5-1)
+**Decided-by**: owner
+**After**: issue-actions
+**Decision**: proceed
+
+Owner's answers at the issue-actions checkpoint (AskUserQuestion, 2026-11-09):
+
+- Where the ported gz4d rules live: "Rules in .agents/README.md; AGENTS.md points". His 2026-09-23 decision on this issue stands ("The ported gz4d conventions go in .agents/README.md ... AGENTS.md points at it and doesn't duplicate the rules"); the roadmap Direction line "the gz4d rules live in AGENTS.md (#7)" is reworded to match, drafted from his words and listed for his veto: "The skills that duplicate workspace skills are gone and the gz4d conventions live in `.agents/README.md`, with `AGENTS.md` pointing at them (#7)".
+- Ask First: "Yes, all of them". For this issue only, the plan and implementation may edit AGENTS.md (the pointer and the work-plans convention), CLAUDE.md (the Skills table) and the skill files (delete plan-task, research, review-pr, audit-project; commit the build skill with the audit note; fix the broken table row in brand-guidelines). Anything beyond what the issue and the Issue Review list comes back to him.
+
+Dependency check by the host: rolker/agent_workspace#332 is closed and this project was onboarded through it (#10), so the 2026-10-13 direction that footprint items wait on #332 is satisfied; the footprint answers are in the tree (.agents/README.md exists, .agent/work-plans/ is committed). The research skill may be removed without waiting on rolker/agent_workspace#331 (owner, 2026-09-23 update).
