@@ -313,3 +313,13 @@ Dropped (below threshold): the adversarial reviewer's notes that `GTest_ROOT`/`C
 
 ### Findings
 - [ ] No issues found. LGTM.
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-09 11:00 -05:00
+**By**: Claude Code Agent (claude-fable-5-1)
+**Decided-by**: host (round-2 pre-push review approved with no findings, Ship recommended; /orchestrator's table lets the host answer publish)
+**After**: publish
+**Decision**: publish
+
+Round-2 Local Review (Pre-Push) (a1920df, reviewing 68730e3) approved with no must-fix and no suggestions; all four round-1 suggestions verified fixed against the files; Gemini and Codex both completed with no findings. The host pushes the branch and opens the pull request with the Decision summary from the Implementation entries, its last clause brought up to date with the owner's core-count decision.
