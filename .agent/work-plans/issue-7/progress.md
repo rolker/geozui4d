@@ -327,3 +327,27 @@ Verification: `grep -n parallel .claude/skills/build/SKILL.md` shows only `<N>`,
 - The work-plans location is recorded as provisional pending rolker/agent_workspace#393.
 - Gap for the PR description: the AGENTS.md and CLAUDE.md build blocks still omit -DBUILD_GTESTS=ON and the test step; a follow-up, since editing them further is outside this issue's approval.
 - Gap for the PR description: the same two blocks' `cmake --install` needs CMake 3.15, above the 3.14 minimum (ADR-0001), unnoted there for the same reason; and their IVS lines (`AGENTS.md` Never, `CLAUDE.md` IVS section) still say "Sv_Raster", which also covers the Apache-2.0 `Sv_Raster.cpp` (pre-existing).
+
+## Local Review (Pre-Push)
+**Status**: complete
+**When**: 2026-11-09 12:25 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Dispatch**: resumed (agent a4aa2ca832f3801bc, resume 1 of 3)
+**Verdict**: changes-requested
+
+**Branch**: feature/issue-7 at `c38ac4d`
+**Base**: main
+**Depth**: Deep (reason: whole-diff classification, 13 files; governance files; fix round reviewed on the fix diff `4d974c0..ab5da91`)
+**Must-fix**: 1 | **Suggestions**: 2
+**Round**: 2 | **Ship**: recommended — round 2: 1 mechanical must-fix (prev 1), not rising — fix and ship rather than another full round
+
+Specialists: governance and plan drift (lead), Claude adversarial (fresh subagent), cross-model Gemini (3 suggestions, all dropped) and Codex (no issues), both EXIT=0; static analysis not applicable (`.md` only).
+
+Round-1 items checked against the files: the must-fix is fixed (no job count in the skill; `scripts/build.sh --parallel <N>`, and the script does append "$@" after its own `--parallel`, last wins); the audit rule no longer claims a workspace behaviour; the description matches CLAUDE.md; the 3.15 note is in the skill and the guide's by-hand block; the AGENTS.md/CLAUDE.md test-step gap is in the Decision summary as a PR-description gap. AGENTS.md, CLAUDE.md and the roadmap are untouched this round; `sitrep_checks.sh --root .` exits 0 with all nine rows. Fix commits carry the agent identity and the trailer.
+
+Dropped: Gemini's stateful `cd` in the AGENTS.md/CLAUDE.md blocks (labelled per line, owner-scoped, already a deferred gap); Gemini's "IVS list departs from the plan" (it answers the round-1 review); Gemini's `git log` baseline wording (faithful port of the old audit text, unchanged in substance this round).
+
+### Findings
+- [ ] (must-fix) The guide now says `Sv_Raster.cpp` "is not one of them", narrowing the AGENTS.md/CLAUDE.md Never rule ("Sv_Raster", no extension) on header evidence that does not hold: `Sv_Raster.cpp` never had an IVS line, and its CCOM Apache-2.0 header came from the blanket relicensing commit 11a46d7, not from an owner ruling. Drop that sentence and list `Sv_Raster.cpp` with the others as covered by the Never rule (the conservative reading), leaving whether it is truly IVS for the owner (it arose from the round-1 suggestion's wording) — `.agents/README.md:190-195`
+- [ ] (suggestion) The layout comment still calls all `Sv_*` files "IVS-copyright files", which contradicts the explicit list; Sv_Pointer, Sv_Slider3, Sv_Standards and Sv_Widgets carry CCOM Apache-2.0. Point at the list instead — `.agents/README.md:56`
+- [ ] (suggestion) "as part of any audit: this project's rule" reads as a fragment; e.g. "Run the full build, with the tests, as part of any audit of this project" — `.claude/skills/build/SKILL.md:58-59`
