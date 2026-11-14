@@ -123,13 +123,13 @@ the libais API has diverged.
 
 ## Build & Test
 
-From the agent workspace, through its adapter (`gz4d` is the name used for
-this checkout; substitute yours):
+From the agent workspace, through its adapter (`<name>` is whatever name
+the checkout has in the workspace on that machine):
 
 ```bash
 WS_ROOT="$(cat ~/.claude/agent-workspace-root)"
-"$WS_ROOT/.agent/scripts/adapter" --project gz4d build   # runs ./scripts/build.sh
-"$WS_ROOT/.agent/scripts/adapter" --project gz4d test    # ctest --test-dir build --output-on-failure
+"$WS_ROOT/.agent/scripts/adapter" --project <name> build   # runs ./scripts/build.sh
+"$WS_ROOT/.agent/scripts/adapter" --project <name> test    # ctest --test-dir build --output-on-failure
 ```
 
 By hand:

@@ -29,7 +29,6 @@ issue here runs through the workspace loop to merge.
 | A fresh clone configures, builds and runs its tests by hand (#9) | `gh-issue 9 closed` |
 | The README's build steps need nothing from the workspace | `file-contains README.md cmake ..` |
 | The workspace builds through the project's own tracked script | `file-exists scripts/build.sh` |
-| The checkout is registered on this machine and validates | `script adapter --project gz4d validate` |
 | Agents read the project's conventions from one guide that stands on its own | `file-contains .agents/README.md this guide stands on its own` |
 | The skills that duplicate workspace skills are gone and the gz4d conventions live in `.agents/README.md`, with `AGENTS.md` pointing at them (#7) | `gh-issue 7 closed` |
 | An issue here has run through the workspace loop to merge | |
@@ -37,4 +36,5 @@ issue here runs through the workspace loop to merge.
 | Deferral | Revisit check |
 |----------|---------------|
 | Direction lines for the long-term goal (#1, #2, #3, #6): after a fresh clone builds, since every modernization change needs that first | `gh-issue 9 closed` |
+| A Direction line that the checkout is registered on this machine and validates. Removed because the sit-rep's only check for it names the project (`adapter --project <name> validate`), and that name differs between machines; restore it once the workspace has a check that does not name the project (rolker/agent_workspace#415, item 12) | `gh-issue rolker/agent_workspace#415 closed` |
 | Where work plans and progress timelines live (today: committed on each issue's feature branch, the workspace's provisional default); revisit once the workspace's records lookup (rolker/agent_workspace#393) lands | `gh-issue rolker/agent_workspace#393 closed` |
