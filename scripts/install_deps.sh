@@ -26,12 +26,13 @@ PACKAGES=(
     libjpeg-dev libtiff-dev libpng-dev
     libnetcdf-dev libnetcdf-c++4-dev
     freeglut3-dev libglew-dev
-    libx11-dev
+    libx11-dev libxmu-dev
     portaudio19-dev libjack-dev
     libavformat-dev libavcodec-dev libavutil-dev
     libvorbis-dev
     libbluetooth-dev
     libspnav-dev
+    libopenni-dev   # Kinect: GeoZui4D builds it unconditionally (GZ4D_KINECT is never tested)
     libgtest-dev    # tests only: scripts/build.sh sets -DBUILD_GTESTS=ON
 )
 
