@@ -168,7 +168,9 @@ What to know:
   `if(...)` and skipped with a message when their libraries are missing;
   the other 38 (for example `audioSignalGenerator`) are unconditional and
   always build.
-- Ubuntu package prerequisites are listed in the README under Building.
+- Ubuntu package prerequisites are installed by `scripts/install_deps.sh`,
+  which holds the one package list (`--list` prints it); the README's
+  Building section points to it.
 - The install step is required to run the app (see Architecture Overview).
 - The build directory is `build/` at the repository root, which `.gitignore`
   ignores with the rule `/build/` (and `install/` with `/install/`). The
