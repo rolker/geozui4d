@@ -219,3 +219,22 @@ Verification (clean scratch build directories, 6 jobs):
 - Narrowed grep `grep -rn 'skills/build\|`/build`'` (excluding `.git` and `.agent/work-plans/`): no matches.
 
 Not changed, for the PR description: `GeoZui4D/main/gzmod/nosb.py:19` creates a Kinect object and fails at run time with OpenNI off; #12's clean `ubuntu:24.04` job is the durable no-OpenNI test; the top-level `CMakeLists.txt` was not touched. Scratch builds and the worktree's gitignored `build/` were removed.
+
+## Local Review (Pre-Push)
+**Status**: complete
+**When**: 2026-11-15 12:09 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Verdict**: changes-requested
+
+**Branch**: feature/issue-16 at `d0665b2`
+**Base**: origin/main
+**Depth**: Deep (reason: 12 files, 560 lines changed incl. work plan; touches CLAUDE.md and a skill file)
+**Must-fix**: 1 | **Suggestions**: 2
+**Round**: 1 | **Ship**: continue — round 1: 1 must-fix; first round always re-reviews after fixes
+
+### Findings
+- [ ] (must-fix) GLEW is listed as an optional feature ("build works without them"), but `objects/Flow.cpp` is always compiled and calls `glewInit()`, `glewIsSupported()` and `glMultiDrawArraysEXT()` unguarded, while `<GL/glew.h>` is reached only under `GZ4D_GLEW` (`gz4d/glo.h:12-14`); without GLEW the build fails. Move GLEW to "required in practice" in the summary and in the `.agents/README.md` Dependencies row (or guard Flow.cpp, which is wider scope) — `GeoZui4D/main/CMakeLists.txt:332`, `.agents/README.md:204`, `GeoZui4D/main/objects/Flow.cpp:33-35,114` (found by Codex; confirmed by reading the source)
+- [ ] (suggestion) CMake 3.24+ prints a CMP0135 developer warning on the GoogleTest fetch path (URL download with no `DOWNLOAD_EXTRACT_TIMESTAMP`); add `if(POLICY CMP0135) cmake_policy(SET CMP0135 NEW) endif()` before `FetchContent_Declare`, which keeps CMake 3.14 working — `libgz4d/cxx/CMakeLists.txt:472`
+- [ ] (suggestion) The `if(NOT TARGET gtest)` FATAL_ERROR is almost never reached: a failed download or hash mismatch stops configure inside `FetchContent_MakeAvailable` with CMake's own error. Print the "install libgtest-dev or configure with network access" hint before the fetch, or reword — `libgz4d/cxx/CMakeLists.txt:479-482` (Gemini and Claude adversarial)
+
+Outside reviewers: Gemini (agy) completed, 1 suggestion (above). Codex completed, 1 must-fix (GLEW, above). Claude adversarial (fresh subagent) completed: no must-fix, 2 suggestions (above); it judged GLEW guarded through `glo.h` and missed Flow.cpp's unguarded calls. Static analysis: shellcheck not installed; `bash -n` clean on both changed scripts; no linter profile for CMake or Markdown.
