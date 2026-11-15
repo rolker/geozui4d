@@ -81,3 +81,51 @@ Scope for the plan: the Kinect guard (first), GoogleTest by FetchContent, the co
 **Plan**: `.agent/work-plans/issue-16/plan.md` at `d60dbdf`
 
 Guard the Kinect object with GZ4D_KINECT first, with a GZ4D_WITH_KINECT switch to verify a build without OpenNI, then fetch GoogleTest when not installed and print a report-only configure summary. CI goes to #12; extra packages to a new issue.
+
+## Plan Review
+**Status**: complete
+**When**: 2026-11-15 09:33 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Verdict**: needs-work
+
+**Issue**: #16 — Declare build dependencies in a runnable, CI-tested form; fix the netCDF C++ package name
+**Plan**: `.agent/work-plans/issue-16/plan.md` at `d60dbdf`
+**Branch**: `feature/issue-16`
+
+### Evaluation
+
+| Dimension | Verdict | Notes |
+|---|---|---|
+| Scope | Good | Three commits in one PR: the Kinect guard, the GoogleTest fetch, the configure summary. It matches the owner's Checkpoint: item 4 goes to #12 and the optional packages go to #19. Step 6's "do the same for the library's optional finds" is open-ended (see finding 6). |
+| Issue alignment | Needs work | Serves: "None (the project states no goals); it serves 'builds from a fresh clone'. Design document: none." That is acceptable for a project. Every review-issue finding is addressed. The summary would label several libraries "optional" that the build cannot do without (finding 1). |
+| File targeting | Needs work | Checked against the source: `ni_FOUND` is set at `GeoZui4D/main/CMakeLists.txt:184`, before `add_subdirectory(objects)` at `:204`, so the plan's "check the order" holds and `objects/CMakeLists.txt` can test `ni_FOUND` directly. The library is configured first (top-level `CMakeLists.txt:14`), so the option declared there is the one that takes effect. Files the plan misses: `.agents/README.md:149-157` (the GTest passage) and `:114` (options list); `.claude/skills/build/SKILL.md:21-22`; `GeoZui4D/main/gzmod/nosb.py:19` (findings 3 and 4). The ".agents/README.md lines 185-186" reference does not match anything about OpenNI. |
+| Consequences | Needs work | Missing: the build skill's "GoogleTest must be installed" text (Ask First, since it is a skill file), and the `.agents/README.md` GTest passage. |
+| Principle alignment | Needs work | "Only what's needed": the `OPTIONAL_PACKAGES` array and the `--optional` flag are not needed now (host decision; finding 2). "Document from source": the summary's feature list does not match the source (finding 1). "Test what breaks": the OFF build is a one-time check, and the plan should name what keeps it tested (finding 7). |
+| ADR compliance | Needs work | ADR-0001: `FetchContent_MakeAvailable` is available in 3.14, and v1.14.0's CMakeLists has `cmake_minimum_required(VERSION 3.13)`, so the pin is compliant. The plan's reason for the pin is wrong, though (finding 5). ADR-0003: BSD-3, test-only, fine. |
+| ROS conventions | N/A | Not a ROS project. |
+
+### Findings
+
+1. **[Principle alignment / Document from source]** Step 6 would print Vorbis, NetCDF C++ and PortAudio as optional features that show `off (not found)`, but the build fails without each of them. `.agents/README.md:189` already records that vorbisfile, GLUT and NetCDF C++ are required in practice (`objects/SoundOgg.cpp` is always compiled; `engine/Scene3D.h` reaches `<ncAtt.h>`). `objects/Sound.cpp` and `Sound.h` include PortAudio headers unconditionally as well. A summary that calls these "optional" misleads the people and the CI it is written for. Resolution: list only the features whose absence the build survives. Checked so far: FFmpeg (`GZ4D_AV`), GLEW (`GZ4D_GLEW`), OpenNI/Kinect once guarded, and probably Bluetooth and Jasper (the app links them but includes none of their headers). Check each one against the source before listing it. Leave the required-in-practice ones out, or print them separately as "required, found". Separately, the Vorbis and Bluetooth blocks set no `*_FOUND` variable either, not only Kinect's.
+2. **[Principle alignment / host decision]** Step 4's `OPTIONAL_PACKAGES` array and `--optional` flag go against the host's decision (no `--optional` now; #19 adds it if it needs it). The guard does not need either one. The smallest form is to delete the `libopenni-dev` line from `PACKAGES` and to say in README.md (Prerequisites) that installing `libopenni-dev` enables the Kinect object and that `-DGZ4D_WITH_KINECT=OFF` turns it off. No new array and no new flag. Update the plan's Open Questions to match.
+3. **[Consequences]** The GoogleTest fallback makes three more texts wrong: `.agents/README.md:149-157` ("found with `find_package(GTest REQUIRED)` … a missing GoogleTest stops the configure", plus the `GTest_DIR` and `GTEST_ROOT` notes, which apply only to the installed path); `.claude/skills/build/SKILL.md:21-22` ("GoogleTest must be installed"), which is a skill file and so needs owner approval under AGENTS.md "Ask First"; and `.agents/README.md:114`, which lists the options and should gain `GZ4D_WITH_KINECT`. Add all three to Files to Change and the Consequences table, and flag the skill edit for approval.
+4. **[File targeting]** `GeoZui4D/main/gzmod/nosb.py:19` runs `gz newobject Kinect …`. It is the one script that creates a Kinect object (no `.tcl` script does). With OpenNI off it fails at run time. No code change is needed, but step 2's grep should cover it and the PR description should say so.
+5. **[ADR compliance / host decision check]** The plan says a later release "needs C++14 and CMake 3.16", and that is wrong. Checked upstream: the top-level `CMakeLists.txt` asks for `cmake_minimum_required(VERSION 3.13)` in v1.14.0, v1.15.0, v1.15.2 and v1.16.0. Only v1.17.0 raises it to 3.16, and v1.17.0 also requires C++17. The host's pin of v1.14.0 is still right, because it matches Ubuntu 24.04's installed `libgtest-dev` 1.14.0-1 and so both paths test the same GoogleTest. Correct the reason in the plan and in any comment next to the pin.
+6. **[Scope]** In step 6, "Do the same for the library's optional finds only if they already set `*_FOUND`" leaves the scope open, because `libgz4d/cxx/CMakeLists.txt` has many such blocks. The issue review said the summary should be printed once, at the end of `GeoZui4D/main/CMakeLists.txt`. Suggestion: limit it to the app, or name the library features up front.
+7. **[Test what breaks]** The OFF build in step 3 checks the guard once. Say what keeps it tested from then on: once `libopenni-dev` leaves `install_deps.sh`, #12's clean `ubuntu:24.04` job builds without OpenNI on every run. Record that as the durable test, in the plan and in the PR, so #12 knows. Suggestion.
+8. **[Approach]** Suggestions for step 5: keep the fetch inside the existing `if(BUILD_GTESTS)` block (`libgz4d/cxx/CMakeLists.txt:451`), so a default configure never touches the network. Set `BUILD_GMOCK OFF` along with `INSTALL_GTEST OFF`; the suite links only `GTest::GTest` and `GTest::Main` (`gtest/CMakeLists.txt:14`), and v1.14.0 builds gmock by default. Also note that the library sets `BUILD_SHARED_LIBS` ON (`libgz4d/cxx/CMakeLists.txt:12-16`), so the fetched gtest builds as a shared library. That is fine for `ctest` from the build tree.
+
+Host decisions checked: the `GZ4D_WITH_KINECT` name is fine, so keep it. The v1.14.0 pin is right, but the plan's reason for it is wrong (finding 5). No `--optional` flag is correct, and the plan's step 4 has to change to match (finding 2).
+
+### Summary
+
+The plan is sound: the Kinect guard comes first and is verified by a build with OpenNI off, and GoogleTest is fetched only when it is not installed. It needs four corrections before implementation. The summary's feature list must match what is really optional; step 4 must drop the optional array and flag; the GoogleTest documents (one of them a skill file, which needs approval) must be added; and the reason for the GoogleTest pin must be fixed.
+
+### Recommended Actions
+
+- [ ] Limit the configure summary to features whose absence the build survives, each checked against the source, or print the required-in-practice ones (Vorbis, GLUT, NetCDF C++, PortAudio) separately as required.
+- [ ] Replace step 4's `OPTIONAL_PACKAGES` and `--optional` with deleting the `libopenni-dev` line, plus README wording; update Open Questions.
+- [ ] Add `.agents/README.md:114` and `:149-157` and `.claude/skills/build/SKILL.md:21-22` to Files to Change and Consequences, and mark the skill edit "Ask First".
+- [ ] Correct the GoogleTest version reason: v1.14.0 to v1.16.0 need CMake 3.13 and only v1.17.0 needs 3.16 and C++17; keep the v1.14.0 pin because it matches Ubuntu 24.04.
+- [ ] Note `gzmod/nosb.py` as the one script that creates a Kinect object.
+- [ ] (Suggestion) Keep the summary to the app; name #12's no-OpenNI CI build as the durable test; keep the fetch inside `if(BUILD_GTESTS)` and set `BUILD_GMOCK OFF`.
