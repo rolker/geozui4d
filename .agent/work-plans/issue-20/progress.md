@@ -293,3 +293,45 @@ The Plan Review at ec2062d found that gz4d::ogr::SpatialReference::SetFromUserIn
 **Plan**: `.agent/work-plans/issue-20/plan.md` at `6d3d34e`
 
 Revision after the ec2062d review: the helper gz4d::gdal::spatialReferenceForRaster (gz4d/gdal/sidecarPrj.h) parses the .prj text with a local OGRSpatialReference first and builds the gz4d::ogr::SpatialReference only on OGRERR_NONE (SpatialReference.h unchanged); a bad .prj reports on stderr naming the file; no .prj keeps today's behaviour (deliberate, to be said in the PR); tests check the stderr file name and probe for a case-insensitive file system.
+
+## Plan Review
+**Status**: complete
+**When**: 2026-11-15 12:09 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Verdict**: ready
+
+**Issue**: #20 — Open ESRI ASCII grids (.asc) as surfaces through the GDAL raster loader
+**Plan**: `.agent/work-plans/issue-20/plan.md` at `6d3d34e`
+**Branch**: `feature/issue-20`
+
+### Evaluation
+
+| Dimension | Verdict | Notes |
+|---|---|---|
+| Scope | Good | Four files (new `gz4d/gdal/sidecarPrj.h`, `GdalRaster.cpp`, `gdal_asc.cpp`, README); one PR. The ice_cube WKT1 half stays out, as the owner set it ("Both"; ice_cube's half done there). |
+| Issue alignment | Good | The ec2062d must-fix is resolved by option (a): parse with a local `OGRSpatialReference::SetFromUserInput`, check `OGRERR_NONE`, and only then build the wrapper from the same text. Checked against `SpatialReference.h`: `SetFromUserInput` returns `void` (lines 82-85) and the raw constructors are private, so (a) is the only route that leaves the header unchanged, and a default wrapper gives `operator bool` false as the plan says. The non-empty-GDAL-WKT path uses the same check. Every issue-review recommendation is carried (helper shared by `Load` and the gtest, `.prj`/`.PRJ`, `std::cerr` naming the file, WKT2/WKT1/no/bad/uppercase cases, README, axis comment as follow-up). Serves: "The project roadmap goal of using GeoZui4D with file formats people use today (`docs/roadmap.md`). The project has no design document: none." Checked: fits, breaks no stated rule. |
+| File targeting | Good | `gz4d/gdal/` beside `saveGeotiff.h` (inline free function, `gz4d::gdal`) matches existing placement; explicit `<filesystem>`/`<fstream>`/`<iostream>`/`<sstream>` includes listed. `gtest/CMakeLists.txt` already has the `if(GDAL_FOUND)` entry; `SpatialReference.h` correctly not listed. |
+| Consequences | Good | README, app rebuild, axis-comment follow-up. `Load` is called right after creation (`Scene3D.cpp:655`, `ObjectCollection.cpp:458`), so no CRS is normally set on the object before `Load`; see finding 1 for keeping that untouched anyway. |
+| Principle alignment | Good | Only what's needed: fallback only when GDAL gives no CRS; no wrapper change. Test what breaks: the gtest runs the helper `Load` calls; branch goes from red to green. Prior art stated (GDAL's `.prj`/`.PRJ` lookup, `saveGeotiff.h` placement; rejected wrapper change, source-grep, app-link test). Design picture: no change. The no-`.prj` gap is stated as deliberate (ec2062d finding 3). Test details from ec2062d finding 4 adopted (stderr names the file; case-insensitive FS probed, no platform macro). |
+| ADR compliance | Good | 0001: header-only, no CMake change. 0002: `replace_extension`/`exists` via `std::filesystem`. 0003: SPDX header on the new file. |
+| ROS conventions | N/A | Not a ROS project. |
+
+Host mechanism choices checked: local-parse-first with `SpatialReference.h` unchanged (sound, smallest); `gz4d::gdal::spatialReferenceForRaster` in `gz4d/gdal/` (fits the existing layout); no `.prj` keeps today's behaviour, stated as a deliberate gap (consistent with "Only what's needed"). No objection to any.
+
+### Findings
+
+1. **[Consequences] Suggestion** — Today `Load` leaves `spatialReference` untouched when GDAL gives no CRS. "Replace lines 79-82 with a call to the helper" would, if written as an unconditional `spatialReference = spatialReferenceForRaster(...)`, overwrite any CRS already on the object with an empty one. Normal loading creates the object and calls `Load` at once, so the risk is small, but assigning only when the result is non-empty (`if(auto sr = ...; sr) spatialReference = sr;`) keeps today's semantics exactly at no cost.
+2. **[Principle alignment] Suggestion** — `UppercasePrj`: write WKT2 into `x.PRJ`. GDAL's AAIGrid driver also looks for `.PRJ`, so a WKT1 `.PRJ` would be read by GDAL itself and the helper's `.PRJ` lookup would never run; WKT2 makes the test exercise the fallback path it is named for (assert `GetProjectionRef()` empty as in `Wkt2PrjUsesFallback`, with the same tolerance for a later GDAL).
+3. **[Principle alignment] Suggestion** — `Wkt1PrjReadByGdal`: comparing the helper's result with a wrapper built from `GetProjectionRef()` is close to tautological (the helper passes that same text through). Compare instead with the UTM SRS the test built to write the `.prj` (`IsSame`), which checks the round trip. "No fallback read" is not directly observable; asserting nothing on captured stderr is enough.
+4. **[Principle alignment] Suggestion (optional hardening)** — `OGRSpatialReference::SetFromUserInput` also treats its argument as a file name, URL or `EPSG:` code. For `.prj` contents that is harmless in practice; GDAL 3.x's two-argument overload with `ALLOW_NETWORK_ACCESS=NO`/`ALLOW_FILE_ACCESS=NO` would close it for the local parse, but the wrapper's one-argument call would still differ. Not worth widening scope; mention only if the implementer touches it.
+5. **[Issue alignment] Confirmed (planner's question)** — The `.asc` alias checked by review and by the owner at a screen, not by ctest, remains acceptable (as in ec2062d finding 5).
+
+### Summary
+
+The revision resolves the previous must-fix with a mechanism that works on the existing wrapper unchanged, and adopts all four earlier suggestions. The remaining points are small test and assignment details the implementer can take in stride. Ready for implementation.
+
+### Recommended Actions
+
+- [ ] In `Load`, assign the helper's result only when it is non-empty (finding 1).
+- [ ] Use WKT2 content in the `UppercasePrj` test so the fallback's `.PRJ` lookup is what runs (finding 2).
+- [ ] In `Wkt1PrjReadByGdal`, compare against the SRS the test built, not GDAL's own string (finding 3).
