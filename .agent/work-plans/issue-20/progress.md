@@ -379,3 +379,13 @@ Merged branch (with issue 16's GoogleTest fetch) built with -DBUILD_GTESTS=ON: f
 - [ ] (suggestion) Agent guide says the gtest suite has "nine sources"; gdal_asc.cpp is now a tenth when GDAL is found — `.agents/README.md:148`
 - [ ] (suggestion) `M_PI` is not standard C++ (MSVC needs `_USE_MATH_DEFINES`); use a local constexpr — `libgz4d/cxx/gtest/gdal_asc.cpp:163`
 - [ ] (suggestion) The `.prj` fallback also applies to CRS-less `.tif`/`.tiff`/`.vrt`, not only `.asc`; say so in the comment or the PR — `GeoZui4D/main/objects/GdalRaster.cpp:81`
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-15 12:38 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Decided-by**: host (pre-push round 1 approved, ship recommended, no must-fix; the standing rule takes a second round only after a must-fix)
+**After**: publish
+**Decision**: publish
+
+The Local Review (Pre-Push) at 60d27d5 approved with six suggestions, named in the PR as follow-ups: bound the .prj read; say "could not read" for an unreadable .prj; the options form of SetFromUserInput needs GDAL 3 (stated in the PR, not checked in CMake: GDAL 3 is in every supported Ubuntu); the "nine sources" count in .agents/README.md; M_PI on MSVC; the fallback also serves .tif/.tiff/.vrt files with no CRS.
