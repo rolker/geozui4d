@@ -12,28 +12,34 @@ Today `GeoZui4D/main/CMakeLists.txt:184-191` finds OpenNI and defines `GZ4D_KINE
 
 ## Approach
 
-1. **Add a switch to force OpenNI off** in `GeoZui4D/main/CMakeLists.txt`: `option(GZ4D_WITH_KINECT "Use OpenNI for the Kinect object when found" ON)`. The find block runs only when ON; it sets `ni_FOUND` and, when found, `add_definitions(-DGZ4D_KINECT)`. With OFF the build is the same as on a machine without OpenNI, which is how the guard is verified here (Ubuntu 24.04 with `libopenni-dev` installed). Mirror the same option in `libgz4d/cxx/CMakeLists.txt:349-358` so `-DGZ4D_WITH_KINECT=OFF` from the top level also skips `gzKinect` in the library (the option is a cache variable, so one `-D` reaches both).
-2. **Guard the application code**: wrap the include (`engine/Scene3D.cpp:9`) and `LINK_OBJECT(Kinect)` (`:118`) in `#ifdef GZ4D_KINECT`; in `objects/CMakeLists.txt` add `Kinect.cpp` to the source list only `if(ni_FOUND)` (the variable set by the main CMakeLists before `add_subdirectory(objects)`; check the order, and if `objects/` is processed first, use `list(APPEND ...)` in the parent instead). Grep for any other `Kinect` use (the earlier grep shows only these) and for Tcl scripts that create a `Kinect` object, which would fail at run time with a clear "unknown object" message rather than at build time.
-3. **Verify** by building twice in scratch build directories: `-DGZ4D_WITH_KINECT=OFF` (must configure, compile and link; check `nm`/`strings` or that no `Kinect` symbol and no `XnCppWrapper` include is reached) and the default (still defines `GZ4D_KINECT` and builds Kinect.cpp). Commit this step on its own.
-4. **Update the package list**: move `libopenni-dev` out of `PACKAGES` in `scripts/install_deps.sh` into an `OPTIONAL_PACKAGES` array that `--list` prints under a clear marker only with a new `--optional` flag (default behavior stays required-only, so the single list stays one file); fix its comment. Update README.md (lines ~90-102) to say OpenNI is optional and how to turn it off. Update `.agents/README.md` lines 185-186 if they claim OpenNI is required, and the file inventory note about Kinect if any (verify first).
-5. **GoogleTest by FetchContent** in `libgz4d/cxx/CMakeLists.txt:449-461`: keep `find_package(GTest)` first (no REQUIRED); when not found, `include(FetchContent)`, `FetchContent_Declare(googletest URL <release tarball> URL_HASH SHA256=...)` pinned to a release (v1.14.0 supports C++14 and CMake 3.13+, so it fits ADR-0001), `set(INSTALL_GTEST OFF)`, `FetchContent_MakeAvailable(googletest)`, then `add_library(GTest::GTest ALIAS gtest)` and `add_library(GTest::Main ALIAS gtest_main)` so `gtest/CMakeLists.txt:14` (`GTest::GTest GTest::Main`) is unchanged. Fetch needs network access at configure; when the fetch fails the error says so. Verify with the installed package (default path) and with `-DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON` (fetch path), running `ctest` in both. Then `libgtest-dev` stays in `install_deps.sh` as the offline path, with its comment changed to say the build fetches GoogleTest when it is absent; the `scripts/build.sh` header comment ("configure stops if it is missing") and README line 101 are corrected.
-6. **Configure summary**, report only: at the end of `GeoZui4D/main/CMakeLists.txt` (next to `message("version: ...")`), print one block, "Optional features:", one line per feature as `on`/`off (not found)` for Vorbis, Bluetooth, NetCDF, NetCDF C++, OpenNI/Kinect, FFmpeg (avformat), PortAudio, GLEW, JPEG/TIFF/PNG/Jasper, X11, from the `*_FOUND` variables each find block already sets (a few blocks, e.g. Kinect's here, only set a define; add the variable). A small helper function `gz4d_report_feature(name flag)` keeps it to one line each. No `FATAL_ERROR` is added. Leave the existing per-block "not found" messages. Do the same for the library's optional finds only if they already set `*_FOUND`; do not add new dependency lookups.
-7. **Review items**: run the full default build (`scripts/build.sh`) and `ctest` before the push; confirm the summary prints both when everything is found and in the OpenNI-off build.
+1. **Add a switch to force OpenNI off** in `GeoZui4D/main/CMakeLists.txt`: `option(GZ4D_WITH_KINECT "Use OpenNI for the Kinect object when found" ON)`. The find block (`:184-191`) runs only when ON; it sets `ni_FOUND` (TRUE/FALSE) and, when found, `add_definitions(-DGZ4D_KINECT)`. With OFF the build is the same as on a machine without OpenNI, which is how the guard is verified here (Ubuntu 24.04 with `libopenni-dev` installed). Declare the same option in `libgz4d/cxx/CMakeLists.txt:349-358` (configured first, top-level `CMakeLists.txt:14`) so one `-DGZ4D_WITH_KINECT=OFF` also skips `gzKinect` in the library; the option is a cache variable, so the top-level file is not touched.
+2. **Guard the application code**: wrap the include (`engine/Scene3D.cpp:9`) and `LINK_OBJECT(Kinect)` (`:118`) in `#ifdef GZ4D_KINECT`; in `objects/CMakeLists.txt:32` add `Kinect.cpp` only `if(ni_FOUND)` (`ni_FOUND` is set at `main/CMakeLists.txt:184`, before `add_subdirectory(objects)` at `:204`, so it is visible there). The only script that creates a Kinect object is `GeoZui4D/main/gzmod/nosb.py:19` (`gz newobject Kinect ...`); no `.tcl` script does. It needs no code change and fails at run time with OpenNI off; the PR description says so.
+3. **Verify** by building twice in scratch build directories: `-DGZ4D_WITH_KINECT=OFF` (must configure, compile and link, with no `XnCppWrapper.h` reached and no `Kinect` object compiled) and the default (still defines `GZ4D_KINECT` and builds `Kinect.cpp`). The durable test afterwards is #12's clean `ubuntu:24.04` job: once `libopenni-dev` leaves `install_deps.sh`, it builds without OpenNI on every run. The PR description records this for #12. Commit this step on its own with step 4.
+4. **Package list and docs for the guard**: delete the `libopenni-dev` line from `PACKAGES` in `scripts/install_deps.sh` and correct its comment about `GZ4D_KINECT`. No `OPTIONAL_PACKAGES` array and no `--optional` flag (host decision; #19 adds one if it needs it). README.md Prerequisites (~lines 90-102) says that installing `libopenni-dev` enables the Kinect object and `-DGZ4D_WITH_KINECT=OFF` turns it off. `.agents/README.md:114` (options list) gains `GZ4D_WITH_KINECT`; correct any OpenNI-required wording found there (verify against the text first).
+5. **GoogleTest by FetchContent** in `libgz4d/cxx/CMakeLists.txt:449-461`, inside the existing `if(BUILD_GTESTS)` block so a default configure never touches the network: keep `find_package(GTest)` first (no REQUIRED); when not found, `include(FetchContent)`, `FetchContent_Declare(googletest URL <v1.14.0 release tarball> URL_HASH SHA256=...)`, `set(INSTALL_GTEST OFF)`, `set(BUILD_GMOCK OFF)` (the suite links only `GTest::GTest` and `GTest::Main`, `gtest/CMakeLists.txt:14`), `FetchContent_MakeAvailable(googletest)`, then `add_library(GTest::GTest ALIAS gtest)` and `add_library(GTest::Main ALIAS gtest_main)`. Pin v1.14.0 because it is the release Ubuntu 24.04's `libgtest-dev` (1.14.0-1) ships, so the installed and the fetched path test the same GoogleTest; it also satisfies ADR-0001 (v1.14.0 through v1.16.0 ask for CMake 3.13; only v1.17.0 raises it to 3.16 and C++17). The comment next to the pin says this. The library sets `BUILD_SHARED_LIBS` ON (`:12-16`), so the fetched gtest builds shared; fine for `ctest` from the build tree. The fetch needs network access at configure; the failure message says so. Verify with the installed package (default path) and with `-DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON` (fetch path), running `ctest` in both. `libgtest-dev` stays in `install_deps.sh` as the offline path, comment changed.
+6. **GoogleTest wording**: correct `scripts/build.sh` header comment ("configure stops if it is missing"), README.md `libgtest-dev` paragraph, and `.agents/README.md:149-157` (no longer `find_package(GTest REQUIRED)`; a missing GoogleTest is fetched; the `GTest_DIR` / `GTEST_ROOT` notes apply only to the installed path).
+7. **Configure summary**, report only, app only (`GeoZui4D/main/CMakeLists.txt`, next to `message("version: ...")`), no `FATAL_ERROR`. Two parts via a helper `gz4d_report_feature(name flag)`: "Optional features (build works without them)" lists only features checked against the source to survive absence. Already confirmed: FFmpeg (`GZ4D_AV`, `:107-110`), GLEW (`GZ4D_GLEW`, `:144-149`), OpenNI/Kinect (guarded in step 2). To check before listing: Bluetooth (`engine/Wiimote.h` is included by `main.cpp:33` and `Scene3D.cpp:65`; see whether it needs `bluetooth/bluetooth.h`), Jasper, JPEG/TIFF/PNG (`.agents/README.md:185` says all three are required in practice), X11, jack. Whatever fails the check is dropped. A second line group, "Required in practice, found", prints Vorbis (`objects/SoundOgg.cpp` always compiled), PortAudio (`Sound.cpp`/`Sound.h` include its headers unconditionally), NetCDF and NetCDF C++ (`engine/Scene3D.h` reaches `<ncAtt.h>`; `.agents/README.md:189`), GLUT, and says `MISSING` for any not found (the build then fails later, as today). The Vorbis and Bluetooth blocks set no `*_FOUND` variable; add one. Existing per-block "not found" messages stay. No library-side summary and no new dependency lookups.
+8. **Remove the build skill** (owner: "let's remove that skill"): `git rm -r .claude/skills/build/`; delete the `/build` row from the CLAUDE.md Skills table (`:86`), nothing else in CLAUDE.md; reword `.agents/README.md:177` (".claude/skills/build/ is tracked") to match, after reading the sentence it sits in. Move the skill's content that nothing else covers into `.agents/README.md` near its build section (`:138`): "Run the full build, with the tests, as part of any audit of this project"; report warnings even on successful builds; do not modify a `CMakeLists.txt` to fix a build error without asking; `scripts/build.sh --parallel <N>` on a machine short of memory (the script passes its arguments to the build step, the last `--parallel` wins). Skip what the README already says (verify each against `scripts/build.sh` and the README text). Check that `grep -rn "skills/build\|/build"` finds no remaining reference.
+9. **Review items**: run the full default build (`scripts/build.sh`) and `ctest` before the push; confirm the summary prints both with everything found and in the OpenNI-off build.
 
 ## Files to Change
 
 | File | Change |
 |------|--------|
-| `GeoZui4D/main/CMakeLists.txt` | `GZ4D_WITH_KINECT` option, `ni_FOUND`, configure summary |
+| `GeoZui4D/main/CMakeLists.txt` | `GZ4D_WITH_KINECT` option, `ni_FOUND`, `*_FOUND` for Vorbis and Bluetooth, configure summary |
 | `GeoZui4D/main/engine/Scene3D.cpp` | `#ifdef GZ4D_KINECT` around include and `LINK_OBJECT(Kinect)` |
 | `GeoZui4D/main/objects/CMakeLists.txt` | `Kinect.cpp` only when OpenNI found |
-| `libgz4d/cxx/CMakeLists.txt` | same option for the OpenNI find; GoogleTest `FetchContent` fallback |
-| `scripts/install_deps.sh` | `libopenni-dev` to an optional list; comments |
-| `scripts/build.sh`, `README.md`, `.agents/README.md` | GoogleTest and OpenNI wording |
+| `libgz4d/cxx/CMakeLists.txt` | same option for the OpenNI find; GoogleTest `FetchContent` fallback inside `if(BUILD_GTESTS)` |
+| `scripts/install_deps.sh` | delete `libopenni-dev`; comments (OpenNI, GoogleTest) |
+| `scripts/build.sh` | header comment on GoogleTest |
+| `README.md` | OpenNI optional and how to enable or disable; GoogleTest wording |
+| `.agents/README.md` | `:114` options, `:149-157` GoogleTest, `:177` skill reference, build guidance moved from the skill |
+| `CLAUDE.md` | delete the `/build` row of the Skills table only (owner approved) |
+| `.claude/skills/build/SKILL.md` | deleted (owner approved) |
 
 ## Prior Art
 
-The existing `GZ4D_KINECT` define and the `ni_FOUND` guard on `gzKinect` in `libgz4d/cxx/test/CMakeLists.txt` are reused rather than a new mechanism. `GeoZui4D/main/CMakeLists.txt` already prints per-dependency "not found" messages; the summary collects the flags they set. For GoogleTest, the upstream-documented `FetchContent` pattern with `find_package` first is used. No CI is built here (#12 owns it).
+The existing `GZ4D_KINECT` define and the `ni_FOUND` guard on `gzKinect` in `libgz4d/cxx/test/CMakeLists.txt` are reused rather than a new mechanism. `GeoZui4D/main/CMakeLists.txt` already prints per-dependency "not found" messages; the summary collects the flags they set. For GoogleTest, the upstream-documented `FetchContent` pattern with `find_package` first is used. The build skill's guidance is folded into `.agents/README.md` rather than kept as a second place. No CI is built here (#12 owns it).
 
 ## Serves
 
@@ -49,14 +55,15 @@ No change to the design picture; the project has no design document.
 |---|---|
 | Only what's needed | One package list stays in `install_deps.sh`; no second list in CI; no new dependency lookups. |
 | Document from source | README, `.agents/README.md`, `install_deps.sh` and `build.sh` wording corrected against the code after the change. |
-| Put each thing at the level it applies to | CI left to #12; extra packages left to their own issue. |
+| Put each thing at the level it applies to | CI left to #12; extra packages left to #19. |
+| Test what breaks | The OFF build is checked once here; #12's clean no-OpenNI job is the durable test. |
 | Verify, do not assume | "Optional" proven by a build with the switch off, not by reading the code. |
 
 ## ADR Compliance
 
 | ADR | Triggered | How addressed |
 |---|---|---|
-| ADR-0001 CMake 3.14, C++17 | Yes | `FetchContent_MakeAvailable` is 3.14; a GoogleTest release that builds with C++17 and CMake 3.14 is pinned. |
+| ADR-0001 CMake 3.14, C++17 | Yes | `FetchContent_MakeAvailable` is 3.14; v1.14.0 asks for CMake 3.13, so the pin is compliant. |
 | ADR-0002 std::filesystem | No | |
 | ADR-0003 Apache 2.0 | No | Fetched GoogleTest (BSD-3) is test-only and not distributed. |
 
@@ -64,8 +71,10 @@ No change to the design picture; the project has no design document.
 
 | If we change... | Also update... | Included in plan? |
 |---|---|---|
-| `libopenni-dev` leaves required list | `install_deps.sh` comment, README, `.agents/README.md` | Yes |
-| GoogleTest fallback | `scripts/build.sh` comment, README line 101 | Yes |
+| `libopenni-dev` leaves required list | `install_deps.sh` comment, README, `.agents/README.md:114` | Yes |
+| Build skill deleted | CLAUDE.md Skills row, `.agents/README.md:177`, guidance moved to `.agents/README.md` | Yes |
+| GoogleTest fallback | `scripts/build.sh` comment, README, `.agents/README.md:149-157` | Yes |
+| `gzmod/nosb.py` creates a Kinect object | Fails at run time with OpenNI off; noted in the PR | Yes |
 | Top-level `CMakeLists.txt` (Ask First) | Not touched; the `-D` option is a cache variable that reaches both sub-projects | Yes |
 | CI workflow in a clean container | #12 | No, follow-up (#12) |
 | libxi, libexif, libflac++, festival packages | New issue opened by the host | No, follow-up |
@@ -74,10 +83,8 @@ Build-impact note for the PR (CMakeLists changes): no required dependency is add
 
 ## Open Questions
 
-- Option name `GZ4D_WITH_KINECT` (default ON, use if found) is a proposal; the owner may prefer another name.
-- Pin the GoogleTest release (v1.14.0 proposed) and its tarball hash; a later release needs C++14 and CMake 3.16, above the project's 3.14 minimum.
-- Should `install_deps.sh --optional` exist now, given that the follow-up issue adds more optional packages? Proposed: yes, so that issue only adds names.
+- None open. Decided: option name `GZ4D_WITH_KINECT`, GoogleTest pin v1.14.0, no `--optional` flag, the build skill removed.
 
 ## Estimated Scope
 
-Single PR, three commits: Kinect guard with the package-list change, GoogleTest fetch, configure summary.
+Single PR, four commits: Kinect guard with the package-list change, GoogleTest fetch, configure summary, build skill removal.
