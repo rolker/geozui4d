@@ -187,3 +187,13 @@ The revision addresses every finding of the first review and follows the owner's
 
 - [ ] List Bluetooth (and JPEG, TIFF, PNG) under "Required in practice, found" in the configure summary, and add Bluetooth to `.agents/README.md:186`.
 - [ ] (Suggestion) Correct the `.agents/README.md:189` reference to `:186`; narrow step 8's grep; align the README `libgtest-dev` wording with the fetch fallback.
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-15 09:43 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Decided-by**: host (second plan review verdict ready; its one must-fix is an implementation instruction, no plan revision needed)
+**After**: plan
+**Decision**: proceed
+
+The Plan Review at 7393c15 is ready. Its findings go to the implement pass: list Bluetooth, JPEG, TIFF and PNG under "Required in practice, found" instead of dropping them, and name Bluetooth at .agents/README.md:186 (Wiimote.cpp is always compiled and reaches <bluetooth/bluetooth.h>); cite :186, not :189, for NetCDF C++; narrow the step 8 grep to `skills/build` or the literal `/build` command; reword README.md:101-102 so libgtest-dev is needed only for offline test builds.
