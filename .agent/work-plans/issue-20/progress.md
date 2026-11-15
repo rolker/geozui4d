@@ -285,3 +285,11 @@ The plan carries the owner's "Both" decision into this repo correctly and puts t
 **Decision**: revise
 
 The Plan Review at ec2062d found that gz4d::ogr::SpatialReference::SetFromUserInput returns void and leaves a wrapper that tests true after garbage input, so the helper cannot detect an unparsable .prj. Host choices for the revision (mechanism, listed for the owner's veto): fix (a), parse the .prj text with a local OGRSpatialReference first and hand it to the wrapper only on success, leaving SpatialReference.h unchanged; place the helper as gz4d::gdal::spatialReferenceForRaster in gz4d/gdal/ beside saveGeotiff.h; keep today's behaviour when there is no .prj and say in the PR that the gap is deliberate; in the bad-.prj test check that stderr names the .prj file; detect a case-insensitive file system by writing a file and checking for it, not by platform macro.
+
+## Plan Authored
+**Status**: complete
+**When**: 2026-11-15 12:08 -05:00
+**By**: Claude Code Agent (claude-sonnet-5-5)
+**Plan**: `.agent/work-plans/issue-20/plan.md` at `6d3d34e`
+
+Revision after the ec2062d review: the helper gz4d::gdal::spatialReferenceForRaster (gz4d/gdal/sidecarPrj.h) parses the .prj text with a local OGRSpatialReference first and builds the gz4d::ogr::SpatialReference only on OGRERR_NONE (SpatialReference.h unchanged); a bad .prj reports on stderr naming the file; no .prj keeps today's behaviour (deliberate, to be said in the PR); tests check the stderr file name and probe for a case-insensitive file system.
