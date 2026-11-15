@@ -6,7 +6,9 @@
 //////////////////////////////////////////////////////////////////////
 
 
+#ifdef GZ4D_KINECT
 #include "objects/Kinect.h"
+#endif
 #include <gz4d/TimeSequence.h>
 #include "objects/Sound.h"
 #include "objects/MissionPlan/MissionPlan.h"
@@ -115,7 +117,9 @@ LINK_OBJECT(WhalePath);
 LINK_OBJECT(XYZStream);
 LINK_OBJECT(FishSchool);
 LINK_OBJECT(X3D);
+#ifdef GZ4D_KINECT
 LINK_OBJECT(Kinect);
+#endif
 //#endif
 
 //#include "BilinearInterpolation.h"

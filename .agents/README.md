@@ -112,7 +112,9 @@ the libais API has diverged.
 1. `CMakeLists.txt` (top level) -- how the two components are wired together.
 2. `libgz4d/cxx/CMakeLists.txt` -- every optional dependency and the options
    `GZ4D_PYTHON` (default ON), `GZ4D_OPENCV` (default OFF), `BUILD_GTESTS`
-   (default OFF).
+   (default OFF), `GZ4D_WITH_KINECT` (default ON; declared in
+   `GeoZui4D/main/CMakeLists.txt` too: OFF skips OpenNI, so no Kinect
+   object and no `test/gzKinect`, as on a machine without OpenNI).
 3. `libgz4d/cxx/include/gz4d/gz4d.h` -- the library's module map (Doxygen groups).
 4. `GeoZui4D/main/main.cpp` and `GeoZui4D/main/MainWindow.cpp` -- startup and
    the Tcl start scripts for the four GUI modes.

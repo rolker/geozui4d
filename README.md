@@ -101,6 +101,10 @@ system, install the equivalents of the packages `--list` prints.
 `libgtest-dev` is needed only for the tests (`-DBUILD_GTESTS=ON`, which
 `scripts/build.sh` turns on).
 
+OpenNI is optional and not in the list: installing `libopenni-dev` enables
+the Kinect object, and `-DGZ4D_WITH_KINECT=OFF` leaves it out even when
+OpenNI is installed.
+
 ### Build
 
 ```sh
