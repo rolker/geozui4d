@@ -179,3 +179,13 @@ None.
 
 ### False positives
 None.
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-15 11:07 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Decided-by**: owner
+**After**: merge
+**Decision**: merge
+
+Asked "Merge PR #21? (It closes #13; the worktree and branch are removed after.)", with the note that the repository has no CI and no Copilot review, so GitHub ran no checks, the owner answered: "Merge".
