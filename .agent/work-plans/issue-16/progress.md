@@ -73,3 +73,11 @@ The owner's answers, to three questions:
 - Q3 "Open a separate issue for adding those optional packages (libxi-dev, libexif-dev, libflac++-dev, festival-dev), instead of doing it in #16?": "Yes, open a separate issue".
 
 Scope for the plan: the Kinect guard (first), GoogleTest by FetchContent, the configure summary (report only). Items 1 and 2 were delivered by #18; item 4 goes to #12; the optional packages go to their own issue.
+
+## Plan Authored
+**Status**: complete
+**When**: 2026-11-15 09:29 -05:00
+**By**: Claude Code Agent (claude-sonnet-5-5)
+**Plan**: `.agent/work-plans/issue-16/plan.md` at `d60dbdf`
+
+Guard the Kinect object with GZ4D_KINECT first, with a GZ4D_WITH_KINECT switch to verify a build without OpenNI, then fetch GoogleTest when not installed and print a report-only configure summary. CI goes to #12; extra packages to a new issue.
