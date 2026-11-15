@@ -113,3 +113,13 @@ The plan is sound and narrow, and its gtest checks the one real risk (GDAL readi
 - [ ] Drop step 4 and `libgz4d/cxx/gtest/check_asc_registered.cmake`; state in the PR that the alias is verified by review and the owner's at-screen open.
 - [ ] Add `.asc` to the bathymetry list in `README.md` "Supported File Formats".
 - [ ] In `gdal_asc.cpp`, assert the origin with latitude in `Projection` output `[0]` and longitude in `[1]` (GDAL 3 authority order, no axis-mapping strategy set); note the misleading `GdalRaster.cpp` comment in the PR as a follow-up.
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-15 10:01 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Decided-by**: host (plan review verdict ready; its two must-fix items are implementation instructions, no re-plan needed)
+**After**: plan
+**Decision**: proceed
+
+The Plan Review at c679309 is ready. To the implement pass: drop step 4 and check_asc_registered.cmake (the alias is checked by code review and by the owner opening a file at a screen; the PR says so); add .asc to README.md:78-84 "Supported File Formats"; pin the axis order in the placement assertion (with GDAL 3.8.4, Projection's WGS84 output [0] is latitude) and note in the PR that GdalRaster.cpp's comment "[0]=lon and [1]=lat" reads backwards, as a possible follow-up, without changing it here; the second "100 m east" point is optional.
