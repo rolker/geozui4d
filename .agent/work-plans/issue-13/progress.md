@@ -151,3 +151,13 @@ Specialists: static analysis (cppcheck not installed; `g++ -std=c++17 -Wall -Wex
 
 ### Findings
 - [ ] No issues found. LGTM.
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-15 10:06 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Decided-by**: host (pre-push review round 1 approved, ship recommended, no findings)
+**After**: publish
+**Decision**: publish
+
+The Local Review (Pre-Push) at 008c0b2 approved with 0 must-fix and 0 suggestions; Gemini and Codex ran and found nothing. Publishing: push and open the pull request with the review's Decision summary.
