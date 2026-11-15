@@ -275,3 +275,13 @@ The plan carries the owner's "Both" decision into this repo correctly and puts t
 - [ ] Decide `gz4d/ogr/SidecarPrj.h` vs `gz4d/gdal/` (suggestion; either is acceptable).
 - [ ] Note in the PR that a no-`.prj` metre grid is still placed as degrees (deliberate).
 - [ ] Tighten the stderr and `.PRJ` test details as in finding 4.
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-15 12:08 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Decided-by**: host (plan review needs-work with one must-fix; first host revise at this plan)
+**After**: plan
+**Decision**: revise
+
+The Plan Review at ec2062d found that gz4d::ogr::SpatialReference::SetFromUserInput returns void and leaves a wrapper that tests true after garbage input, so the helper cannot detect an unparsable .prj. Host choices for the revision (mechanism, listed for the owner's veto): fix (a), parse the .prj text with a local OGRSpatialReference first and hand it to the wrapper only on success, leaving SpatialReference.h unchanged; place the helper as gz4d::gdal::spatialReferenceForRaster in gz4d/gdal/ beside saveGeotiff.h; keep today's behaviour when there is no .prj and say in the PR that the gap is deliberate; in the bad-.prj test check that stderr names the .prj file; detect a case-insensitive file system by writing a file and checking for it, not by platform macro.
