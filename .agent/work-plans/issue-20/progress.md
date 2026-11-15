@@ -216,3 +216,13 @@ Verified against source. At `GdalRaster.cpp:79-82` the CRS comes only from `ds->
 - [ ] Extend `gdal_asc.cpp` to cover the WKT2 fallback, a WKT1 `.prj` read by GDAL itself, and no `.prj` at all, keeping the lat/lon axis-order and NODATA assertions.
 - [ ] Add `.asc` to README "Supported File Formats". State in the PR that the alias line is verified by review and by the owner opening a file at a screen, and list the `GdalRaster.cpp` axis comment as a follow-up.
 - [ ] Keep GeoTIFF output and the WKT1 `.prj` writing out of this issue (ice_cube's).
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-15 10:17 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Decided-by**: host (the post-restart Issue Review's Actions are how to build and test the owner's restated scope; no further scope change)
+**After**: issue-actions
+**Decision**: proceed
+
+The Issue Review at 4f443fe (after the restart) recommends planning the widened scope the owner chose ("Both"): a sidecar .prj fallback in GdalRaster when GDAL finds no CRS, in a small libgz4d helper that both GdalRaster::Load and the gtest call; tests for a WKT2 .prj, a WKT1 .prj and no .prj; the .asc alias and README line in the same change; std::filesystem for the path.
