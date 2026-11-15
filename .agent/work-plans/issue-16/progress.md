@@ -238,3 +238,22 @@ Not changed, for the PR description: `GeoZui4D/main/gzmod/nosb.py:19` creates a 
 - [x] (suggestion) The `if(NOT TARGET gtest)` FATAL_ERROR is almost never reached: a failed download or hash mismatch stops configure inside `FetchContent_MakeAvailable` with CMake's own error. Print the "install libgtest-dev or configure with network access" hint before the fetch, or reword — `libgz4d/cxx/CMakeLists.txt:479-482` (Gemini and Claude adversarial)
 
 Outside reviewers: Gemini (agy) completed, 1 suggestion (above). Codex completed, 1 must-fix (GLEW, above). Claude adversarial (fresh subagent) completed: no must-fix, 2 suggestions (above); it judged GLEW guarded through `glo.h` and missed Flow.cpp's unguarded calls. Static analysis: shellcheck not installed; `bash -n` clean on both changed scripts; no linter profile for CMake or Markdown.
+
+## Implementation
+**Status**: complete
+**When**: 2026-11-15 12:14 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+
+**Branch**: feature/issue-16 at `4ceb250`
+**Addressed**: Local Review (Pre-Push) at `d0665b2` (2026-11-15 12:09 -05:00)
+**Commits**: d338c74, daa6720, 4ceb250
+
+### Actions
+- [x] (must-fix) GLEW moved from the optional features to "required in practice" in the configure summary, and added to the `.agents/README.md` Dependencies row with the `objects/Flow.cpp` evidence; Flow.cpp itself not guarded (out of scope) — `GeoZui4D/main/CMakeLists.txt:346`, `.agents/README.md:204`
+- [x] (suggestion) `cmake_policy(SET CMP0135 NEW)` under `if(POLICY CMP0135)` before `FetchContent_Declare`; the fetched configure on CMake 3.28 printed one CMP0135 warning before and none after — `libgz4d/cxx/CMakeLists.txt:475`
+- [x] (suggestion) The libgtest-dev hint now goes in the message before the fetch; the unreachable `if(NOT TARGET gtest)` FATAL_ERROR is removed — `libgz4d/cxx/CMakeLists.txt:470`
+
+### Verification
+- Plain configure (`cmake -S . -B <scratch>`) succeeds; summary lists GLEW under "required in practice".
+- `-DBUILD_GTESTS=ON -DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON` configure fetches GoogleTest with no CMP0135 warning and prints the new hint.
+- No full build: the changes touch configure messages and a FetchContent policy only, nothing compiled. Scratch build dirs removed.
