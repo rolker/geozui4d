@@ -146,3 +146,16 @@ Stopped at the plan's stop condition: GDAL 3.8.4's AAIGrid driver does not read 
 **Owner's decision needed**, one of: (a) a sidecar `.prj` fallback in `GdalRaster::Load` when `GetProjectionRef()` is empty (`SetFromUserInput` on the file's text); (b) ice_cube writes the WKT1 form beside the `.asc` (`LocalFrame.wkt1()` exists) or GeoTIFF (his option 3); (c) both. With (b) only, the test's `.prj` would change to WKT1 and the alias and README line go in.
 
 **Possible follow-up** (not changed here): the comment in `GdalRaster.cpp` before the centre conversion, "[0]=lon and [1]=lat", reads backwards: with GDAL 3 and no axis-mapping strategy, `Projection`'s WGS84 output has latitude in `[0]`.
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-15 10:07 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Decided-by**: owner
+**After**: phase-failed
+**Decision**: restart
+**Phase**: implement
+
+The implement pass stopped (partial): GDAL 3.8.4's AAIGrid driver reads a .prj as ESRI WKT1 only, so a WKT2 .prj (what ice_cube writes, LocalFrame.wkt2()) leaves the grid with no CRS; a WKT1 .prj of the same projection is read. Asked "How should the CRS reach GeoZui?" with the options "ice_cube writes WKT1 in .prj", "GeoZui reads WKT2 .prj itself" (when GDAL finds no CRS, GdalRaster reads the sidecar .prj with SetFromUserInput), "Both" (ice_cube switches to WKT1 and GeoZui also gets the fallback for other WKT2 .prj files) and "Stop #20 for now", the owner answered: "Both".
+
+For #20 that adds the GeoZui half: a sidecar .prj fallback in GdalRaster when GDAL finds no CRS. The ice_cube half (write WKT1 in its .prj) is done from an ice_cube session, not here.
