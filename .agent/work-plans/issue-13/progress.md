@@ -114,3 +114,23 @@ A minimal, well-supported plan: the stub is verified empty and verified uncalled
 **Decision**: proceed
 
 The Plan Review at 70c73bb found no must-fix. Its three suggestions go to the implement pass: list every includer of URI.h in the PR; verify with a default-options build (the acceptance check) and a -DBUILD_GTESTS=ON build with ctest, grepping both logs for -Wreturn-type and URI.h; and say in the PR why no new test is added.
+
+## Implementation
+**Status**: complete
+**When**: 2026-11-15 10:04 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Branch**: feature/issue-13 at `06486ef`
+
+- `libgz4d/cxx/include/gz4d/URI.h`: removed the empty `static std::string encode(std::string const&)` member (and its preceding blank line) from `struct URI` (commit 06486ef).
+- Includers of URI.h (direct): `ais/SocketListener.h`, `socket/IPSocket.h`, `socket/SocketReceiver.h`, `gtest/URI.cpp`. Through those: `GeoZui4D/main/engine/Object.h` (and everything in the app that includes it), `boost.python/socket/IPAddress.cpp`, `boost.python/socket/IPSocket.cpp`, `socket/TCPSocket.h`, `socket/UDPSocket.h`, `sonar/Simrad/net/Server.h`, `gtest/socket.cpp` (not in the plan review's list), and `test/cat_ais.cpp`, `cat_ais8.cpp`, `show_ais.cpp`, `list_ipAddresses.cpp`, `udp.cpp`. `git grep encode` over `*.h/*.cpp/*.hpp/*.tcl/*.i` finds no call to `URI::encode`; both full builds below compile every built includer with the member gone.
+- No new test: a deletion leaves nothing to exercise. The regression check is the build-log grep: before the change the default build logs 166 `-Wreturn-type` warnings at `URI.h:276`; after it, none.
+
+Verification (fresh build dirs in the session scratchpad, `--parallel 6`):
+
+| Build | `-Wreturn-type` lines | `URI.h` lines | Result |
+|---|---|---|---|
+| Default options, before (branch base = main code) | 224 (166 at URI.h:276) | 332 | exit 0 |
+| Default options, after | 58 | 0 | exit 0 |
+| `-DBUILD_GTESTS=ON`, after | 58 | 0 | exit 0; ctest: test_libgz4d passed (1/1) |
+
+The remaining 58 `-Wreturn-type` warnings are in other headers (Box.h:133, dtag/Chip.h, dtag/DTAG.h, sonar/RDI/Sample.h, Simrad/net/Parameter.h and Response.h, v4l/Stream.h), outside this issue's scope.
