@@ -357,3 +357,25 @@ The Plan Review at 5fea17f is ready. Its suggestions go to the implement pass: i
 - Plan-review suggestions taken: non-empty-only assignment; WKT2 in the `UppercasePrj` `.PRJ`; `Wkt1PrjReadByGdal` compares with the WGS 84 / UTM 23N CRS the test built (`IsSame`), not GDAL's string.
 - Verification (scratch build, `-DBUILD_GTESTS=ON`, `-j6`): `test_libgz4d` 28/28 passed; GdalAscTest: Wkt2PrjUsesFallback, Wkt1PrjReadByGdal, NoPrjHandledCleanly, UnparsablePrjReported, UppercasePrj all passed (not skipped; GDAL 3.8.4 gave no CRS for either WKT2 sidecar, so the fallback ran). ctest 1/1 passed. Full app (`GeoZui4D`) built, no new warnings from the changed files. Scratch dirs removed.
 - For the PR: the `.asc` alias is checked by review and by the owner opening a file, not by ctest; a metre `.asc` with no `.prj` is still placed as degrees (deliberate); the `GdalRaster.cpp` "[0]=lon and [1]=lat" comment is backwards under GDAL 3 and left unchanged as a follow-up.
+
+## Local Review (Pre-Push)
+**Status**: complete
+**When**: 2026-11-15 12:37 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Verdict**: approved
+
+**Branch**: feature/issue-20 at `8931f4f`
+**Base**: main
+**Depth**: Deep (reason: 849 changed lines incl. plan/progress; ~400 lines of code across 5 files)
+**Must-fix**: 0 | **Suggestions**: 6
+**Round**: 1 | **Ship**: recommended — no must-fix findings; remaining suggestions can be applied or tracked
+
+Merged branch (with issue 16's GoogleTest fetch) built with -DBUILD_GTESTS=ON: full build incl. GeoZui4D app OK, ctest 1/1 passed (28 tests, 5 GdalAscTest), no compiler warnings in changed files. Also built with -DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON (fetched GoogleTest v1.14.0 + gdal_asc.cpp): test_libgz4d 28/28 passed. Static analysis: cppcheck and clang-tidy not installed (C++ files not linted). Cross-model: gemini and codex completed (suggestions only, folded in below). Claude adversarial: no must-fix.
+
+### Findings
+- [ ] (suggestion) Bound the sidecar size before reading the whole `.prj` into memory (codex + gemini) — `libgz4d/cxx/include/gz4d/gdal/sidecarPrj.h:73`
+- [ ] (suggestion) Check that the `.prj` opened/read; an unreadable file is reported as "could not parse" (gemini + Claude adversarial) — `libgz4d/cxx/include/gz4d/gdal/sidecarPrj.h:71`
+- [ ] (suggestion) Two-argument `OGRSpatialReference::SetFromUserInput(text, options)` needs GDAL 3.x; no minimum GDAL version is stated or guarded (`find_package(GDAL)` has none) — `libgz4d/cxx/include/gz4d/gdal/sidecarPrj.h:34`
+- [ ] (suggestion) Agent guide says the gtest suite has "nine sources"; gdal_asc.cpp is now a tenth when GDAL is found — `.agents/README.md:148`
+- [ ] (suggestion) `M_PI` is not standard C++ (MSVC needs `_USE_MATH_DEFINES`); use a local constexpr — `libgz4d/cxx/gtest/gdal_asc.cpp:163`
+- [ ] (suggestion) The `.prj` fallback also applies to CRS-less `.tif`/`.tiff`/`.vrt`, not only `.asc`; say so in the comment or the PR — `GeoZui4D/main/objects/GdalRaster.cpp:81`
