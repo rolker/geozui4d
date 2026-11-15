@@ -77,7 +77,8 @@ to earlier work by Glenn Franck, Nhu Le, and Colin Ware at UNB.
 
 ### Supported File Formats
 
-Scenes (`.gzx`), bathymetry (`.gutm`, `.dem`, `.grd`, `.bag`, `.srtm`),
+Scenes (`.gzx`), bathymetry (`.gutm`, `.dem`, `.grd`, `.bag`, `.srtm`,
+`.asc` ESRI ASCII grids with the CRS from a sidecar `.prj`),
 vector data (`.gdl`, `.gdp`, `.gdt`, `.dxf`), 3D models (`.x3d`, `.wrl`),
 point clouds (`.xyz`, `.pts`), sonar (`.raw`, `.sws`), charts (`.000`/S-57),
 images (`.tif`, `.jpg` with world files), NetCDF (`.nc`), audio (`.ogg`,
