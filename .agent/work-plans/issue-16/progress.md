@@ -197,3 +197,25 @@ The revision addresses every finding of the first review and follows the owner's
 **Decision**: proceed
 
 The Plan Review at 7393c15 is ready. Its findings go to the implement pass: list Bluetooth, JPEG, TIFF and PNG under "Required in practice, found" instead of dropping them, and name Bluetooth at .agents/README.md:186 (Wiimote.cpp is always compiled and reaches <bluetooth/bluetooth.h>); cite :186, not :189, for NetCDF C++; narrow the step 8 grep to `skills/build` or the literal `/build` command; reword README.md:101-102 so libgtest-dev is needed only for offline test builds.
+
+## Implementation
+**Status**: complete
+**When**: 2026-11-15 10:44 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Branch**: feature/issue-16 at `6b5995e`
+
+The earlier pass made the plan's four commits; this pass checked them against the plan and the second plan review's findings, found nothing missing, made no new code commits, and ran the verification.
+
+Commits:
+- `abd79d1` Guard the Kinect object so OpenNI is optional: `GZ4D_WITH_KINECT` option (default ON) in `GeoZui4D/main/CMakeLists.txt` and `libgz4d/cxx/CMakeLists.txt`; `ni_FOUND` set in the app; `#ifdef GZ4D_KINECT` around the include and `LINK_OBJECT(Kinect)` in `engine/Scene3D.cpp`; `objects/Kinect.cpp` compiled only `if(ni_FOUND)`; `libopenni-dev` removed from `scripts/install_deps.sh` (no optional array, no `--optional` flag); README and `.agents/README.md` options list updated.
+- `c19b962` Fetch GoogleTest when it is not installed: inside `if(BUILD_GTESTS)`, `find_package(GTest)` first, else `FetchContent` of v1.14.0 (URL plus SHA256, `INSTALL_GTEST OFF`, `BUILD_GMOCK OFF`) aliased to `GTest::GTest` and `GTest::Main`; the pin comment gives the corrected reason (Ubuntu 24.04's 1.14.0-1; v1.14.0 to v1.16.0 ask for CMake 3.13). `scripts/build.sh`, `install_deps.sh`, README.md (libgtest-dev needed only for offline test builds) and `.agents/README.md` GTest passage reworded.
+- `6d4006d` Configure summary at the end of `GeoZui4D/main/CMakeLists.txt`, report only: optional features FFmpeg, GLEW, OpenNI, Jasper; "required in practice" JPEG, TIFF, PNG, PortAudio, JACK, Vorbis, Bluetooth, GLUT, NetCDF, NetCDF C++, X11, `MISSING` when not found. `*_FOUND` added for FFmpeg, JACK, Vorbis, Bluetooth. `.agents/README.md:186` (not :189) now names Bluetooth, PortAudio, JACK and X11 with the includes that make them required. Rechecked this pass: Bluetooth through `engine/Wiimote.h` and `BTSocketManager.h`, JACK and PortAudio through `objects/AudioSpectrum.h` (Jack only on non-WIN32), X11 through vendored `Togl/togl.c` (`<X11/Xlib.h>`).
+- `6b5995e` Remove the project's build skill (owner decision): `.claude/skills/build/` deleted, only the `/build` row removed from CLAUDE.md, `.agents/README.md` `.gitignore` note reworded, and the skill's remaining guidance (full build with tests in audits, report warnings, ask before changing a `CMakeLists.txt` to fix a build, `scripts/build.sh --parallel <N>`) moved to `.agents/README.md`'s build section.
+
+Verification (clean scratch build directories, 6 jobs):
+- Default (`-DBUILD_GTESTS=ON`, installed GoogleTest found at `/usr/lib/x86_64-linux-gnu/cmake/GTest`): configure, full build and link succeeded (about 12 min); `GZ4D_KINECT` is in the app's compile flags and `objects/Kinect.cpp` and `test/gzKinect` were built; summary printed every required library `found`, FFmpeg, GLEW and OpenNI `found`, Jasper `off (not found)`. `ctest`: 1/1 passed (`test_libgz4d`). 463 compiler warnings, from unchanged code (e.g. `URI.h:276` no return, Boost bind deprecation, OpenNI deprecated overload); none come from this branch's changes.
+- Kinect off (`-DGZ4D_WITH_KINECT=OFF`, OpenNI installed): full build and link succeeded; configure printed `skipping gzKinect.cpp` and `OpenNI Kinect object (GZ4D_KINECT): off (GZ4D_WITH_KINECT=OFF)`; no `GZ4D_KINECT` in the app flags, no Kinect source compiled and no `XnCppWrapper.h` reached anywhere in the log; no `gzKinect` executable.
+- GoogleTest fetched (`-DBUILD_GTESTS=ON -DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON`): configure printed the fetch message and downloaded v1.14.0 (network available); gtest and gtest_main built as shared libraries, no gmock; `test_libgz4d` built; `ctest`: 1/1 passed.
+- Narrowed grep `grep -rn 'skills/build\|`/build`'` (excluding `.git` and `.agent/work-plans/`): no matches.
+
+Not changed, for the PR description: `GeoZui4D/main/gzmod/nosb.py:19` creates a Kinect object and fails at run time with OpenNI off; #12's clean `ubuntu:24.04` job is the durable no-OpenNI test; the top-level `CMakeLists.txt` was not touched. Scratch builds and the worktree's gitignored `build/` were removed.
