@@ -6,35 +6,44 @@ https://github.com/rolker/geozui4d/issues/20
 
 ## Context
 
-`GdalRaster` (`GeoZui4D/main/objects/GdalRaster.cpp:20-22`) is registered for `tif`, `tiff` and `vrt` only, so an `.asc` grid falls through to the texture loader (`Scene3D.cpp:645-680`). `Load()` already places a grid from its CRS (`GetProjectionRef` -> `SetFromUserInput` -> `gz4d::geo::Projection`) and turns NODATA into NaN (line 154). The one unknown is whether GDAL 3.8.4's AAIGrid driver reads the WKT2 `.prj` ice_cube writes (`LocalFrame.wkt2()`: an ellipsoidal orthographic, EPSG method 9840, about a local origin). If it does not, `spatialReference` stays empty and the grid is placed as if metres were degrees.
+`GdalRaster` (`GeoZui4D/main/objects/GdalRaster.cpp:20-22`) is registered for `tif`, `tiff` and `vrt` only, so an `.asc` falls through to the texture loader. `Load()` takes the CRS only from `ds->GetProjectionRef()` (lines 79-82); when empty, `spatialReference` stays empty and line 93 places a metre grid as if in degrees. GDAL 3.8.4's AAIGrid driver reads a `.prj` as ESRI WKT1 only, so the WKT2 `.prj` ice_cube writes leaves the grid with no CRS (found on this branch).
 
-Owner decision (2026-11-15): do option 1 (register `.asc`); GeoTIFF output is ice_cube's business and out of scope.
+Owner decisions (2026-11-15): register `.asc` (option 1); on "How should the CRS reach GeoZui?": "Both" (ice_cube writes WKT1 in `.prj` AND GeoZui reads a WKT2 `.prj` itself). This plan replaces the earlier one (alias plus stop-and-report). The ice_cube half is done in ice_cube and is not part of this issue.
+
+Existing branch commits: `db55e60` adds `libgz4d/cxx/gtest/gdal_asc.cpp` (synthetic 4x3 grid, made-up origin 12.3456/-45.6789, WKT2 `.prj`, test `ReadsWkt2PrjPlacementAndNoData`) and its `if(GDAL_FOUND)` entry in `gtest/CMakeLists.txt`; it fails on purpose at `GetProjectionRef`. The other commits (`6cd70dd`, `602e0fb`, `4f443fe`, `90d265c`) are progress entries only. This plan builds on `db55e60`: it keeps the test file and its CMake wiring and changes where the CRS comes from.
 
 ## Approach
 
-1. **Write the test first** in `libgz4d/cxx/gtest/gdal_asc.cpp`, with a made-up origin (lat 12.3456, lon -45.6789, nothing from ice_cube data). The test writes a 4x3 `.asc` (`NODATA_value -9999`, one cell set to -9999, float values, `xllcorner`/`yllcorner` in metres about the origin) and a `.prj` holding a WKT2 string copied in form from `LocalFrame.wkt2()` (same PROJCRS, METHOD "Orthographic" ID EPSG 9840, false easting/northing 0, east/north axes, USAGE/BBOX). The files go in a per-test temp directory under `std::filesystem::temp_directory_path()` and are removed afterwards.
-2. **Assertions**, using the same calls `GdalRaster::Load` makes:
-   - `GDALOpen` succeeds; `GetProjectionRef()` is non-empty. This is the assertion that fails first if the AAIGrid driver ignores the WKT2 `.prj`. Per the host's instruction, if it fails the work **stops and reports**; no sidecar `.prj` fallback is added (owner's call).
-   - `SetFromUserInput(projWkt)` gives a projected, non-geographic CRS.
-   - A `gz4d::geo::Projection(srs, WGS84)` of the projected coordinate (0, 0) gives the origin lat/lon to within 1e-9 deg (the ortho projection about the origin is exact there). A second point, 100 m east, is checked against the ENU expectation at a looser tolerance.
-   - The NODATA cell read through `RasterIO(GDT_Float32)` equals `-9999`, and the same comparison `GdalRaster` makes (`z == (float)noDataValue`, `GetNoDataValue` flagged) maps it to NaN, while the other cells stay finite. The mapping is two lines in `Load()` that cannot be called without the app, so the test repeats the comparison as written; this is noted in a comment.
-3. **Register the alias**: add `REGISTER_ALIAS(GdalRasterAsc, GdalRaster, "asc");` after the `vrt` line in `GdalRaster.cpp`.
-4. **Registration check.** `GdalRaster` is app code in the `GeoZui4D` executable (the registry in `engine/Object.cpp` is app-side too), so a libgz4d gtest cannot link it and cannot ask the registry whether `asc` maps to `GdalRaster`. The gdal test lives in libgz4d's gtest suite because that is the only test harness in the repo (`BUILD_GTESTS`, `ctest` via `scripts/build.sh`) and GDAL and `gz4d::geo::Projection` are reachable from there. For the registration, add a ctest in the same gtest directory that is a CMake script (`cmake -P`) reading `GeoZui4D/main/objects/GdalRaster.cpp` and failing unless it contains a `REGISTER_ALIAS(..., GdalRaster, "asc")` line. It is a source check, not a runtime one; the runtime check (opening an `.asc` in the app and seeing a surface) is left for the owner at a screen. This weakness is stated in the PR.
-5. **Wire the test** into `libgz4d/cxx/gtest/CMakeLists.txt`: add `gdal_asc.cpp` to `TEST_SOURCES` only `if(GDAL_FOUND)` (libgz4d's CMake finds GDAL optionally and already adds it to `LIBS`), and add the registration `add_test`. Confirm that `scripts/build.sh` plus ctest picks both up.
-6. **Verify**: build with `-DBUILD_GTESTS=ON`; run ctest. Check the test fails before the `.prj` is present (temporarily omitting it) so the guard is shown to bite. Build the app to confirm `GdalRaster.cpp` compiles.
+1. **Helper in libgz4d** (header-only, like most of libgz4d; no CMake change): new `libgz4d/cxx/include/gz4d/ogr/SidecarPrj.h` (SPDX header) with `inline gz4d::ogr::SpatialReference gz4d::ogr::spatialReferenceForRaster(const std::string &datasetWkt, const std::filesystem::path &rasterPath)`.
+   - Non-empty `datasetWkt`: `SetFromUserInput(datasetWkt)` and return; GDAL's own result is never overridden.
+   - Empty: try `<stem>.prj` then `<stem>.PRJ` (`replace_extension`, `std::filesystem`, ADR-0002); read the first that exists; `SetFromUserInput(text)` (accepts WKT1 and WKT2).
+   - A `.prj` that exists but does not parse: message on `std::cerr` naming the file; return an empty reference. No `.prj`: return empty, silently (as today).
+2. **Use it in `GdalRaster::Load`**: replace lines 79-82 with a call to the helper using `ds->GetProjectionRef()` and `GetFilename()`. Include the header. The rest of `Load` is unchanged (an empty CRS behaves as before).
+3. **Register the alias**: `REGISTER_ALIAS(GdalRasterAsc, GdalRaster, "asc");` after the `vrt` line, in the same change as the fallback.
+4. **Rework `gdal_asc.cpp`** so the test goes green and covers the fallback: a fixture helper writes the grid and an optional `.prj` (parameter: WKT2, WKT1, none, garbage). Each test opens with GDAL as `Load` does, calls the helper with `GetProjectionRef()` and the path, then makes the same Projection/NODATA checks.
+   - `Wkt2PrjUsesFallback`: GDAL's `GetProjectionRef()` is empty (documents the reason for the helper; if a later GDAL reads WKT2 this assertion is relaxed to "either way the helper result is right"); helper result is projected; (0,0) maps to lat `[0]` 12.3456, lon `[1]` -45.6789 within 1e-9; 100 m east checked as now; NODATA cell becomes NaN, others finite.
+   - `Wkt1PrjReadByGdal`: an ESRI-WKT1 `.prj` (e.g. a UTM zone written by `exportToWkt`/`morphToESRI` of a WGS84 UTM SRS built in the test) gives non-empty `GetProjectionRef()`; helper returns a projected CRS equal to GDAL's (`IsSame`); no fallback read.
+   - `NoPrjHandledCleanly`: no `.prj`; helper returns an empty reference, no throw, nothing on stderr.
+   - `UnparsablePrjReported`: garbage `.prj` gives an empty reference and a message on stderr (`testing::internal::CaptureStderr`).
+   - `UppercasePrj`: `.PRJ` is found (skipped where the file system is case-insensitive).
+   Keep the lat-in-`[0]` axis assertion and the NODATA assertion. Synthetic data only; temp dir via `std::filesystem`, removed in `TearDown`.
+5. **README**: add `.asc` (ESRI ASCII grid, CRS from a sidecar `.prj`) to the bathymetry list under "Supported File Formats".
+6. **Verify**: build with `-DBUILD_GTESTS=ON` and run ctest (the branch goes green); build the full app so `GdalRaster.cpp` compiles with the header. The alias line and runtime behaviour of the app are checked by review and by the owner opening an `.asc` at a screen; state that in the PR, and list the `GdalRaster.cpp` "[0]=lon, [1]=lat" comment (backwards under GDAL 3) as a follow-up, not changed here.
 
 ## Files to Change
 
 | File | Change |
 |------|--------|
-| `GeoZui4D/main/objects/GdalRaster.cpp` | Add the `asc` alias line |
-| `libgz4d/cxx/gtest/gdal_asc.cpp` | New test (SPDX header), synthetic grid + WKT2 `.prj` |
-| `libgz4d/cxx/gtest/CMakeLists.txt` | Add the test source when GDAL is found; add the registration source-check ctest |
-| `libgz4d/cxx/gtest/check_asc_registered.cmake` | New cmake -P script for the source check |
+| `libgz4d/cxx/include/gz4d/ogr/SidecarPrj.h` | New header-only helper |
+| `GeoZui4D/main/objects/GdalRaster.cpp` | Call helper at lines 79-82; add `asc` alias |
+| `libgz4d/cxx/gtest/gdal_asc.cpp` | Rework: WKT2 fallback, WKT1, no `.prj`, bad `.prj`, `.PRJ` cases |
+| `README.md` | `.asc` in Supported File Formats |
+
+`libgz4d/cxx/gtest/CMakeLists.txt` already has the GDAL-guarded entry; no change expected.
 
 ## Prior Art
 
-`GdalRaster::Load` itself is the reference: the test copies its GDAL and Projection calls rather than inventing a path. The existing gtest suite (`libgz4d/cxx/gtest/`) gives the harness and SPDX header pattern. Rejected: a stand-alone program (not run by ctest); a sidecar `.prj` reader in `GdalRaster` (widens the issue, owner's call); linking the app into a test (the app is an executable with Tcl/GL dependencies).
+`GdalRaster::Load` and `db55e60` are the reference for the GDAL/Projection calls. GDAL's AAIGrid driver looks for `.prj` and `.PRJ` (taken: both spellings) but parses ESRI WKT1 only (the gap). Rejected: converting the WKT2 to WKT1 in GeoZui (ice_cube writes WKT1 already; the fallback only needs `SetFromUserInput`); a CMake source-check for the alias (the earlier plan's idea; the owner views the app, the line is one-liner reviewed); a runtime link of the app into a test (GL/Tcl dependencies).
 
 ## Serves
 
@@ -42,35 +51,37 @@ The project roadmap goal of using GeoZui4D with file formats people use today (`
 
 ## Design Picture
 
-No change to the design picture. It adds an alias to an existing loader.
+No change to the design picture; an alias and a CRS fallback inside an existing loader.
 
 ## Principles Self-Check
 
 | Principle | Consideration |
 |---|---|
-| Only what's needed | One registration line plus the check of the acceptance; no fallback, no GeoTIFF work |
-| Test what you change | The test runs the real GDAL and Projection calls; fails first if the `.prj` is not read |
-| Private data stays private | Made-up origin and values, generated in the test; nothing from ice_cube data |
+| Only what's needed | Fallback only when GDAL gives no CRS; no CRS rewriting; no GeoTIFF or ice_cube work |
+| Test what you change | The fallback lives in libgz4d so the gtest runs the same code as `Load`; all four `.prj` situations covered |
+| Private data stays private | Synthetic grid and made-up origin; nothing from ice_cube data |
+| Put each thing at the level it applies to | The WKT2 reading helps any WKT2 `.prj`; WKT1 writing stays in ice_cube |
 
 ## ADR Compliance
 
 | ADR | Triggered | How addressed |
 |---|---|---|
-| 0001 CMake 3.14, C++17 | Watch | Only the sub-CMakeLists in `gtest/` changes; top-level `CMakeLists.txt` untouched; cmake -P script is plain 3.14 |
-| 0002 std::filesystem | Yes | Test uses `std::filesystem` for the temp directory |
-| 0003 Apache 2.0 | Yes | SPDX header on the new files |
+| 0001 CMake 3.14, C++17 | Watch | Header-only helper; no CMake change; top-level `CMakeLists.txt` untouched |
+| 0002 std::filesystem | Yes | Path built and probed with `std::filesystem` |
+| 0003 Apache 2.0 | Yes | SPDX header on the new header |
 
 ## Consequences
 
 | If we change... | Also update... | Included in plan? |
 |---|---|---|
-| gtest sources | README test steps / `scripts/build.sh` already run ctest | Yes, confirmed in step 5 |
-| Supported surface extensions | No document lists them (searched `docs/`) | n/a |
+| Supported surface extensions | README "Supported File Formats" | Yes, step 5 |
+| A libgz4d header | App rebuild to confirm it compiles | Yes, step 6 |
+| `Load` CRS source | Axis comment in `Load` (backwards) | No, PR follow-up |
 
 ## Open Questions
 
-- If GDAL 3.8.4 does not read the WKT2 `.prj`, the plan stops there and reports; whether to add a sidecar `.prj` fallback is the owner's decision.
-- The runtime registration check is a source check only; an app-level check needs a person at a screen. Acceptable?
+- None blocking. If the installed GDAL ever reads the WKT2 `.prj` itself, the helper simply does not fall back; the test tolerates both.
+- The alias registration is checked by review and by the owner at a screen, not by ctest. Acceptable?
 
 ## Estimated Scope
 
