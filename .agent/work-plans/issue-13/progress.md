@@ -66,3 +66,41 @@ The Actions ask to prefer removing the unused stub over implementing a percent-e
 **Plan**: `.agent/work-plans/issue-13/plan.md` at `3c889f0`
 
 Remove the unused empty `URI::encode` stub from URI.h. Searched C++, Tcl, Python, SWIG and CMake files: no caller. Verify with a fresh default build log showing no -Wreturn-type for URI.h, and run test_libgz4d.
+
+## Plan Review
+**Status**: complete
+**When**: 2026-11-15 09:29 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Verdict**: ready
+
+**Issue**: #13 — URI::encode in URI.h has an empty body and returns nothing (-Wreturn-type)
+**Plan**: `.agent/work-plans/issue-13/plan.md` at `3c889f0`
+**Branch**: `feature/issue-13`
+
+### Evaluation
+
+| Dimension | Verdict | Notes |
+|---|---|---|
+| Scope | Good | One 3-line deletion in one header; single small PR. |
+| Issue alignment | Good | Takes the issue's "remove the unused declaration" option, as the Issue Review and the proceed checkpoint preferred; keeps the implement fallback if a caller turns up. Serves (as checked): "None (hygiene on the build; the project's `docs/roadmap.md` Direction lines do not cover it); design document: none." Breaks no stated project rule. |
+| File targeting | Good | `URI.h:274-276` verified empty; `git grep` confirms no caller of `encode` in C++, Tcl, SWIG `.i` or the `boost.python` bindings (no `URI` reference there). |
+| Consequences | Needs work | The includer list (SocketListener, SocketReceiver, IPSocket, gtest/URI.cpp) is incomplete; see finding 1. No caller exists, so the outcome is unchanged. |
+| Principle alignment | Good | Only what's needed: removal over an unused encoder. Test what breaks: no new test is planned; for a deletion the evidence is the build log and the existing `test_libgz4d` run, which the plan should say explicitly (finding 3). Design picture: no change, no design document, stated. Prior art: stated. |
+| ADR compliance | Good | No ADR triggered (no build config, paths or new files). |
+| ROS conventions | N/A | Not a ROS project. |
+
+### Findings
+
+1. **[Consequences]** — The table lists four includers, but `URI.h` reaches more: `GeoZui4D/main/engine/Object.h`, `libgz4d/cxx/boost.python/socket/IPAddress.cpp` and `IPSocket.cpp`, `socket/TCPSocket.h`, `socket/UDPSocket.h`, `sonar/Simrad/net/Server.h`, and `test/cat_ais.cpp`, `cat_ais8.cpp`, `show_ais.cpp`, `list_ipAddresses.cpp`, `udp.cpp`. None calls `encode`, so this is a record-accuracy fix, not a blocker; correct the list in the PR description. (suggestion)
+2. **[Issue alignment]** — Steps 3 and 4 do not fit together: `BUILD_GTESTS` defaults to OFF (`libgz4d/cxx/CMakeLists.txt:449`), so a "fresh build with default options" does not compile `gtest/URI.cpp` and does not build `test_libgz4d`. Do the acceptance check with a default-options build, then build with `-DBUILD_GTESTS=ON` (as `scripts/build.sh` does) and run ctest. Grep both logs for `-Wreturn-type`/`URI.h`. (suggestion)
+3. **[Principle alignment]** — Say in the PR that no new test is added because a deletion has nothing to exercise, and that the before/after build-log grep is the check that fails without the fix. (suggestion)
+
+### Summary
+
+A minimal, well-supported plan: the stub is verified empty and verified uncalled, and removal matches the issue and the checkpoint decision. The three suggestions tighten the verification record and none of them blocks implementation.
+
+### Recommended Actions
+
+- [ ] List every includer of `URI.h` in the PR's consequence record (finding 1).
+- [ ] Verify with both a default-options build (acceptance) and a `-DBUILD_GTESTS=ON` build plus ctest; grep both logs (finding 2).
+- [ ] State in the PR why no new test is added and that the build-log grep is the regression check (finding 3).
