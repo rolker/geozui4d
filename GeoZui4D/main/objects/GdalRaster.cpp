@@ -3,6 +3,7 @@
 
 #include "GdalRaster.h"
 #include <gz4d/geo/Projection.h>
+#include <gz4d/gdal/sidecarPrj.h>
 #include "MainWindow.h"
 #include "engine/Scene3D.h"
 #include "engine/Window3D.h"
@@ -20,6 +21,7 @@ extern MainWindow * mainWindow;
 REGISTER_OBJECT(GdalRaster, "tif");
 REGISTER_ALIAS(GdalRasterTiff, GdalRaster, "tiff");
 REGISTER_ALIAS(GdalRasterVrt, GdalRaster, "vrt");
+REGISTER_ALIAS(GdalRasterAsc, GdalRaster, "asc");
 
 GdalRaster::GdalRaster()
     :firstDraw(true)
@@ -76,10 +78,12 @@ int GdalRaster::Load()
         return 1;
     }
 
-    // Set spatial reference from dataset projection
+    // Set spatial reference from dataset projection, or from a sidecar
+    // .prj GDAL could not read (a WKT2 .prj beside an .asc)
     const char *projWkt = ds->GetProjectionRef();
-    if(projWkt && projWkt[0] != '\0')
-        spatialReference.SetFromUserInput(projWkt);
+    gz4d::ogr::SpatialReference datasetSR = gz4d::gdal::spatialReferenceForRaster(projWkt ? projWkt : "", GetFilename());
+    if(datasetSR)
+        spatialReference = datasetSR;
 
     // Compute center in geographic coordinates for autoProjection
     double centerCol = cols / 2.0;
