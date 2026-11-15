@@ -58,3 +58,11 @@ issue: 13
 **Decision**: proceed
 
 The Actions ask to prefer removing the unused stub over implementing a percent-encoder, and to confirm the warning is gone in a fresh build log. The issue body offers both ("Either implement it ... or remove the unused declaration"), and `git grep` finds no C++ caller, so the choice does not change what the work is for. The plan should take removal unless it finds a caller (Tcl, Python bindings, or another consumer of the installed header); the owner may veto in favour of implementing.
+
+## Plan Authored
+**Status**: complete
+**When**: 2026-11-15 09:26 -05:00
+**By**: Claude Code Agent (claude-sonnet-5-5)
+**Plan**: `.agent/work-plans/issue-13/plan.md` at `3c889f0`
+
+Remove the unused empty `URI::encode` stub from URI.h. Searched C++, Tcl, Python, SWIG and CMake files: no caller. Verify with a fresh default build log showing no -Wreturn-type for URI.h, and run test_libgz4d.
