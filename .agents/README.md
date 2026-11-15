@@ -181,7 +181,18 @@ What to know:
 - The install step is required to run the app (see Architecture Overview).
 - The build directory is `build/` at the repository root, which `.gitignore`
   ignores with the rule `/build/` (and `install/` with `/install/`). The
-  rules are anchored to the root, so `.claude/skills/build/` is tracked.
+  rules are anchored to the root, so a `build/` directory deeper in the
+  tree is not ignored.
+- Run the full build, with the tests (`scripts/build.sh`, then `ctest`),
+  as part of any audit of this project.
+- Report compiler warnings even when the build succeeds; they may point
+  to real problems.
+- Do not modify a `CMakeLists.txt` to fix a build error without asking
+  first.
+- To limit the parallel jobs (for example on a machine short of memory),
+  run `scripts/build.sh --parallel <N>`: the script passes its arguments
+  to the build step, and the last `--parallel` wins. Pick N from the
+  machine's cores and free memory.
 
 ## Dependencies
 
