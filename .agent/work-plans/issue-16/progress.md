@@ -257,3 +257,22 @@ Outside reviewers: Gemini (agy) completed, 1 suggestion (above). Codex completed
 - Plain configure (`cmake -S . -B <scratch>`) succeeds; summary lists GLEW under "required in practice".
 - `-DBUILD_GTESTS=ON -DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON` configure fetches GoogleTest with no CMP0135 warning and prints the new hint.
 - No full build: the changes touch configure messages and a FetchContent policy only, nothing compiled. Scratch build dirs removed.
+
+## Local Review (Pre-Push)
+**Status**: complete
+**When**: 2026-11-15 12:17 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Verdict**: approved
+
+**Branch**: feature/issue-16 at `161e57c`
+**Base**: origin/main
+**Depth**: Deep (reason: 12 files, 604 lines changed incl. work plan; touches CLAUDE.md and a skill file; fix round classified on the whole diff)
+**Must-fix**: 0 | **Suggestions**: 1
+**Round**: 2 | **Ship**: recommended — no must-fix findings; round 1's must-fix (GLEW) and both suggestions are fixed
+
+### Findings
+- [ ] (suggestion) The "required in practice" summary is incomplete: OpenGL (`find_package(OpenGL)` without REQUIRED, line 167, needed by the GL code and Togl) is not listed, and the X11 line checks only `X11_FOUND` although `Togl/togl.c:34` includes `<X11/Xmu/StdCmap.h>`, which `FindX11` reports separately (`X11_Xmu_FOUND`); add `OPENGL_FOUND` and check Xmu, and name OpenGL in the `.agents/README.md` Dependencies row — `GeoZui4D/main/CMakeLists.txt:338-350`, `.agents/README.md:204` (Codex: Xmu; Claude adversarial: OpenGL; confirmed by reading the source)
+
+Round-1 fixes checked: GLEW is under "required in practice" (`GeoZui4D/main/CMakeLists.txt:346`) and in the `.agents/README.md` row with the Flow.cpp evidence; `cmake_policy(SET CMP0135 NEW)` under `if(POLICY CMP0135)` precedes `FetchContent_Declare`; the unreachable FATAL_ERROR is gone and the libgtest-dev hint prints before the fetch.
+
+Outside reviewers: Gemini (agy) completed, no issues. Codex completed, 1 suggestion (Xmu, above). Claude adversarial (fresh subagent) completed, no must-fix; suggestions OpenGL (above) and a pre-existing `ctest --test-dir` inconsistency at `.agents/README.md:134` (line not touched by this branch; dropped). Static analysis: shellcheck not installed; `bash -n` clean on both changed scripts; no linter profile for CMake or Markdown. Verified: `cmake -DGZ4D_WITH_KINECT=OFF -DBUILD_GTESTS=ON` configures cleanly in a scratch dir, prints the summary with Kinect off, skips gzKinect, no Kinect source in any generated build.make; only dev warnings are pre-existing (PythonLibs policy, line 33 syntax warning).
