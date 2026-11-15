@@ -66,3 +66,11 @@ Verified against source. `GdalRaster.cpp:20-22` registers `tif`, `tiff` and `vrt
 **Decision**: proceed
 
 The Actions ask for a gtest (or stand-alone program) on synthetic data that checks the .asc registration, the placement from an orthographic WKT2 .prj, and NODATA as NaN, written so that it fails first if GDAL's AAIGrid driver does not read the WKT2 .prj. If it does not, a sidecar .prj fallback in GdalRaster would widen the issue: that is the owner's question, raised only if the test shows it is needed. The plan should take the narrow scope and say what it does if the .prj is not read (stop and report, not add the fallback).
+
+## Plan Authored
+**Status**: complete
+**When**: 2026-11-15 09:58 -05:00
+**By**: Claude Code Agent (claude-sonnet-5-5)
+**Plan**: `.agent/work-plans/issue-20/plan.md` at `a4fce1b`
+
+Register `.asc` for GdalRaster; add a libgz4d gtest on a synthetic WKT2-.prj grid that fails first if GDAL ignores the .prj (then stop and report, no fallback), plus a source-level ctest for the registration.
