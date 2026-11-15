@@ -87,25 +87,16 @@ images (`.tif`, `.jpg` with world files), NetCDF (`.nc`), audio (`.ogg`,
 
 ### Prerequisites
 
-On Ubuntu/Debian, install the required packages:
+On Ubuntu/Debian, install the required packages with:
 
 ```sh
-sudo apt install \
-  build-essential cmake \
-  libboost-all-dev \
-  tcl-dev tk-dev \
-  libgdal-dev \
-  libjpeg-dev libtiff-dev libpng-dev \
-  libnetcdf-dev libnetcdf-cxx-legacy-dev \
-  freeglut3-dev libglew-dev \
-  libx11-dev \
-  portaudio19-dev libjack-dev \
-  libavformat-dev libavcodec-dev libavutil-dev \
-  libvorbis-dev \
-  libbluetooth-dev \
-  libspnav-dev \
-  libgtest-dev
+scripts/install_deps.sh
 ```
+
+It installs only the packages that are missing, through `sudo apt-get`.
+`--dry-run` shows what it would install, and `--list` prints the package
+list, which is the project's one list of build dependencies. On another
+system, install the equivalents of the packages `--list` prints.
 
 `libgtest-dev` is needed only for the tests (`-DBUILD_GTESTS=ON`, which
 `scripts/build.sh` turns on).
