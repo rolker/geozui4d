@@ -159,3 +159,60 @@ Stopped at the plan's stop condition: GDAL 3.8.4's AAIGrid driver does not read 
 The implement pass stopped (partial): GDAL 3.8.4's AAIGrid driver reads a .prj as ESRI WKT1 only, so a WKT2 .prj (what ice_cube writes, LocalFrame.wkt2()) leaves the grid with no CRS; a WKT1 .prj of the same projection is read. Asked "How should the CRS reach GeoZui?" with the options "ice_cube writes WKT1 in .prj", "GeoZui reads WKT2 .prj itself" (when GDAL finds no CRS, GdalRaster reads the sidecar .prj with SetFromUserInput), "Both" (ice_cube switches to WKT1 and GeoZui also gets the fallback for other WKT2 .prj files) and "Stop #20 for now", the owner answered: "Both".
 
 For #20 that adds the GeoZui half: a sidecar .prj fallback in GdalRaster when GDAL finds no CRS. The ice_cube half (write WKT1 in its .prj) is done from an ice_cube session, not here.
+
+## Issue Review
+**Status**: complete
+**When**: 2026-11-15 10:17 -05:00
+**By**: Claude Code Agent (claude-sonnet-5-5)
+
+**Issue**: #20
+
+### Scope Assessment
+
+**Well-scoped?** Yes. Still one PR: the `.asc` alias, a sidecar `.prj` fallback of a few lines in `GdalRaster::Load`, the README format entry, and the test already on the branch. The issue body predates the restated goal and says nothing of the fallback; this comment and the owner's restart comment carry it (the body is not edited).
+**Right repo?** Yes. `GeoZui4D/main/objects/GdalRaster.cpp` is in this repo. The ice_cube half (write WKT1 in `.prj`) belongs to ice_cube and is not part of this issue.
+**Serves**: the roadmap goal (use GeoZui4D with the file formats people use today, `docs/roadmap.md`). The project has no design document ("none").
+**Design picture?** No change. It adds an alias and a fallback inside an existing loader.
+**Dependencies**: none identified. The ice_cube WKT1 change is independent: with the fallback, WKT2 `.prj` files from ice_cube today open too.
+
+Verified against source. At `GdalRaster.cpp:79-82` the CRS comes only from `ds->GetProjectionRef()`; when it is empty, `spatialReference` stays empty, and `:93` then treats the centre as geographic, so a metre grid is placed as if in degrees. That is the failure the branch's gtest (`db55e60`) reproduces (GDAL 3.8.4 AAIGrid reads the `.prj` as ESRI WKT1 only; `SetFromUserInput` accepts the WKT2, per the 10:04 timeline entry). The fallback therefore fits at line 81: if the string is empty, read the `.prj` beside the dataset and call `SetFromUserInput` on its text. Points to settle in the plan: derive the `.prj` path from the filename with the extension swapped (`std::filesystem`, ADR-0002), try `.prj` and `.PRJ` since GDAL's own lookup does, and print a message to `std::cerr` (as the loader already does) when the file exists but does not parse, so a failed CRS is not silent.
+
+### Principle Alignment
+
+| Principle | Status | Notes |
+|---|---|---|
+| Only what's needed | OK | The fallback is the owner's decision ("Both"); keep it to the empty-CRS case and do not rewrite the CRS GDAL did find. |
+| Test what you change | Action needed | The existing gtest stops at GDAL's own reading and does not run the fallback. `GdalRaster.cpp` cannot be linked into a gtest (it pulls in `MainWindow`/`Scene3D`/GL; see the plan review), so the fallback code would be untested as written. Put the sidecar read in a small function in libgz4d (for example a helper that returns a `gz4d::ogr::SpatialReference` from a raster path and the dataset's own WKT), call it from `GdalRaster::Load`, and have `gdal_asc.cpp` call that same helper: the test then passes on the WKT2 `.prj` and still asserts placement (origin at lat `[0]`, lon `[1]`) and NODATA. Add a second case with a WKT1 `.prj` showing GDAL's own path is untouched, and one with no `.prj` showing the loader still fails cleanly rather than guessing. |
+| Private data stays private | OK | The test data is synthetic (made-up origin 12.3456 / -45.6789), as the earlier review asked. Keep it so. |
+| Put each thing at the level it applies to | OK | The WKT2 reading belongs here (it helps any WKT2 `.prj`, not only ice_cube's); the WKT1 writing belongs in ice_cube. |
+
+### ADR Applicability
+
+| ADR | Triggered | Notes |
+|---|---|---|
+| 0001 CMake 3.14 and C++17 | Watch | Only if the helper needs a new source in a `CMakeLists.txt`; libgz4d's sub-CMakeLists is not "ask first", the top-level one is. |
+| 0002 std::filesystem | Triggered | Build the `.prj` path with `std::filesystem`, not string slicing or boost. |
+| 0003 Apache 2.0 | Watch | A new header/source file needs the SPDX header. |
+
+### Consequences
+
+- Add `.asc` to the bathymetry list in `README.md` "Supported File Formats" (also asked for by the plan review); mention that a sidecar `.prj` supplies the CRS.
+- A helper in libgz4d is built into the app as well; rebuild the app (not only `test_libgz4d`) to check it still compiles, and confirm ctest passes with the test no longer red.
+- The branch is red on purpose today (`GdalAscTest` fails); it must go green by the end of this work.
+- The `GdalRaster.cpp` comment "[0]=lon and [1]=lat" reads backwards (GDAL 3, no axis-mapping strategy); keep it as a PR-description follow-up, not changed here.
+
+### Recommendations
+
+- Register `.asc` as `REGISTER_ALIAS(GdalRasterAsc, GdalRaster, "asc");` beside the existing aliases, in the same change as the fallback (registering without it misplaces WKT2 grids).
+- Add the sidecar `.prj` fallback to `GdalRaster::Load`, used only when `GetProjectionRef()` is empty, through a libgz4d helper the gtest also calls; handle `.prj`/`.PRJ`, and report an unparsable `.prj` on `std::cerr`.
+- Extend `gdal_asc.cpp` to cover the WKT2 fallback, a WKT1 `.prj` read by GDAL itself, and no `.prj` at all, keeping the lat/lon axis-order and NODATA assertions.
+- Add `.asc` to README "Supported File Formats". State in the PR that the alias line is verified by review and by the owner opening a file at a screen, and list the `GdalRaster.cpp` axis comment as a follow-up.
+- Keep GeoTIFF output and the WKT1 `.prj` writing out of this issue (ice_cube's).
+
+### Actions
+- [ ] The existing gtest stops at GDAL's own reading and does not run the fallback. `GdalRaster.cpp` cannot be linked into a gtest (it pulls in `MainWindow`/`Scene3D`/GL; see the plan review), so the fallback code would be untested as written. Put the sidecar read in a small function in libgz4d (for example a helper that returns a `gz4d::ogr::SpatialReference` from a raster path and the dataset's own WKT), call it from `GdalRaster::Load`, and have `gdal_asc.cpp` call that same helper: the test then passes on the WKT2 `.prj` and still asserts placement (origin at lat `[0]`, lon `[1]`) and NODATA. Add a second case with a WKT1 `.prj` showing GDAL's own path is untouched, and one with no `.prj` showing the loader still fails cleanly rather than guessing.
+- [ ] Register `.asc` as `REGISTER_ALIAS(GdalRasterAsc, GdalRaster, "asc");` beside the existing aliases, in the same change as the fallback (registering without it misplaces WKT2 grids).
+- [ ] Add the sidecar `.prj` fallback to `GdalRaster::Load`, used only when `GetProjectionRef()` is empty, through a libgz4d helper the gtest also calls; handle `.prj`/`.PRJ`, and report an unparsable `.prj` on `std::cerr`.
+- [ ] Extend `gdal_asc.cpp` to cover the WKT2 fallback, a WKT1 `.prj` read by GDAL itself, and no `.prj` at all, keeping the lat/lon axis-order and NODATA assertions.
+- [ ] Add `.asc` to README "Supported File Formats". State in the PR that the alias line is verified by review and by the owner opening a file at a screen, and list the `GdalRaster.cpp` axis comment as a follow-up.
+- [ ] Keep GeoTIFF output and the WKT1 `.prj` writing out of this issue (ice_cube's).
