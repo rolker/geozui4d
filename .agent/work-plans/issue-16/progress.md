@@ -276,3 +276,13 @@ Outside reviewers: Gemini (agy) completed, 1 suggestion (above). Codex completed
 Round-1 fixes checked: GLEW is under "required in practice" (`GeoZui4D/main/CMakeLists.txt:346`) and in the `.agents/README.md` row with the Flow.cpp evidence; `cmake_policy(SET CMP0135 NEW)` under `if(POLICY CMP0135)` precedes `FetchContent_Declare`; the unreachable FATAL_ERROR is gone and the libgtest-dev hint prints before the fetch.
 
 Outside reviewers: Gemini (agy) completed, no issues. Codex completed, 1 suggestion (Xmu, above). Claude adversarial (fresh subagent) completed, no must-fix; suggestions OpenGL (above) and a pre-existing `ctest --test-dir` inconsistency at `.agents/README.md:134` (line not touched by this branch; dropped). Static analysis: shellcheck not installed; `bash -n` clean on both changed scripts; no linter profile for CMake or Markdown. Verified: `cmake -DGZ4D_WITH_KINECT=OFF -DBUILD_GTESTS=ON` configures cleanly in a scratch dir, prints the summary with Kinect off, skips gzKinect, no Kinect source in any generated build.make; only dev warnings are pre-existing (PythonLibs policy, line 33 syntax warning).
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-15 12:17 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Decided-by**: host (round 2 approved, ship recommended, no must-fix; wall-clock time before another round)
+**After**: publish
+**Decision**: publish
+
+The Local Review (Pre-Push) at e6cbf9a approved round 2 with one suggestion: the summary's "required in practice" list omits OpenGL (looked up without REQUIRED) and checks X11_FOUND without X11_Xmu_FOUND, though Togl needs Xmu. Publishing without it: applying it costs a fix pass and a round-3 check, and the gap only affects what the report-only summary names. It goes in the PR as a known follow-up; the owner may veto and have it fixed before merge.
