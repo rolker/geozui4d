@@ -389,3 +389,26 @@ Merged branch (with issue 16's GoogleTest fetch) built with -DBUILD_GTESTS=ON: f
 **Decision**: publish
 
 The Local Review (Pre-Push) at 60d27d5 approved with six suggestions, named in the PR as follow-ups: bound the .prj read; say "could not read" for an unreadable .prj; the options form of SetFromUserInput needs GDAL 3 (stated in the PR, not checked in CMake: GDAL 3 is in every supported Ubuntu); the "nine sources" count in .agents/README.md; M_PI on MSVC; the fallback also serves .tif/.tiff/.vrt files with no CRS.
+
+## Integrated Review
+**Status**: complete
+**When**: 2026-11-15 12:39 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+
+**PR**: #23 at `5f9c990`
+**Sources**: 2 (Local Review (Pre-Push) @ `8931f4f` (covers 5f9c990 via bookkeeping; recorded at 60d27d5), GitHub fetch @ `5f9c990`: 0 reviews, 0 inline comments, 0 conversation comments, 0 check-runs)
+**Cross-source confirmations**: 0
+**CI**: all-pass (vacuous: the repository has no CI workflow, so 0 check-runs exist at the head; issue 12 adds CI)
+
+All six pre-push suggestions re-checked against the code at 5f9c990 and still apply. None is must-fix; the publish Checkpoint names them in the PR as known follow-ups.
+
+### Findings
+- [ ] (suggestion, Local Review (Pre-Push) @ `8931f4f`) Bound the sidecar size before reading the whole `.prj` into memory (codex + gemini) — `libgz4d/cxx/include/gz4d/gdal/sidecarPrj.h`
+- [ ] (suggestion, Local Review (Pre-Push) @ `8931f4f`) Check that the `.prj` opened/read; an unreadable file is reported as "could not parse" (gemini + Claude adversarial) — `libgz4d/cxx/include/gz4d/gdal/sidecarPrj.h`
+- [ ] (suggestion, Local Review (Pre-Push) @ `8931f4f`) Two-argument `OGRSpatialReference::SetFromUserInput(text, options)` needs GDAL 3.x; no minimum GDAL version is stated or guarded (`find_package(GDAL)` has none) — `libgz4d/cxx/include/gz4d/gdal/sidecarPrj.h`
+- [ ] (suggestion, Local Review (Pre-Push) @ `8931f4f`) Agent guide says the gtest suite has "nine sources"; gdal_asc.cpp is now a tenth when GDAL is found — `.agents/README.md`
+- [ ] (suggestion, Local Review (Pre-Push) @ `8931f4f`) `M_PI` is not standard C++ (MSVC needs `_USE_MATH_DEFINES`); use a local constexpr — `libgz4d/cxx/gtest/gdal_asc.cpp`
+- [ ] (suggestion, Local Review (Pre-Push) @ `8931f4f`) The `.prj` fallback also applies to CRS-less `.tif`/`.tiff`/`.vrt`, not only `.asc`; say so in the comment or the PR — `GeoZui4D/main/objects/GdalRaster.cpp`
+
+### False positives
+- None.
