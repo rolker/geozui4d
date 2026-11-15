@@ -74,3 +74,42 @@ The Actions ask for a gtest (or stand-alone program) on synthetic data that chec
 **Plan**: `.agent/work-plans/issue-20/plan.md` at `a4fce1b`
 
 Register `.asc` for GdalRaster; add a libgz4d gtest on a synthetic WKT2-.prj grid that fails first if GDAL ignores the .prj (then stop and report, no fallback), plus a source-level ctest for the registration.
+
+## Plan Review
+**Status**: complete
+**When**: 2026-11-15 10:01 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Verdict**: ready
+
+**Issue**: #20 — Open ESRI ASCII grids (.asc) as surfaces through the GDAL raster loader
+**Plan**: `.agent/work-plans/issue-20/plan.md` at `a4fce1b`
+**Branch**: `feature/issue-20`
+
+### Evaluation
+
+| Dimension | Verdict | Notes |
+|---|---|---|
+| Scope | Good | One alias line, one gtest, gtest CMake wiring. Narrow scope from the Checkpoint is kept: synthetic data only, stop and report if the WKT2 `.prj` is not read, no sidecar fallback. |
+| Issue alignment | Good | Covers all three acceptance lines and the issue-review Actions (synthetic data, fails first on the `.prj`, alias line, GeoTIFF out). Serves (checked): "The project roadmap goal of using GeoZui4D with file formats people use today (`docs/roadmap.md`). The project has no design document: none." `docs/roadmap.md:5` states that goal. |
+| File targeting | Needs work | `check_asc_registered.cmake` and its `add_test` should go (finding 1). `README.md` is missing (finding 2). |
+| Consequences | Needs work | `README.md:78-84` "Supported File Formats" lists extensions; the issue review searched only `docs/` and missed it (finding 2). |
+| Principle alignment | Good, with finding 1 | Test-first on the real GDAL/PROJ calls is the right check of the one real risk. The source-grep ctest fails the "only what's needed" / "enforce as simply as possible" test (finding 1). |
+| ADR compliance | Good | 0001: only `libgz4d/cxx/gtest/CMakeLists.txt` changes, top level untouched. 0002: `std::filesystem` for the temp dir. 0003: SPDX header on the new file. |
+| ROS conventions | N/A | Not a ROS project. |
+
+### Findings
+
+1. **[Principle alignment — the planner's open question]** Drop step 4 (the `cmake -P` grep of `GdalRaster.cpp`). It fails only if someone deletes the very line this PR adds, so it checks the diff, not the behaviour: it does not exercise the registry, `getRegistryEntryFromExt` (`Object.cpp:1797-1809`, which matches `'.'+extension` exactly, case-sensitive like `tif`), or `Scene3D` routing. Nothing better is within reach at reasonable cost: the app is one `add_executable(GeoZui4D ${GEOZUI4D_SRC})` (`GeoZui4D/main/CMakeLists.txt:303`) with no objects library, and `GdalRaster.cpp` pulls in `MainWindow`/`Scene3D`/GL, so a registry test means restructuring the app build, well beyond this issue. The alias is a one-liner identical in form to the `tiff` and `vrt` lines beside it: review covers it, and the owner's at-screen open is the runtime check. Say so in the PR. Remove `check_asc_registered.cmake` from Files to Change.
+2. **[Consequences]** Add `.asc` to `README.md`'s "Supported File Formats" (bathymetry list, line 80). The plan's consequences row says "No document lists them (searched `docs/`)"; the README does.
+3. **[Approach — suggestion]** Axis order in the placement assertion. Nothing in libgz4d or the app sets an axis-mapping strategy (no `SetAxisMappingStrategy` / `OAMS_TRADITIONAL_GIS_ORDER` anywhere), and with GDAL 3.8.4 a transform to `SetWellKnownGeogCS("WGS84")` returns latitude in x (checked with a throwaway program: UTM 19N (500000, 4800000) -> x=43.35, y=-69.0). So `Projection(srs, wgs84)(0, 0)` gives `Point[0]` = lat, `[1]` = lon, the opposite of the comment at `GdalRaster.cpp` ("[0]=lon and [1]=lat"). Write the expectation explicitly against lat in `[0]` (or assert both orderings are distinguished, e.g. with an origin where |lat| != |lon|, which 12.3456 / -45.6789 already gives) so the test is not quietly written to whatever comes out. This does not misplace a projected grid today: `autoProjection` (`Object.cpp:515-535`) uses the object's own spatial reference when it has one and ignores the swapped centre, so it is no reason to widen this issue; mention the misleading comment in the PR as a possible follow-up rather than fixing it here.
+4. **[Scope — suggestion]** The "100 m east" second point is optional; the origin check and a projected, non-geographic CRS already show the `.prj` was read. Keep it only if it stays a few lines.
+
+### Summary
+
+The plan is sound and narrow, and its gtest checks the one real risk (GDAL reading the WKT2 `.prj`) with the same calls `GdalRaster::Load` makes. Drop the source-grep ctest, add `.asc` to the README format list, and pin the axis order in the placement assertion; none of these needs a re-plan.
+
+### Recommended Actions
+
+- [ ] Drop step 4 and `libgz4d/cxx/gtest/check_asc_registered.cmake`; state in the PR that the alias is verified by review and the owner's at-screen open.
+- [ ] Add `.asc` to the bathymetry list in `README.md` "Supported File Formats".
+- [ ] In `gdal_asc.cpp`, assert the origin with latitude in `Projection` output `[0]` and longitude in `[1]` (GDAL 3 authority order, no axis-mapping strategy set); note the misleading `GdalRaster.cpp` comment in the PR as a follow-up.
