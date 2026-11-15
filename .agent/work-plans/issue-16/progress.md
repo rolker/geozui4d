@@ -302,3 +302,13 @@ The Local Review (Pre-Push) at e6cbf9a approved round 2 with one suggestion: the
 
 ### False positives
 (none)
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-15 12:24 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Decided-by**: owner
+**After**: findings
+**Decision**: merge
+
+Asked "Merge PR #22 with F1 left as a follow-up, or fix F1 first?" (F1: the "required in practice" summary omits OpenGL and checks X11 without Xmu), the owner answered: "Merge, F1 as follow-up". Asked "If you merge in Q1, use --no-wait for PR #22?" (the repository has no CI, so merge_pr.sh's CI wait stops after 120 s), he answered: "Yes, --no-wait".
