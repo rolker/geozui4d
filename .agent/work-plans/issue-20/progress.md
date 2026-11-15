@@ -234,3 +234,44 @@ The Issue Review at 4f443fe (after the restart) recommends planning the widened 
 **Plan**: `.agent/work-plans/issue-20/plan.md` at `31904cd`
 
 Replaces the earlier plan after the owner chose "Both": a header-only libgz4d helper (gz4d/ogr/SidecarPrj.h) reads a sidecar .prj (.prj/.PRJ, std::filesystem) only when GDAL gives no CRS; GdalRaster::Load and gdal_asc.cpp (db55e60, reworked to WKT2, WKT1, no, bad and uppercase .prj cases) both call it; .asc alias and README line in the same change; ice_cube's WKT1 writing is out of scope.
+
+## Plan Review
+**Status**: complete
+**When**: 2026-11-15 12:08 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Verdict**: needs-work
+
+**Issue**: #20 — Open ESRI ASCII grids (.asc) as surfaces through the GDAL raster loader
+**Plan**: `.agent/work-plans/issue-20/plan.md` at `31904cd`
+**Branch**: `feature/issue-20`
+
+### Evaluation
+
+| Dimension | Verdict | Notes |
+|---|---|---|
+| Scope | Good | Four files (one new header, `GdalRaster.cpp`, `gdal_asc.cpp`, README); one PR. The ice_cube WKT1 half is kept out, as the owner set it. |
+| Issue alignment | Needs work | Covers the owner's "Both" (this repo's half) and every recommendation of the 2026-11-15 issue review: helper in libgz4d called by both `Load` and the gtest, `.prj`/`.PRJ`, `std::cerr` on an unparsable `.prj`, WKT2 / WKT1 / no-`.prj` cases, README, axis comment as follow-up. But the unparsable-`.prj` behaviour cannot be built as planned on the current wrapper (finding 1). Serves: "The project roadmap goal of using GeoZui4D with file formats people use today (`docs/roadmap.md`). The project has no design document: none." Checked: fits, breaks no stated rule. |
+| File targeting | Good | Right files. `gtest/CMakeLists.txt` already has the `if(GDAL_FOUND)` entry. Placement of the header is acceptable but `gz4d/gdal/` is the closer fit (finding 2). If finding 1 is resolved by changing the wrapper, `ogr/SpatialReference.h` joins the list. |
+| Consequences | Good | README, app rebuild, axis-comment follow-up are listed. No other consumer of the new header. |
+| Principle alignment | Good | Only what's needed: fallback only on an empty GDAL CRS. Test what breaks: the gtest runs the same helper `Load` calls and is red on the branch today. Prior art stated (GDAL's own `.prj`/`.PRJ` lookup; rejected source-grep and app-link tests). Design picture: no change, project has no design document. |
+| ADR compliance | Good | 0001: header-only, no CMake change. 0002: `std::filesystem` for the sidecar path. 0003: SPDX header on the new file. |
+| ROS conventions | N/A | Not a ROS project. |
+
+### Findings
+
+1. **[Issue alignment] Must-fix** — The plan's helper cannot detect a `.prj` that does not parse. `gz4d::ogr::SpatialReference::SetFromUserInput` (`libgz4d/cxx/include/gz4d/ogr/SpatialReference.h:82-85`) returns `void`, drops the `OGRErr`, and calls `init()` first, so after garbage input the wrapper is non-empty (`operator bool` true) with an empty `OGRSpatialReference` inside. The raw-pointer constructors are private (friends only), so the helper cannot build the result from a local `OGRSpatialReference` either. As written, `UnparsablePrjReported` would fail and `Load` would treat the bad CRS as a valid projected one (`!IsGeographic()` is true for an empty SRS) and run `Projection` on it. The plan must name the mechanism: either (a) validate the text first with a local `OGRSpatialReference::SetFromUserInput` and call the wrapper only on `OGRERR_NONE`, leaving `SpatialReference.h` untouched; or (b) change the wrapper's `SetFromUserInput` to return `OGRErr` (source-compatible for the seven existing callers, which ignore the result: `Scene3D.cpp:1559`, `Object.cpp:326,2104`, `gzCommandInterface.cpp:1685`, `GdalRaster.cpp:82`, `geo/Projection.h:40`) and `reset()` on failure. (a) is smaller and keeps the change local; (b) adds `SpatialReference.h` to the file list. The same question applies to a non-empty `GetProjectionRef()` string, though GDAL produced it, so a failure there is unlikely.
+2. **[File targeting] Suggestion** — Placement asked by the planner. `gz4d/ogr/` holds the thin RAII wrappers over OGR types (`SpatialReference`, `Geometry`, `Layer`, `DataSource`, `CoordinateTransformation`), all PascalCase class headers; it has no free functions and nothing that reads files beside a raster. `gz4d/gdal/` (`saveGeotiff.h`: `inline` free function `gz4d::gdal::saveGeotiff`, plus `Dataset.h`, `RasterBand.h`) is where raster-dataset helpers already live, and it already depends on the ogr headers. A sidecar lookup for a raster dataset reads more naturally as `gz4d/gdal/sidecarPrj.h` with `gz4d::gdal::spatialReferenceForRaster(...)`, returning a `gz4d::ogr::SpatialReference`. The `ogr/` placement is not wrong (it compiles and both callers have GDAL), so this is the planner's call; whichever is chosen, define the function `inline` in-namespace and include `<filesystem>`, `<fstream>`, `<iostream>` explicitly (libgz4d headers already use `std::cerr`, e.g. `Angle.h`, `Kalman.h`).
+3. **[Issue alignment] Suggestion** — The issue review asked for a no-`.prj` case "showing the loader still fails cleanly rather than guessing"; the plan keeps today's behaviour (empty CRS, `Load` proceeds and treats the grid coordinates as geographic). That is consistent with "Only what's needed" and with GeoTIFFs that are geographic but carry no CRS, but say in the PR that a metre `.asc` with no `.prj` is still misplaced as degrees, so the owner knows the gap is deliberate.
+4. **[Principle alignment] Suggestion** — In `UnparsablePrjReported`, GDAL/PROJ will also print its own `CPLError` text to stderr; assert that the captured text contains the `.prj` filename (the helper's message), not merely that stderr is non-empty. For `UppercasePrj`, decide the case-insensitive-FS skip by probing (write `x.PRJ`, check `exists(x.prj)`), not by platform macro.
+5. **[Principle alignment] Confirmed (planner's question)** — The `.asc` alias is checked by code review and by the owner opening a file at a screen, not by ctest. Agreed: `REGISTER_ALIAS` is a one-line static registration in `GdalRaster.cpp` beside the `tif`/`tiff`/`vrt` lines, the app has no objects library a test could link (`GdalRaster.cpp` pulls in `MainWindow`, `Scene3D`, GL), and a source-grep check would test the text, not the registration. The real risk (CRS placement) is covered by the gtest through the shared helper. State this in the PR, as planned.
+
+### Summary
+
+The plan carries the owner's "Both" decision into this repo correctly and puts the fallback where the gtest can run it. One mechanism gap blocks it: the existing `SpatialReference` wrapper hides parse errors, so the planned unparsable-`.prj` report and empty result cannot work without naming how the error is detected. Once that is settled, it is ready.
+
+### Recommended Actions
+
+- [ ] Name how the helper detects a failed parse (validate with a local `OGRSpatialReference` first, or have the wrapper's `SetFromUserInput` return `OGRErr` and add `SpatialReference.h` to Files to Change).
+- [ ] Decide `gz4d/ogr/SidecarPrj.h` vs `gz4d/gdal/` (suggestion; either is acceptable).
+- [ ] Note in the PR that a no-`.prj` metre grid is still placed as degrees (deliberate).
+- [ ] Tighten the stderr and `.PRJ` test details as in finding 4.
