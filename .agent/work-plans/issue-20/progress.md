@@ -412,3 +412,13 @@ All six pre-push suggestions re-checked against the code at 5f9c990 and still ap
 
 ### False positives
 - None.
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-15 15:39 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Decided-by**: owner
+**After**: findings
+**Decision**: merge
+
+Asked "Merge PR #23 with F1–F6 as follow-ups, or fix them first?" (the six pre-push suggestions), the owner answered: "Merge, F1–F6 as follow-ups". Asked "If you merge in Q1, use --no-wait for PR #23?" (the repository has no CI), he answered: "Yes, --no-wait".
