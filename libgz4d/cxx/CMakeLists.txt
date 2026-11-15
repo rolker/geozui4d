@@ -469,6 +469,12 @@ if(BUILD_GTESTS)
         # v1.17.0 raises that to 3.16 and C++17), within ADR-0001's 3.14.
         message("gtest: not installed, fetching GoogleTest v1.14.0 (needs network access)")
         include(FetchContent)
+        # CMake 3.24+ warns about a URL download without this policy; NEW
+        # stamps extracted files with the extraction time. Older CMake
+        # (ADR-0001's 3.14) has no such policy, hence the guard.
+        if(POLICY CMP0135)
+            cmake_policy(SET CMP0135 NEW)
+        endif()
         FetchContent_Declare(googletest
             URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
             URL_HASH SHA256=8ad598c73ad796e0d8280b082cebd82a630d73e73cd3c70057938a6501bba5d7
