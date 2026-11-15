@@ -8,8 +8,9 @@
 # Configures build/, then builds every target. Extra arguments are passed to
 # the build step, e.g. `scripts/build.sh --target GeoZui4D`.
 #
-# The libgz4d gtest suite is on (-DBUILD_GTESTS=ON), so GoogleTest must be
-# installed (libgtest-dev on Ubuntu); configure stops if it is missing. Run
+# The libgz4d gtest suite is on (-DBUILD_GTESTS=ON). An installed
+# GoogleTest (libgtest-dev on Ubuntu) is used; without one, configure
+# fetches GoogleTest v1.14.0, which needs network access. Run
 # the tests afterwards with `cd build && ctest --output-on-failure`
 # (`ctest --test-dir` needs CMake 3.20, above the project's 3.14 minimum).
 # The build uses one job per core (4 if nproc is missing).

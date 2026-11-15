@@ -32,9 +32,12 @@ PACKAGES=(
     libvorbis-dev
     libbluetooth-dev
     libspnav-dev
-    libopenni-dev   # Kinect: GeoZui4D builds it unconditionally (GZ4D_KINECT is never tested)
-    libgtest-dev    # tests only: scripts/build.sh sets -DBUILD_GTESTS=ON
+    libgtest-dev    # tests (-DBUILD_GTESTS=ON) offline; without it configure fetches GoogleTest
 )
+
+# Not listed, because the build works without it: libopenni-dev (OpenNI).
+# When it is installed, the Kinect object is built (GZ4D_KINECT);
+# -DGZ4D_WITH_KINECT=OFF leaves it out even then.
 
 # Packages that stand in for a listed one when installed: JACK 2's headers
 # conflict with libjack-dev (JACK 1) and serve the build just as well.

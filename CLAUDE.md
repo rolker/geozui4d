@@ -83,7 +83,6 @@ See [`docs/decisions/`](docs/decisions/) for recorded decisions:
 | Skill | Purpose |
 |-------|---------|
 | `/brand-guidelines` | CCOM/JHC brand identity and editorial standards |
-| `/build` | Build, test and optionally install the project |
 
 When the repository is worked from the agent workspace, planning, review and
 audit are the workspace skills (`agent-workspace:plan-task`,

@@ -29,7 +29,6 @@ set(GEOZUI4D_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/Hugin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ImageStream.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/IMU.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Kinect.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Label.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Line.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/MBGrid.cpp
@@ -67,8 +66,14 @@ set(GEOZUI4D_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/X3DFeatureInstance.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/X3DFragment.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/X3DImageInstance.cpp
-    PARENT_SCOPE
 )
+
+# ni_FOUND is set in ../CMakeLists.txt (OpenNI found and GZ4D_WITH_KINECT on).
+if(ni_FOUND)
+    set(GEOZUI4D_SRC ${GEOZUI4D_SRC} ${CMAKE_CURRENT_SOURCE_DIR}/Kinect.cpp)
+endif()
+
+set(GEOZUI4D_SRC ${GEOZUI4D_SRC} PARENT_SCOPE)
 
 #add_library(gz_objects STATIC ${GEOZUI4D_OBJECTS_SRC})
 

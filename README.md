@@ -99,8 +99,13 @@ It installs only the packages that are missing, through `sudo apt-get`.
 list, which is the project's one list of build dependencies. On another
 system, install the equivalents of the packages `--list` prints.
 
-`libgtest-dev` is needed only for the tests (`-DBUILD_GTESTS=ON`, which
-`scripts/build.sh` turns on).
+`libgtest-dev` is needed only to build the tests (`-DBUILD_GTESTS=ON`,
+which `scripts/build.sh` turns on) without network access: when GoogleTest
+is not installed, configure fetches GoogleTest v1.14.0 instead.
+
+OpenNI is optional and not in the list: installing `libopenni-dev` enables
+the Kinect object, and `-DGZ4D_WITH_KINECT=OFF` leaves it out even when
+OpenNI is installed.
 
 ### Build
 
