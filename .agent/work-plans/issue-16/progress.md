@@ -58,3 +58,18 @@ issue: 16
 - [ ] Owner decision, scope: should a missing optional dependency fail CI or only be reported? The issue leaves this open. Suggested default: report only, since the build must work without them after the Kinect guard.
 - [ ] Do the Kinect guard first and verify that a build without OpenNI compiles (remove the package or force `ni_FOUND` off), because that is the real test of "optional".
 - [ ] Open a separate issue for adding the remaining optional packages (XInput, exif, FLAC++, Festival), one per build, rather than extending this one.
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-15 09:28 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Decided-by**: owner
+**After**: issue-actions
+**Decision**: proceed
+
+The owner's answers, to three questions:
+- Q1 "Should #16 hand item 4 to #12 and cover only F3?" (F3: guard the Kinect object with GZ4D_KINECT so OpenNI becomes optional again, done first and verified by a build without OpenNI; fetch GoogleTest with FetchContent; print a configure summary of optional features): "Yes, hand item 4 to #12".
+- Q2 "Should a missing optional library fail CI, or only be reported in the summary?": "Report only".
+- Q3 "Open a separate issue for adding those optional packages (libxi-dev, libexif-dev, libflac++-dev, festival-dev), instead of doing it in #16?": "Yes, open a separate issue".
+
+Scope for the plan: the Kinect guard (first), GoogleTest by FetchContent, the configure summary (report only). Items 1 and 2 were delivered by #18; item 4 goes to #12; the optional packages go to their own issue.
