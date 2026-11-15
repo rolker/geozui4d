@@ -56,3 +56,13 @@ Verified against source. `GdalRaster.cpp:20-22` registers `tif`, `tiff` and `vrt
 - [ ] Add the automated check described above. Make it fail first if GDAL does not read the WKT2 `.prj`, since that is the real risk to the placement acceptance.
 - [ ] If the `.prj` is not read, fall back to reading the sidecar `.prj` in `GdalRaster` for that case. Raise it as a scope question to the owner rather than widening this issue unasked.
 - [ ] Keep GeoTIFF output out of this issue (ice_cube's own business).
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-15 09:57 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Decided-by**: host (the Actions are how to verify the acceptance, not a scope change; the one scope question is conditional)
+**After**: issue-actions
+**Decision**: proceed
+
+The Actions ask for a gtest (or stand-alone program) on synthetic data that checks the .asc registration, the placement from an orthographic WKT2 .prj, and NODATA as NaN, written so that it fails first if GDAL's AAIGrid driver does not read the WKT2 .prj. If it does not, a sidecar .prj fallback in GdalRaster would widen the issue: that is the owner's question, raised only if the test shows it is needed. The plan should take the narrow scope and say what it does if the .prj is not read (stop and report, not add the fallback).
