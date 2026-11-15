@@ -104,3 +104,13 @@ A minimal, well-supported plan: the stub is verified empty and verified uncalled
 - [ ] List every includer of `URI.h` in the PR's consequence record (finding 1).
 - [ ] Verify with both a default-options build (acceptance) and a `-DBUILD_GTESTS=ON` build plus ctest; grep both logs (finding 2).
 - [ ] State in the PR why no new test is added and that the build-log grep is the regression check (finding 3).
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-15 09:30 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Decided-by**: host (plan review verdict ready, no must-fix; suggestions folded into the implement handoff)
+**After**: plan
+**Decision**: proceed
+
+The Plan Review at 70c73bb found no must-fix. Its three suggestions go to the implement pass: list every includer of URI.h in the PR; verify with a default-options build (the acceptance check) and a -DBUILD_GTESTS=ON build with ctest, grepping both logs for -Wreturn-type and URI.h; and say in the PR why no new test is added.
