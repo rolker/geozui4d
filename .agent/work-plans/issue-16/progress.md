@@ -129,3 +129,15 @@ The plan is sound: the Kinect guard comes first and is verified by a build with 
 - [ ] Correct the GoogleTest version reason: v1.14.0 to v1.16.0 need CMake 3.13 and only v1.17.0 needs 3.16 and C++17; keep the v1.14.0 pin because it matches Ubuntu 24.04.
 - [ ] Note `gzmod/nosb.py` as the one script that creates a Kinect object.
 - [ ] (Suggestion) Keep the summary to the app; name #12's no-OpenNI CI build as the durable test; keep the fetch inside `if(BUILD_GTESTS)` and set `BUILD_GMOCK OFF`.
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-15 09:39 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Decided-by**: owner
+**After**: plan
+**Decision**: revise
+
+The Plan Review at 08b59f7 (needs-work) has four must-fix findings; the revision addresses all four and takes its suggestions. Asked whether #16 may edit the project's build skill (.claude/skills/build/SKILL.md, whose "GoogleTest must be installed" line the GoogleTest fallback makes wrong), the owner asked where it came from and whether the workspace needs it, then answered: "let's remove that skill."
+
+So the revised plan also deletes .claude/skills/build/ and updates what names it: the CLAUDE.md Skills table row for /build, and .agents/README.md:177 ("so .claude/skills/build/ is tracked"). The skill's one project rule that is not elsewhere, "Run the full build, with the tests, as part of any audit of this project", moves to .agents/README.md, with its other guidance (report warnings; do not modify a CMakeLists.txt to fix a build error without asking; scripts/build.sh --parallel <N> on a machine short of memory) where it is not already covered.
