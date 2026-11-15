@@ -48,3 +48,13 @@ issue: 13
 ### Actions
 - [ ] Prefer removing the unused `URI::encode` stub; implement it only if the owner wants a percent-encoder, with a test in `libgz4d/cxx/gtest/URI.cpp`.
 - [ ] Confirm in the fresh build log that no `-Wreturn-type` warning remains for `URI.h` (SocketListener.h and the URI gtest include it).
+
+## Checkpoint
+**Status**: complete
+**When**: 2026-11-15 09:25 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Decided-by**: host (both fixes are in the issue's own Proposed section; no scope change)
+**After**: issue-actions
+**Decision**: proceed
+
+The Actions ask to prefer removing the unused stub over implementing a percent-encoder, and to confirm the warning is gone in a fresh build log. The issue body offers both ("Either implement it ... or remove the unused declaration"), and `git grep` finds no C++ caller, so the choice does not change what the work is for. The plan should take removal unless it finds a caller (Tcl, Python bindings, or another consumer of the installed header); the owner may veto in favour of implementing.
