@@ -270,10 +270,6 @@ namespace gz4d
             }
             return ret;
         }
-        
-        static std::string encode(std::string const&)
-        {
-        }
     };
 }
 
