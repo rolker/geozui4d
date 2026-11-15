@@ -141,3 +141,11 @@ The plan is sound: the Kinect guard comes first and is verified by a build with 
 The Plan Review at 08b59f7 (needs-work) has four must-fix findings; the revision addresses all four and takes its suggestions. Asked whether #16 may edit the project's build skill (.claude/skills/build/SKILL.md, whose "GoogleTest must be installed" line the GoogleTest fallback makes wrong), the owner asked where it came from and whether the workspace needs it, then answered: "let's remove that skill."
 
 So the revised plan also deletes .claude/skills/build/ and updates what names it: the CLAUDE.md Skills table row for /build, and .agents/README.md:177 ("so .claude/skills/build/ is tracked"). The skill's one project rule that is not elsewhere, "Run the full build, with the tests, as part of any audit of this project", moves to .agents/README.md, with its other guidance (report warnings; do not modify a CMakeLists.txt to fix a build error without asking; scripts/build.sh --parallel <N> on a machine short of memory) where it is not already covered.
+
+## Plan Authored
+**Status**: complete
+**When**: 2026-11-15 09:40 -05:00
+**By**: Claude Code Agent (claude-sonnet-5-5)
+**Plan**: `.agent/work-plans/issue-16/plan.md` at `40874b9`
+
+Revision after the plan review: the configure summary lists only features the build survives without (required-in-practice ones print separately), the libopenni-dev line is deleted with no --optional flag, GoogleTest docs and the pin reason are corrected, and the build skill is removed with its guidance moved to .agents/README.md (owner decision).
