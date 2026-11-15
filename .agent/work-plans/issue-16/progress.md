@@ -286,3 +286,19 @@ Outside reviewers: Gemini (agy) completed, no issues. Codex completed, 1 suggest
 **Decision**: publish
 
 The Local Review (Pre-Push) at e6cbf9a approved round 2 with one suggestion: the summary's "required in practice" list omits OpenGL (looked up without REQUIRED) and checks X11_FOUND without X11_Xmu_FOUND, though Togl needs Xmu. Publishing without it: applying it costs a fix pass and a round-3 check, and the gap only affects what the report-only summary names. It goes in the PR as a known follow-up; the owner may veto and have it fixed before merge.
+
+## Integrated Review
+**Status**: complete
+**When**: 2026-11-15 12:19 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+
+**PR**: #22 at `566155c`
+**Sources**: 2 (Local Review (Pre-Push) round 1 @ `fdf7ca0`, changes requested, all three items fixed and superseded by round 2; Local Review (Pre-Push) round 2 @ `161e57c` (recorded in `e6cbf9a`), covers `566155c` via bookkeeping). GitHub: 0 reviews, 0 inline comments, 0 conversation comments, 0 CI checks.
+**Cross-source confirmations**: 0
+**CI**: all-pass (vacuous: the repository has no CI workflow, so 0 checks ran and none failed; issue 12 adds one. Nothing to wait for, so not `pending`.)
+
+### Findings
+- [ ] (suggestion, Local Review (Pre-Push) @ `161e57c` (covers `566155c` via bookkeeping)) The "required in practice" configure summary omits OpenGL (`find_package(OpenGL)` without REQUIRED at line 167, needed by the GL code and Togl), and the X11 line checks only `X11_FOUND` although `Togl/togl.c:34` includes `<X11/Xmu/StdCmap.h>`, which `FindX11` reports as `X11_Xmu_FOUND`; add `OPENGL_FOUND`, check Xmu, and name OpenGL in the `.agents/README.md` Dependencies row. Re-checked at head: still present (`GeoZui4D/main/CMakeLists.txt:339-350` has no OpenGL line and line 350 checks `X11_FOUND` only). Not must-fix; the publish Checkpoint chose to ship with it as a known follow-up named in the PR — `GeoZui4D/main/CMakeLists.txt`, `.agents/README.md`
+
+### False positives
+(none)
