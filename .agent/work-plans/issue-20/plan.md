@@ -14,18 +14,19 @@ Existing branch commits: `db55e60` adds `libgz4d/cxx/gtest/gdal_asc.cpp` (synthe
 
 ## Approach
 
-1. **Helper in libgz4d** (header-only, like most of libgz4d; no CMake change): new `libgz4d/cxx/include/gz4d/ogr/SidecarPrj.h` (SPDX header) with `inline gz4d::ogr::SpatialReference gz4d::ogr::spatialReferenceForRaster(const std::string &datasetWkt, const std::filesystem::path &rasterPath)`.
-   - Non-empty `datasetWkt`: `SetFromUserInput(datasetWkt)` and return; GDAL's own result is never overridden.
-   - Empty: try `<stem>.prj` then `<stem>.PRJ` (`replace_extension`, `std::filesystem`, ADR-0002); read the first that exists; `SetFromUserInput(text)` (accepts WKT1 and WKT2).
-   - A `.prj` that exists but does not parse: message on `std::cerr` naming the file; return an empty reference. No `.prj`: return empty, silently (as today).
+1. **Helper in libgz4d** (header-only, like most of libgz4d; no CMake change): new `libgz4d/cxx/include/gz4d/gdal/sidecarPrj.h` (SPDX header, beside `saveGeotiff.h`; explicit `<filesystem>`, `<fstream>`, `<iostream>`, `<sstream>` includes) with `inline gz4d::ogr::SpatialReference gz4d::gdal::spatialReferenceForRaster(const std::string &datasetWkt, const std::filesystem::path &rasterPath)`.
+   - Parse check: the wrapper's `SetFromUserInput` returns `void` and leaves a non-empty wrapper holding an empty SRS after garbage, and its raw-reference constructors are private. So the helper parses the text first with a local `OGRSpatialReference::SetFromUserInput` (accepts WKT1 and WKT2) and checks for `OGRERR_NONE`; only on success does it call `SetFromUserInput(text)` on a fresh wrapper with the same text (lossless; the text is parsed twice, which is cheap). `SpatialReference.h` stays unchanged. Failure returns a default (empty) wrapper, so `operator bool` is false.
+   - Non-empty `datasetWkt`: same parse check, then the wrapper; GDAL's own result is never overridden. A parse failure here (unlikely, GDAL produced it) returns empty and reports on `std::cerr` as below.
+   - Empty: try `<stem>.prj` then `<stem>.PRJ` (`replace_extension`, `std::filesystem`, ADR-0002); read the first that exists.
+   - A `.prj` that exists but does not parse: message on `std::cerr` naming the `.prj` file; return an empty reference. No `.prj`: return empty, silently (as today). This gap is deliberate: a metre `.asc` with no `.prj` is still placed as if in degrees, as any CRS-less raster is today; the PR says so.
 2. **Use it in `GdalRaster::Load`**: replace lines 79-82 with a call to the helper using `ds->GetProjectionRef()` and `GetFilename()`. Include the header. The rest of `Load` is unchanged (an empty CRS behaves as before).
 3. **Register the alias**: `REGISTER_ALIAS(GdalRasterAsc, GdalRaster, "asc");` after the `vrt` line, in the same change as the fallback.
 4. **Rework `gdal_asc.cpp`** so the test goes green and covers the fallback: a fixture helper writes the grid and an optional `.prj` (parameter: WKT2, WKT1, none, garbage). Each test opens with GDAL as `Load` does, calls the helper with `GetProjectionRef()` and the path, then makes the same Projection/NODATA checks.
    - `Wkt2PrjUsesFallback`: GDAL's `GetProjectionRef()` is empty (documents the reason for the helper; if a later GDAL reads WKT2 this assertion is relaxed to "either way the helper result is right"); helper result is projected; (0,0) maps to lat `[0]` 12.3456, lon `[1]` -45.6789 within 1e-9; 100 m east checked as now; NODATA cell becomes NaN, others finite.
    - `Wkt1PrjReadByGdal`: an ESRI-WKT1 `.prj` (e.g. a UTM zone written by `exportToWkt`/`morphToESRI` of a WGS84 UTM SRS built in the test) gives non-empty `GetProjectionRef()`; helper returns a projected CRS equal to GDAL's (`IsSame`); no fallback read.
    - `NoPrjHandledCleanly`: no `.prj`; helper returns an empty reference, no throw, nothing on stderr.
-   - `UnparsablePrjReported`: garbage `.prj` gives an empty reference and a message on stderr (`testing::internal::CaptureStderr`).
-   - `UppercasePrj`: `.PRJ` is found (skipped where the file system is case-insensitive).
+   - `UnparsablePrjReported`: garbage `.prj` gives an empty reference (`operator bool` false); captured stderr (`testing::internal::CaptureStderr`) contains the `.prj` file name (GDAL/PROJ may add its own text, so non-empty is not enough).
+   - `UppercasePrj`: `.PRJ` is found (the test writes `x.PRJ` and checks whether `x.prj` exists; if so the file system is case-insensitive and the test is skipped; no platform macro).
    Keep the lat-in-`[0]` axis assertion and the NODATA assertion. Synthetic data only; temp dir via `std::filesystem`, removed in `TearDown`.
 5. **README**: add `.asc` (ESRI ASCII grid, CRS from a sidecar `.prj`) to the bathymetry list under "Supported File Formats".
 6. **Verify**: build with `-DBUILD_GTESTS=ON` and run ctest (the branch goes green); build the full app so `GdalRaster.cpp` compiles with the header. The alias line and runtime behaviour of the app are checked by review and by the owner opening an `.asc` at a screen; state that in the PR, and list the `GdalRaster.cpp` "[0]=lon, [1]=lat" comment (backwards under GDAL 3) as a follow-up, not changed here.
@@ -34,7 +35,7 @@ Existing branch commits: `db55e60` adds `libgz4d/cxx/gtest/gdal_asc.cpp` (synthe
 
 | File | Change |
 |------|--------|
-| `libgz4d/cxx/include/gz4d/ogr/SidecarPrj.h` | New header-only helper |
+| `libgz4d/cxx/include/gz4d/gdal/sidecarPrj.h` | New header-only helper `gz4d::gdal::spatialReferenceForRaster` |
 | `GeoZui4D/main/objects/GdalRaster.cpp` | Call helper at lines 79-82; add `asc` alias |
 | `libgz4d/cxx/gtest/gdal_asc.cpp` | Rework: WKT2 fallback, WKT1, no `.prj`, bad `.prj`, `.PRJ` cases |
 | `README.md` | `.asc` in Supported File Formats |
@@ -43,7 +44,7 @@ Existing branch commits: `db55e60` adds `libgz4d/cxx/gtest/gdal_asc.cpp` (synthe
 
 ## Prior Art
 
-`GdalRaster::Load` and `db55e60` are the reference for the GDAL/Projection calls. GDAL's AAIGrid driver looks for `.prj` and `.PRJ` (taken: both spellings) but parses ESRI WKT1 only (the gap). Rejected: converting the WKT2 to WKT1 in GeoZui (ice_cube writes WKT1 already; the fallback only needs `SetFromUserInput`); a CMake source-check for the alias (the earlier plan's idea; the owner views the app, the line is one-liner reviewed); a runtime link of the app into a test (GL/Tcl dependencies).
+`GdalRaster::Load` and `db55e60` are the reference for the GDAL/Projection calls. Placement follows `saveGeotiff.h` (free `inline` raster helper in `gz4d/gdal/`; `gz4d/ogr/` holds class wrappers only). Changing the wrapper's `SetFromUserInput` to return `OGRErr` was rejected as larger (seven callers, one more file). GDAL's AAIGrid driver looks for `.prj` and `.PRJ` (taken: both spellings) but parses ESRI WKT1 only (the gap). Rejected: converting the WKT2 to WKT1 in GeoZui (ice_cube writes WKT1 already; the fallback only needs `SetFromUserInput`); a CMake source-check for the alias (the earlier plan's idea; the owner views the app, the line is one-liner reviewed); a runtime link of the app into a test (GL/Tcl dependencies).
 
 ## Serves
 
@@ -80,7 +81,7 @@ No change to the design picture; an alias and a CRS fallback inside an existing 
 
 ## Open Questions
 
-- None blocking. If the installed GDAL ever reads the WKT2 `.prj` itself, the helper simply does not fall back; the test tolerates both.
+- None blocking. Host mechanism choices listed for the owner's veto: local-parse-first, `gz4d/gdal/` placement, no-`.prj` unchanged. If the installed GDAL ever reads the WKT2 `.prj` itself, the helper simply does not fall back; the test tolerates both.
 - The alias registration is checked by review and by the owner at a screen, not by ctest. Acceptable?
 
 ## Estimated Scope
