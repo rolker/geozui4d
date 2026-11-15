@@ -123,3 +123,26 @@ The plan is sound and narrow, and its gtest checks the one real risk (GDAL readi
 **Decision**: proceed
 
 The Plan Review at c679309 is ready. To the implement pass: drop step 4 and check_asc_registered.cmake (the alias is checked by code review and by the owner opening a file at a screen; the PR says so); add .asc to README.md:78-84 "Supported File Formats"; pin the axis order in the placement assertion (with GDAL 3.8.4, Projection's WGS84 output [0] is latitude) and note in the PR that GdalRaster.cpp's comment "[0]=lon and [1]=lat" reads backwards, as a possible follow-up, without changing it here; the second "100 m east" point is optional.
+
+## Implementation
+**Status**: partial
+**When**: 2026-11-15 10:04 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Branch**: feature/issue-20 at `db55e60`
+
+Stopped at the plan's stop condition: GDAL 3.8.4's AAIGrid driver does not read a WKT2 `.prj`. No sidecar `.prj` fallback was added (the owner's call).
+
+**What changed** (commit `db55e60`):
+- `libgz4d/cxx/gtest/gdal_asc.cpp` (new, SPDX header): writes a 4x3 `.asc` (10 m cells, NODATA -9999 in one cell) and a WKT2 `.prj` copied in form from `LocalFrame.wkt2()` (ellipsoidal orthographic, EPSG method 9840) about a made-up origin (lat 12.3456, lon -45.6789), in a temp dir removed afterwards. It makes the calls `GdalRaster::Load` makes and asserts: AAIGrid opens it, non-byte band, geotransform, non-empty `GetProjectionRef()`, a projected CRS, the origin at lat in `[0]` and lon in `[1]` within 1e-9 deg (axis order pinned, per the review), a point 100 m east, and the NODATA cell mapped to NaN with the comparison `Load` uses, the other cells finite.
+- `libgz4d/cxx/gtest/CMakeLists.txt`: adds `gdal_asc.cpp` to `test_libgz4d` only `if(GDAL_FOUND)`. Build impact: one extra source in the existing gtest executable when `BUILD_GTESTS=ON` and GDAL is found (it already links `${LIBS}`, which holds GDAL); no new target, top-level `CMakeLists.txt` untouched.
+- **Not done**, deliberately: the `REGISTER_ALIAS(GdalRasterAsc, GdalRaster, "asc")` line and the README "Supported File Formats" entry. With the `.prj` unread, registering `.asc` would place WKT2 grids as if their metres were degrees. Plan step 4 / `check_asc_registered.cmake` dropped per the checkpoint; when the alias goes in, it is checked by code review and by the owner opening a file at a screen.
+
+**Verification** (built in the session scratchpad with `-DBUILD_GTESTS=ON`, `--parallel 4`; test target only, the app was not built since `GdalRaster.cpp` is unchanged):
+- `test_libgz4d`: 23 of 24 tests pass; `GdalAscTest.ReadsWkt2PrjPlacementAndNoData` fails at its first guard, `gdal_asc.cpp:123`: `GetProjectionRef()` is `""`. ctest therefore reports `test_libgz4d` failed: the branch is red on purpose until the owner decides.
+- `CPL_DEBUG=ON` shows the cause: `AAIGrid: Loaded SRS from .../grid.prj` then `OGR_ESRI: Can't find Projection`. The driver passes the `.prj` to `importFromESRI`, which takes ESRI WKT1 only.
+- A throwaway probe (GDAL 3.8.4, removed afterwards): the same grid with a WKT1 `.prj` of the same orthographic gives a 368-character `GetProjectionRef()`; with the WKT2 `.prj`, length 0. `OGRSpatialReference::SetFromUserInput` on the same WKT2 string succeeds (err 0, projected), so a sidecar read in `GdalRaster` would work if the owner wants that.
+- The placement and NODATA assertions were not reached with WKT2.
+
+**Owner's decision needed**, one of: (a) a sidecar `.prj` fallback in `GdalRaster::Load` when `GetProjectionRef()` is empty (`SetFromUserInput` on the file's text); (b) ice_cube writes the WKT1 form beside the `.asc` (`LocalFrame.wkt1()` exists) or GeoTIFF (his option 3); (c) both. With (b) only, the test's `.prj` would change to WKT1 and the alias and README line go in.
+
+**Possible follow-up** (not changed here): the comment in `GdalRaster.cpp` before the centre conversion, "[0]=lon and [1]=lat", reads backwards: with GDAL 3 and no axis-mapping strategy, `Projection`'s WGS84 output has latitude in `[0]`.
