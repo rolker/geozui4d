@@ -149,3 +149,41 @@ So the revised plan also deletes .claude/skills/build/ and updates what names it
 **Plan**: `.agent/work-plans/issue-16/plan.md` at `40874b9`
 
 Revision after the plan review: the configure summary lists only features the build survives without (required-in-practice ones print separately), the libopenni-dev line is deleted with no --optional flag, GoogleTest docs and the pin reason are corrected, and the build skill is removed with its guidance moved to .agents/README.md (owner decision).
+
+## Plan Review
+**Status**: complete
+**When**: 2026-11-15 09:44 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Verdict**: ready
+
+**Issue**: #16 — Declare build dependencies in a runnable, CI-tested form; fix the netCDF C++ package name
+**Plan**: `.agent/work-plans/issue-16/plan.md` at `40874b9`
+**Branch**: `feature/issue-16`
+
+### Evaluation
+
+| Dimension | Verdict | Notes |
+|---|---|---|
+| Scope | Good | One PR, four commits: Kinect guard with the package-list change, GoogleTest fetch, configure summary, build-skill removal. The summary is now limited to the app (earlier finding 6 taken). The skill removal is the owner's decision from the latest Checkpoint ("let's remove that skill") and stays small: the skill folder, one CLAUDE.md row, `.agents/README.md`. |
+| Issue alignment | Good | Serves: "None (the project states no goals); it serves 'builds from a fresh clone'. Design document: none." That is acceptable for a project. All five must-fix items from the first review are addressed: (1) the summary has two groups, optional and "required in practice", each to be checked against the source; (2) no `OPTIONAL_PACKAGES` and no `--optional`, just the deleted `libopenni-dev` line plus README wording; (3) `.agents/README.md:114` and `:149-157` are in Files to Change, and the skill text is handled by deleting the skill, which the owner approved; (4) the GoogleTest pin reason is corrected (v1.14.0 to v1.16.0 ask for 3.13, v1.17.0 for 3.16 and C++17); (5) `gzmod/nosb.py:19` is noted. |
+| File targeting | Good | Checked: CLAUDE.md:86 is the `/build` row; `.agents/README.md:177` is the `.claude/skills/build/` sentence; `:114` is the options list; `:149-157` is the GTest passage; `:185` is the PNG/TIFF/JPEG row. Two references are off: NetCDF C++ is cited as `.agents/README.md:189`, but the row is `:186` (`:189` is under Common Pitfalls). Step 4's "correct any OpenNI-required wording" in `.agents/README.md` finds nothing: the only Kinect mention is the module list at `:77`, which is neutral. The earlier "lines 185-186 about OpenNI" reference is gone from the plan. |
+| Consequences | Good | The consequences table covers the skill removal, the GoogleTest docs, the OpenNI package-list change, `nosb.py`, and the top-level CMakeLists.txt being left alone. In the workspace, `skills/build` appears only in a test fixture (`test_project_integration_audit.sh`) and in another issue's plan, not as a dependency on this project's skill. |
+| Principle alignment | Good | "Only what's needed" holds now that the array and flag are gone. "Test what breaks": the one-time OFF build, with #12's clean job as the durable test, is recorded. "Document from source": one open check, Bluetooth, resolves the other way from what the plan expects (finding 1). |
+| ADR compliance | Good | ADR-0001: `FetchContent_MakeAvailable` is 3.14, and v1.14.0 asks for 3.13. ADR-0003: GoogleTest is BSD-3, test-only. ADR-0002 is not triggered. |
+| ROS conventions | N/A | Not a ROS project. |
+
+### Findings
+
+1. **[Principle alignment / Document from source]** (must-fix during implementation; no plan revision needed) Bluetooth is not optional on Linux. `main.cpp:33` and `engine/Scene3D.cpp:65` include `engine/Wiimote.h`, which on non-WIN32 includes `<gz4d/WiimoteManager.h>`. That reaches `gz4d/socket/BTSocketManager.h:11-13` (`<bluetooth/bluetooth.h>`, `hci.h`, `hci_lib.h`) and `BTSocket.h:16`. `engine/CMakeLists.txt:42` always compiles `Wiimote.cpp`. A missing `libbluetooth-dev` therefore fails the compile. The same applies to JPEG, TIFF and PNG through `gz4d_x3d` (`.agents/README.md:185`). Step 7 says "Whatever fails the check is dropped". Instead, these should be listed under "Required in practice, found" (with the `bluetooth_FOUND` the plan already adds), and `.agents/README.md:186` should name Bluetooth among the app's required-in-practice libraries. Jasper and jack have no headers included by the app or its included gz4d headers, so they look optional; X11 is still to be checked (Togl on Linux).
+2. **[File targeting]** (suggestion) The NetCDF C++ reference `.agents/README.md:189` should be `:186`. Also drop "correct any OpenNI-required wording" for `.agents/README.md`, since there is none, or keep it as a check that is expected to find nothing.
+3. **[Approach]** (suggestion) Step 8's final check, `grep -rn "skills/build\|/build"`, also matches `.gitignore:2` (`/build/`), README's `scripts/build.sh` lines and kdevelop files, so it cannot "find no remaining reference". Use `grep -rn 'skills/build\|`/build`'` (excluding `.agent/work-plans/`) instead.
+4. **[Approach]** (suggestion) README.md:101-102 ("`libgtest-dev` is needed only for the tests") is in step 6. With the fetch, it is needed only for offline test builds; word it the way the `install_deps.sh` comment will be worded.
+
+### Summary
+
+The revision addresses every finding of the first review and follows the owner's decisions (item 4 to #12, report only, optional packages to #19, build skill removed). One fact from the open checks needs carrying into implementation: Bluetooth, like JPEG/TIFF/PNG, is required in practice and belongs in the summary's required group, not dropped. The plan is ready for implementation.
+
+### Recommended Actions
+
+- [ ] List Bluetooth (and JPEG, TIFF, PNG) under "Required in practice, found" in the configure summary, and add Bluetooth to `.agents/README.md:186`.
+- [ ] (Suggestion) Correct the `.agents/README.md:189` reference to `:186`; narrow step 8's grep; align the README `libgtest-dev` wording with the fetch fallback.
