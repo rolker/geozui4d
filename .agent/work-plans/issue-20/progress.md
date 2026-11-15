@@ -226,3 +226,11 @@ Verified against source. At `GdalRaster.cpp:79-82` the CRS comes only from `ds->
 **Decision**: proceed
 
 The Issue Review at 4f443fe (after the restart) recommends planning the widened scope the owner chose ("Both"): a sidecar .prj fallback in GdalRaster when GDAL finds no CRS, in a small libgz4d helper that both GdalRaster::Load and the gtest call; tests for a WKT2 .prj, a WKT1 .prj and no .prj; the .asc alias and README line in the same change; std::filesystem for the path.
+
+## Plan Authored
+**Status**: complete
+**When**: 2026-11-15 10:18 -05:00
+**By**: Claude Code Agent (claude-sonnet-5-5)
+**Plan**: `.agent/work-plans/issue-20/plan.md` at `31904cd`
+
+Replaces the earlier plan after the owner chose "Both": a header-only libgz4d helper (gz4d/ogr/SidecarPrj.h) reads a sidecar .prj (.prj/.PRJ, std::filesystem) only when GDAL gives no CRS; GdalRaster::Load and gdal_asc.cpp (db55e60, reworked to WKT2, WKT1, no, bad and uppercase .prj cases) both call it; .asc alias and README line in the same change; ice_cube's WKT1 writing is out of scope.
