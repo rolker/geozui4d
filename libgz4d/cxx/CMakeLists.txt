@@ -467,7 +467,11 @@ if(BUILD_GTESTS)
         # ships, so the installed and the fetched path test the same
         # GoogleTest. It asks for CMake 3.13 (so do v1.15.x and v1.16.0;
         # v1.17.0 raises that to 3.16 and C++17), within ADR-0001's 3.14.
-        message("gtest: not installed, fetching GoogleTest v1.14.0 (needs network access)")
+        # A failed download or hash mismatch stops configure inside
+        # FetchContent_MakeAvailable with CMake's own error, so the way out
+        # is printed here, before the fetch.
+        message("gtest: not installed, fetching GoogleTest v1.14.0 (needs network access; "
+            "without it, install libgtest-dev)")
         include(FetchContent)
         # CMake 3.24+ warns about a URL download without this policy; NEW
         # stamps extracted files with the extraction time. Older CMake
@@ -482,10 +486,6 @@ if(BUILD_GTESTS)
         set(INSTALL_GTEST OFF)
         set(BUILD_GMOCK OFF)
         FetchContent_MakeAvailable(googletest)
-        if(NOT TARGET gtest)
-            message(FATAL_ERROR "GoogleTest is not installed and could not be fetched; "
-                "install libgtest-dev or configure with network access")
-        endif()
         add_library(GTest::GTest ALIAS gtest)
         add_library(GTest::Main ALIAS gtest_main)
     endif()
