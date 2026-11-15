@@ -345,3 +345,15 @@ The revision resolves the previous must-fix with a mechanism that works on the e
 **Decision**: proceed
 
 The Plan Review at 5fea17f is ready. Its suggestions go to the implement pass: in GdalRaster::Load assign the helper's result only when it is non-empty; write WKT2 into the UppercasePrj test's .PRJ; compare Wkt1PrjReadByGdal's result with the CRS the test built; and, since a .prj is untrusted input, use the options form of OGRSpatialReference::SetFromUserInput for the local parse with network and file access turned off (host choice: cheap, and it keeps a .prj from naming a URL or file to fetch).
+
+## Implementation
+**Status**: complete
+**When**: 2026-11-15 12:24 -05:00
+**By**: Claude Code Agent (claude-opus-5-5)
+**Branch**: feature/issue-20 at `f15d118`
+
+- `829c004`: new header-only `libgz4d/cxx/include/gz4d/gdal/sidecarPrj.h`, `gz4d::gdal::spatialReferenceForRaster(datasetWkt, rasterPath)`. Uses GDAL's CRS when non-empty; otherwise reads `<stem>.prj` then `<stem>.PRJ` (`std::filesystem`). Parses with a local `OGRSpatialReference::SetFromUserInput(text, {ALLOW_NETWORK_ACCESS=NO, ALLOW_FILE_ACCESS=NO})` (two-argument form and both options present in GDAL 3.8.4's `ogr_spatialref.h` / libgdal) and builds the wrapper only on `OGRERR_NONE`; an unparsable `.prj` is reported on `std::cerr` naming the file and gives an empty reference. `SpatialReference.h` unchanged. `gdal_asc.cpp` reworked into five cases calling the helper.
+- `f15d118`: `GdalRaster::Load` calls the helper and assigns `spatialReference` only when the result is non-empty; `REGISTER_ALIAS(GdalRasterAsc, GdalRaster, "asc")`; README lists `.asc`.
+- Plan-review suggestions taken: non-empty-only assignment; WKT2 in the `UppercasePrj` `.PRJ`; `Wkt1PrjReadByGdal` compares with the WGS 84 / UTM 23N CRS the test built (`IsSame`), not GDAL's string.
+- Verification (scratch build, `-DBUILD_GTESTS=ON`, `-j6`): `test_libgz4d` 28/28 passed; GdalAscTest: Wkt2PrjUsesFallback, Wkt1PrjReadByGdal, NoPrjHandledCleanly, UnparsablePrjReported, UppercasePrj all passed (not skipped; GDAL 3.8.4 gave no CRS for either WKT2 sidecar, so the fallback ran). ctest 1/1 passed. Full app (`GeoZui4D`) built, no new warnings from the changed files. Scratch dirs removed.
+- For the PR: the `.asc` alias is checked by review and by the owner opening a file, not by ctest; a metre `.asc` with no `.prj` is still placed as degrees (deliberate); the `GdalRaster.cpp` "[0]=lon and [1]=lat" comment is backwards under GDAL 3 and left unchanged as a follow-up.
