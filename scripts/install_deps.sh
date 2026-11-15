@@ -32,7 +32,7 @@ PACKAGES=(
     libvorbis-dev
     libbluetooth-dev
     libspnav-dev
-    libgtest-dev    # tests only: scripts/build.sh sets -DBUILD_GTESTS=ON
+    libgtest-dev    # tests (-DBUILD_GTESTS=ON) offline; without it configure fetches GoogleTest
 )
 
 # Not listed, because the build works without it: libopenni-dev (OpenNI).

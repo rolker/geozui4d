@@ -148,9 +148,14 @@ What to know:
 - The gtest suite is one executable, `test_libgz4d`, from nine sources in
   `libgz4d/cxx/gtest/` (angle, box, color, geocam, matrix, socket, time,
   timeSequence, URI). It exists only when the build was configured with
-  `BUILD_GTESTS=ON`, which `scripts/build.sh` turns on. GoogleTest is found
-  with `find_package(GTest REQUIRED)` (`libgtest-dev` on Ubuntu), so a
-  missing GoogleTest stops the configure. On CMake 3.20 and later,
+  `BUILD_GTESTS=ON`, which `scripts/build.sh` turns on. An installed GoogleTest
+  (`libgtest-dev` on Ubuntu) is found with `find_package(GTest)` and used
+  first. When none is found, `libgz4d/cxx/CMakeLists.txt` fetches
+  GoogleTest v1.14.0 with `FetchContent` (the release Ubuntu 24.04 ships;
+  network access needed at configure, gmock off, not installed); to test
+  that path on a machine that has `libgtest-dev`, configure with
+  `-DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON`. The rest of this item applies
+  only to an installed GoogleTest. On CMake 3.20 and later,
   `FindGTest` uses GoogleTest's own CMake package files when they exist;
   configure then prints `gtest: <GTest_DIR>`, and when more than one
   GoogleTest is installed (for example a copy under `~/.local`),
