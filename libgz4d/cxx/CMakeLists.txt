@@ -346,15 +346,19 @@ else()
     message("Festival not found")
 endif()
 
-find_path(ni_INCLUDE_DIR XnCppWrapper.h PATHS /usr/include/ni)
-find_library(ni_LIBRARY OpenNI)
-if(ni_INCLUDE_DIR AND ni_LIBRARY)
-    set(ni_FOUND TRUE)
-    include_directories(${ni_INCLUDE_DIR})
-    set(LIBS ${LIBS} ${ni_LIBRARY})
-else()
-    message("ni includes not found.")
-    set(ni_FOUND FALSE)
+# Same option as in GeoZui4D/main; OFF also skips test/gzKinect.
+option(GZ4D_WITH_KINECT "Use OpenNI for the Kinect object when found" ON)
+set(ni_FOUND FALSE)
+if(GZ4D_WITH_KINECT)
+    find_path(ni_INCLUDE_DIR XnCppWrapper.h PATHS /usr/include/ni)
+    find_library(ni_LIBRARY OpenNI)
+    if(ni_INCLUDE_DIR AND ni_LIBRARY)
+        set(ni_FOUND TRUE)
+        include_directories(${ni_INCLUDE_DIR})
+        set(LIBS ${LIBS} ${ni_LIBRARY})
+    else()
+        message("ni includes not found.")
+    endif()
 endif()
 
 find_path(flac_INCLUDE_DIR FLAC++/encoder.h )
@@ -451,9 +455,39 @@ option(BUILD_GTESTS  "Enable gtest testing." OFF)
 if(BUILD_GTESTS)
 
     # GTest::GTest and GTest::Main carry the include path and Threads.
-    find_package(GTest REQUIRED)
-    if(GTest_DIR)
-        message("gtest: ${GTest_DIR}")
+    # An installed GoogleTest is used first; without one, it is fetched at
+    # configure time (network access needed then).
+    find_package(GTest)
+    if(GTest_FOUND)
+        if(GTest_DIR)
+            message("gtest: ${GTest_DIR}")
+        endif()
+    else()
+        # v1.14.0 is the release Ubuntu 24.04's libgtest-dev (1.14.0-1)
+        # ships, so the installed and the fetched path test the same
+        # GoogleTest. It asks for CMake 3.13 (so do v1.15.x and v1.16.0;
+        # v1.17.0 raises that to 3.16 and C++17), within ADR-0001's 3.14.
+        # A failed download or hash mismatch stops configure inside
+        # FetchContent_MakeAvailable with CMake's own error, so the way out
+        # is printed here, before the fetch.
+        message("gtest: not installed, fetching GoogleTest v1.14.0 (needs network access; "
+            "without it, install libgtest-dev)")
+        include(FetchContent)
+        # CMake 3.24+ warns about a URL download without this policy; NEW
+        # stamps extracted files with the extraction time. Older CMake
+        # (ADR-0001's 3.14) has no such policy, hence the guard.
+        if(POLICY CMP0135)
+            cmake_policy(SET CMP0135 NEW)
+        endif()
+        FetchContent_Declare(googletest
+            URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
+            URL_HASH SHA256=8ad598c73ad796e0d8280b082cebd82a630d73e73cd3c70057938a6501bba5d7
+        )
+        set(INSTALL_GTEST OFF)
+        set(BUILD_GMOCK OFF)
+        FetchContent_MakeAvailable(googletest)
+        add_library(GTest::GTest ALIAS gtest)
+        add_library(GTest::Main ALIAS gtest_main)
     endif()
 
     enable_testing()

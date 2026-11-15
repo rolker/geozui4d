@@ -112,7 +112,9 @@ the libais API has diverged.
 1. `CMakeLists.txt` (top level) -- how the two components are wired together.
 2. `libgz4d/cxx/CMakeLists.txt` -- every optional dependency and the options
    `GZ4D_PYTHON` (default ON), `GZ4D_OPENCV` (default OFF), `BUILD_GTESTS`
-   (default OFF).
+   (default OFF), `GZ4D_WITH_KINECT` (default ON; declared in
+   `GeoZui4D/main/CMakeLists.txt` too: OFF skips OpenNI, so no Kinect
+   object and no `test/gzKinect`, as on a machine without OpenNI).
 3. `libgz4d/cxx/include/gz4d/gz4d.h` -- the library's module map (Doxygen groups).
 4. `GeoZui4D/main/main.cpp` and `GeoZui4D/main/MainWindow.cpp` -- startup and
    the Tcl start scripts for the four GUI modes.
@@ -146,9 +148,14 @@ What to know:
 - The gtest suite is one executable, `test_libgz4d`, from nine sources in
   `libgz4d/cxx/gtest/` (angle, box, color, geocam, matrix, socket, time,
   timeSequence, URI). It exists only when the build was configured with
-  `BUILD_GTESTS=ON`, which `scripts/build.sh` turns on. GoogleTest is found
-  with `find_package(GTest REQUIRED)` (`libgtest-dev` on Ubuntu), so a
-  missing GoogleTest stops the configure. On CMake 3.20 and later,
+  `BUILD_GTESTS=ON`, which `scripts/build.sh` turns on. An installed GoogleTest
+  (`libgtest-dev` on Ubuntu) is found with `find_package(GTest)` and used
+  first. When none is found, `libgz4d/cxx/CMakeLists.txt` fetches
+  GoogleTest v1.14.0 with `FetchContent` (the release Ubuntu 24.04 ships;
+  network access needed at configure, gmock off, not installed); to test
+  that path on a machine that has `libgtest-dev`, configure with
+  `-DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON`. The rest of this item applies
+  only to an installed GoogleTest. On CMake 3.20 and later,
   `FindGTest` uses GoogleTest's own CMake package files when they exist;
   configure then prints `gtest: <GTest_DIR>`, and when more than one
   GoogleTest is installed (for example a copy under `~/.local`),
@@ -174,7 +181,18 @@ What to know:
 - The install step is required to run the app (see Architecture Overview).
 - The build directory is `build/` at the repository root, which `.gitignore`
   ignores with the rule `/build/` (and `install/` with `/install/`). The
-  rules are anchored to the root, so `.claude/skills/build/` is tracked.
+  rules are anchored to the root, so a `build/` directory deeper in the
+  tree is not ignored.
+- Run the full build, with the tests (`scripts/build.sh`, then `ctest`),
+  as part of any audit of this project.
+- Report compiler warnings even when the build succeeds; they may point
+  to real problems.
+- Do not modify a `CMakeLists.txt` to fix a build error without asking
+  first.
+- To limit the parallel jobs (for example on a machine short of memory),
+  run `scripts/build.sh --parallel <N>`: the script passes its arguments
+  to the build step, and the last `--parallel` wins. Pick N from the
+  machine's cores and free memory.
 
 ## Dependencies
 
@@ -183,7 +201,7 @@ What to know:
 | `GeoZui4D/main` | `libgz4d/cxx` | Headers under `include/gz4d/` and the `gz4d_x3d` library (`find_path(gz4d_INCLUDE_DIR gz4d/gz4d.h)` and `find_library` for `gz4d_x3d`; the top-level build sets both) |
 | `GeoZui4D/main` | `Togl/` (vendored) | `gz_togl` static library, the Tk OpenGL widget |
 | `libgz4d/cxx` | Boost, GDAL, PNG, TIFF, JPEG, optional audio/video/NetCDF/Bluetooth and other image libraries | Found in `libgz4d/cxx/CMakeLists.txt`. PNG, TIFF and JPEG are required for the app: without all three, `gz4d_x3d` is skipped (`src/x3d/CMakeLists.txt:4`), yet the top level still hands `GeoZui4D/main` the name `gz4d_x3d` (`CMakeLists.txt:17`), so the app fails to link. Elsewhere in `libgz4d/cxx`, a missing optional library only skips the guarded stand-alone programs in `test/` that need it |
-| `GeoZui4D/main` | vorbisfile, GLUT, NetCDF C++ (`netcdf_c++4`) | Required to build the app, although `GeoZui4D/main/CMakeLists.txt` looks each up as optional and configure does not stop without it: `objects/SoundOgg.h` includes `<vorbis/vorbisfile.h>` and `SoundOgg.cpp` is always compiled; `main.cpp` includes `<GL/glut.h>` and calls `glutInit`; `engine/Object.h` and `engine/Scene3D.h` include `<gz4d/netcdf.h>`, which reaches `<ncAtt.h>`. A missing one fails the build at compile or link time |
+| `GeoZui4D/main` | vorbisfile, GLUT, GLEW, NetCDF C++ (`netcdf_c++4`), Bluetooth, PortAudio, JACK, X11 | Required to build the app, although `GeoZui4D/main/CMakeLists.txt` looks each up as optional and configure does not stop without it: `objects/SoundOgg.h` includes `<vorbis/vorbisfile.h>` and `SoundOgg.cpp` is always compiled; `main.cpp` includes `<GL/glut.h>` and calls `glutInit`; `objects/Flow.cpp` is always compiled and calls `glewInit`, `glewIsSupported` and `glMultiDrawArraysEXT`, while `gz4d/glo.h` includes `<GL/glew.h>` only when GLEW is found (`GZ4D_GLEW`); `engine/Object.h` and `engine/Scene3D.h` include `<gz4d/netcdf.h>`, which reaches `<ncAtt.h>`; `main.cpp` and `engine/Scene3D.cpp` include `engine/Wiimote.h`, which on Linux reaches `<bluetooth/bluetooth.h>` through `gz4d/WiimoteManager.h` and `gz4d/socket/BTSocketManager.h`, and `engine/Wiimote.cpp` is always compiled; `objects/AudioSpectrum.h` includes `<gz4d/sound/Portaudio.h>` and `<gz4d/sound/Jack.h>` (which reaches `<jack/jack.h>`), and `AudioSpectrum.cpp` is always compiled; the vendored `Togl/togl.c` includes X11 and Xmu headers. A missing one fails the build at compile or link time. The configure summary at the end of `GeoZui4D/main/CMakeLists.txt` lists these, with JPEG, TIFF, PNG and NetCDF, as "required in practice" and says `MISSING` for any not found; its "optional features" (FFmpeg, OpenNI, Jasper) are the ones the build works without |
 
 ## Common Pitfalls
 
