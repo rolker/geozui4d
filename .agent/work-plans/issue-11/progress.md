@@ -92,3 +92,13 @@ What the review changed: the unreviewed version said the `-cp` mode works
 when installed, which is false; all three independent reviewers pointed at
 it. The implementation had recorded "none was looked for" about further
 slips of this kind.
+
+## Merge (report-only)
+**Status**: complete
+**When**: 2026-11-24 15:00 -05:00
+**By**: merge_pr.sh (Claude Code Agent)
+
+**PR**: #31 at `b56e0f5`
+**Mode**: enforce
+**Scope**: project
+**Conditions**: latest Local Review entry is at `579231b`, not the PR head `b56e0f5` (stale review: touches `.agents/README.md`, which is not a merge-time document file)
