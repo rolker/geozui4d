@@ -40,7 +40,7 @@ namespace gz4d
                             friend class Field;
                             std::string name;
                             std::string type;
-                            Definition(OGRFieldDefn *d);
+                            Definition(OGRFieldDefn const *d);
                             public:
                                 std::string GetName();
                                 std::string GetType();
@@ -119,7 +119,9 @@ inline std::size_t gz4d::ogr::Feature::size()
 
 inline gz4d::ogr::Feature::Definition gz4d::ogr::Feature::GetDefinition()
 {
-    return Definition(feature->GetDefnRef());
+    // GDAL 3.12 returns the definition as const here; earlier releases do
+    // not. The wrapper only takes a counted reference to it.
+    return Definition(const_cast<OGRFeatureDefn *>(feature->GetDefnRef()));
 }
 
 inline gz4d::ogr::Feature::Field gz4d::ogr::Feature::operator[](int i) const
@@ -289,7 +291,7 @@ inline gz4d::ogr::Feature::Field::operator bool()
     return false;
 }
 
-inline gz4d::ogr::Feature::Field::Definition::Definition(OGRFieldDefn *d)
+inline gz4d::ogr::Feature::Field::Definition::Definition(OGRFieldDefn const *d)
 :name(d->GetNameRef())
 {
     switch(d->GetType())

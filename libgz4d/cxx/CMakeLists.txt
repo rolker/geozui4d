@@ -39,7 +39,11 @@ ${CMAKE_CURRENT_SOURCE_DIR}/include/
 
 SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} CACHE STRING "You may add additional search paths here. Use ; to separate multiple paths.")
 
-set(boost_components date_time system program_options) # iostreams)
+# Boost.System is header-only, and Boost 1.89 dropped its compiled stub
+# library (Ubuntu 26.04 ships 1.90), so `system` is asked for only as an
+# optional component: linked where the installed Boost still has it
+# (Ubuntu 24.04's 1.83), skipped where it does not.
+set(boost_components date_time program_options) # iostreams)
 if(CMAKE_CROSSCOMPILING)
     set(boost_components ${boost_components} thread_win32)
 else()
@@ -47,7 +51,7 @@ else()
     set(DEB_DEPS ${DEB_DEPS} libboost-thread1.40.0)
 endif()
 
-find_package(Boost 1.46.0 COMPONENTS ${boost_components} REQUIRED)
+find_package(Boost 1.46.0 REQUIRED COMPONENTS ${boost_components} OPTIONAL_COMPONENTS system)
 set(DEB_DEPS ${DEB_DEPS} libboost-system1.40.0 libboost-program-options1.40.0 libboost-iostreams1.40.0)
 if(NOT MSVC)
     set(LIBS ${LIBS} ${Boost_LIBRARIES})
@@ -502,14 +506,18 @@ if(GZ4D_PYTHON)
     find_package(Boost 1.40.0 COMPONENTS python)
     find_package(PythonLibs)
 
-    if(PYTHONLIBS_FOUND AND Boost_PYTHON_FOUND)
+    # The bindings are Python 2 code. With Boost 1.90's own CMake files
+    # (Ubuntu 26.04) the `python` component is found next to Python 3,
+    # where they do not compile or link; CMake's FindBoost on Ubuntu 24.04
+    # never found it there. Build them only against Python 2.
+    if(PYTHONLIBS_FOUND AND Boost_PYTHON_FOUND AND PYTHONLIBS_VERSION_STRING VERSION_LESS 3)
         message("Python headers and libs found. Building boost.python")
         include_directories(${PYTHON_INCLUDE_DIRS})
         set(LIBS ${LIBS} ${Boost_PYTHON_LIBRARY})
         add_subdirectory(boost.python)
         set(DEB_DEPS ${DEB_DEPS} libboost-python1.40.0 libpython2.6)
     else()
-        message("Python headers and libs not found. Skipping boost.python")
+        message("Python 2 headers and libs, or Boost.Python, not found. Skipping boost.python")
     endif()
 else()
     message("Python bindings disabled")
