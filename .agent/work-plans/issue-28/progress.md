@@ -29,10 +29,10 @@ secondary sources.
 
 ## Trial counts
 
-Light-level trial (no review loop). Whether this research counts as a piece of
-work in the trial is the owner's to say.
+Light-level trial (no review loop), piece of work 2 (the owner counted it,
+2026-11-24).
 
 - **Start**: 2026-11-24 13:52 -05:00 (worktree created).
-- **Merge**: not merged yet.
+- **Merge**: on the owner's word, 2026-11-24; the time is in the merge record on pull request 29 (this file is committed before the merge).
 - **Defects found later**: none recorded yet.
 - **Redone because the first result was not what was meant**: none recorded yet.
