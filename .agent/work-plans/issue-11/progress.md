@@ -46,7 +46,7 @@ Light-level trial (no review loop), piece of work 3.
 - **Merge**: on the owner's word; the time is in the merge record on the
   pull request (this file is committed before the merge).
 - **Review**: one round, 14:56:24 to 14:58:18 -05:00 (about 2 minutes), run at
-  the owner's request before the merge; fixes took a few minutes more.
+  the owner's request before the merge; the fixes were pushed by 14:59:54.
 - **Defects found by the review, before the merge**: 3 must-fix (see Local
   Review).
 - **Defects found later**: none recorded yet.
