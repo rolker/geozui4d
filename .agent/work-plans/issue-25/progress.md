@@ -72,7 +72,7 @@ GDAL 3.12.2, Tcl/Tk 8.6.16) until `scripts/build.sh` passed:
 
 ## Trial counts
 
-Light-level trial (no review loop), piece of work 1 if the owner counts it.
+Light-level trial (no review loop), piece of work 1 (the owner counted it, 2026-11-24).
 
 - **Start**: 2026-11-24 11:24 -05:00 (worktree created).
 - **Merge**: not merged yet.
