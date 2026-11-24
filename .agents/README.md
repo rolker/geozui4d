@@ -61,7 +61,9 @@ gz4d/
 │   ├── *.tcl                 # 15 Tcl/Tk GUI scripts (visualizer.tcl is the start script)
 │   ├── scripts/              # Tcl extension scripts; only attributeWindow.tcl and cutaway.tcl are installed, to lib/GeoZui4D/scripts
 │   ├── gzmod/                # Python extension modules, partly installed to lib/GeoZui4D/gzmod: 12 of the 22
-│   │                         #   top-level scripts, ais/, deltaT/, lighting/ and parts of gz4d/; simMBFish/ is not
+│   │                         #   top-level .py files; the .py files of ais/, deltaT/ and lighting/; from gz4d/,
+│   │                         #   __init__.py and MovieMaker/ (to gzmod/gz4d) and base/ (to gzmod/base, not
+│   │                         #   under gz4d). simMBFish/ and the rest of gz4d/ are not installed
 │   └── bitmaps/              # Images installed with the app
 └── docs/
     ├── decisions/            # ADRs 0001-0003 and their index
@@ -72,14 +74,15 @@ gz4d/
 
 **libgz4d** is a collection of toolkit-independent C++ modules that assume
 only C++ and OpenGL (`include/gz4d/gz4d.h`, the Doxygen main page). Every
-entity is in namespace `gz4d`. The header subdirectories are the modules.
-A partial list (22 of the 39): `geo` and `crs` (coordinates), `sonar`,
+entity is in namespace `gz4d`. Most modules are header subdirectories. A
+partial list (22 of the 39): `geo` and `crs` (coordinates), `sonar`,
 `acoustic`, `ais`, `nav`, `s57`, `netcdf`, `gdal`, `ogr`, `image`, `av`
 (audio/video), `dsp`, `glo` (OpenGL objects), `render`, `x3d`, device
 interfaces (`IMU`, `serial`, `socket`, `v4l`, `midi`), and `util`, which
-holds the vendored RapidXML parser. Some modules are single headers beside
-the subdirectories: `scene.h`, `Spaceball.h`, `Wiimote.h`, `Kinect.h`. Only the X3D node classes
-are compiled, into `gz4d_x3d`; everything else is included.
+holds the vendored RapidXML parser. Others are single headers beside the
+subdirectories, among them `scene.h`, `Spaceball.h`, `Wiimote.h` and
+`Kinect.h`. Only the X3D node classes are compiled, into `gz4d_x3d`;
+everything else is included.
 
 **GeoZui4D** links `gz4d_x3d`, the vendored `gz_togl`, Tcl/Tk stubs, GDAL,
 Boost (system, program_options, iostreams, thread), OpenGL, GLUT, X11,
@@ -99,13 +102,26 @@ set in a later file overrides the same value from an earlier one. A config
 file may set `appdir`, `datadir` and the other variables the script
 declares. Then it sources `visualizer.tcl` from
 `appdir`. The default, `-cp` and `-wall` scripts set `appdir` to
-`../lib/GeoZui4D` relative to the executable, so by default those modes
-only work installed: the Tcl scripts, bitmaps and BWidget are found
-relative to the binary. That value is set before the `GeoZui4D.conf` files
-are sourced, so a config file that sets `appdir` redirects them. The `-nav`
-script sets `appdir` to an empty string, so GeoNav3D
-looks for `visualizer.tcl` in the working directory unless `GeoZui4D.conf`
-sets `appdir`.
+`../lib/GeoZui4D` relative to the executable, before the `GeoZui4D.conf`
+files are sourced, so a config file that sets `appdir` overrides it. The
+Tcl scripts, bitmaps and BWidget are all found under `appdir`, so the
+directory it names must hold all three. What that means differs by mode:
+
+- In the default and `-wall` modes `visualizer.tcl` sources `GeoZui.tcl`,
+  which is installed, so by default they only work installed.
+- `-cp` does not run from an install alone: `visualizer.tcl` sources
+  `GeoCoastPilot.tcl` from `appdir`, and that script sources five more
+  from `appdir/scripts` (`GeoCoastPilot_preferences.tcl`,
+  `GeoCoastPilot_extras.tcl`, `GeoCoastPilot_control_panel.tcl`,
+  `CFR_procs.tcl`, `GeoCoastPilot_text_and_procs.tcl`). None of the six is
+  installed; they exist only in `GeoZui4D/main`. It needs an `appdir` that
+  holds them.
+- The `-nav` script sets `appdir` to an empty string, so GeoNav3D looks
+  for `visualizer.tcl` in the working directory unless `GeoZui4D.conf`
+  sets `appdir`. Either way `visualizer.tcl` sources `GeoNav.tcl` by a
+  bare relative name, so that file always comes from the working
+  directory, and it sources `pane_procs.tcl` from `appdir`. Neither is
+  installed.
 
 The top-level `CMakeLists.txt` builds `libgz4d/cxx` first, points
 `GeoZui4D/main` at the in-tree headers and the `gz4d_x3d` target, and
@@ -193,9 +209,10 @@ What to know:
   pointers (`gz4d/ogr/Feature.h`), and GCC 15 makes the vendored Togl's
   pointer mismatch an error unless `GeoZui4D/main/CMakeLists.txt` turns it
   back into a warning for the `gz_togl` target.
-- By default the install step is required to run the app; a `GeoZui4D.conf`
-  that sets `appdir` can point it at another copy of the scripts (see
-  Architecture Overview).
+- The install step is required to run the default and `-wall` modes,
+  unless a `GeoZui4D.conf` sets `appdir` to another directory that holds
+  the Tcl scripts, bitmaps and BWidget. The `-cp` and `-nav` modes need
+  scripts the install does not provide (see Architecture Overview).
 - The build directory is `build/` at the repository root, which `.gitignore`
   ignores with the rule `/build/` (and `install/` with `/install/`). The
   rules are anchored to the root, so a `build/` directory deeper in the
