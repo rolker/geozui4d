@@ -59,8 +59,9 @@ GDAL 3.12.2, Tcl/Tk 8.6.16) until `scripts/build.sh` passed:
   changes were written to be neutral there (`OPTIONAL_COMPONENTS` needs
   CMake 3.11; a non-const to const pointer conversion and a `const_cast`
   to the same type compile with the older GDAL; GCC 13 accepts the warning
-  flag; the bindings were already skipped there, as the earlier builds
-  show), but that is reasoning, not a build.
+  flag), but that is reasoning, not a build. Whether the Python bindings
+  were being built on 24.04 before this change was not checked: if Python 2
+  is absent there they are now skipped, as on 26.04.
 - The application was built, not started.
 
 ### Gaps
