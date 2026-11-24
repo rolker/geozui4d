@@ -36,3 +36,13 @@ Light-level trial (no review loop), piece of work 2 (the owner counted it,
 - **Merge**: on the owner's word, 2026-11-24; the time is in the merge record on pull request 29 (this file is committed before the merge).
 - **Defects found later**: none recorded yet.
 - **Redone because the first result was not what was meant**: none recorded yet.
+
+## Merge (report-only)
+**Status**: complete
+**When**: 2026-11-24 14:23 -05:00
+**By**: merge_pr.sh (Claude Code Agent)
+
+**PR**: #29 at `916c09e`
+**Mode**: enforce
+**Scope**: project
+**Conditions**: no ## Local Review / ## Integrated Review entry in /home/roland/src/geozui4d/worktrees/issue-geozui4d-28/.agent/work-plans/issue-28/progress.md;no "## Decision summary" heading in the PR body or a PR comment
