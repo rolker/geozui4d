@@ -22,8 +22,8 @@ re-verified against the source at `b3d3974` before editing.
 2. **"Only work installed" now says "by default".** The default, `-wall` and
    `-cp` start scripts set `appdir` and then append the common part that
    sources the `GeoZui4D.conf` files (`MainWindow.cpp`), so a config file
-   can redirect them. Changed in the startup paragraph and in the Common
-   Pitfalls note on the install step.
+   can redirect them. Changed in the startup paragraph and in the Build &
+   Test note on the install step.
 3. **`scene` is a header, not a subdirectory.** `libgz4d/cxx/include/gz4d/`
    has 39 subdirectories; the guide names 22 of them, now called a partial
    list. `scene.h`, `Spaceball.h`, `Wiimote.h` and `Kinect.h` are listed as
@@ -45,6 +45,10 @@ Light-level trial (no review loop), piece of work 3.
 - **Start**: 2026-11-24 14:53 -05:00 (worktree created).
 - **Merge**: on the owner's word; the time is in the merge record on the
   pull request (this file is committed before the merge).
+- **Review**: one round, 14:56:24 to 14:58:18 -05:00 (about 2 minutes), run at
+  the owner's request before the merge; fixes took a few minutes more.
+- **Defects found by the review, before the merge**: 3 must-fix (see Local
+  Review).
 - **Defects found later**: none recorded yet.
 - **Redone because the first result was not what was meant**: none recorded yet.
 
@@ -65,12 +69,26 @@ All three independent reviewers flagged the first finding or its neighbours
 (Gemini without access to the source, as a claim to verify).
 
 ### Findings
-- [ ] (must-fix) `-cp` does not run from an install: `GeoCoastPilot.tcl` and the five scripts it sources are not installed, so "by default those modes only work installed" is false for it (Claude adversarial, Codex) — `.agents/README.md:101`
-- [ ] (must-fix) "By default the install step is required to run the app" is too broad: `-nav` reads `GeoNav.tcl` from the working directory and `-cp` cannot run installed (Claude adversarial) — `.agents/README.md:196`
-- [ ] (must-fix) "parts of gz4d/" hides that `gz4d/base` is installed to `gzmod/base`, not under `gzmod/gz4d/` (Claude adversarial; Codex as a suggestion) — `.agents/README.md:63`
-- [ ] (suggestion) progress.md names the wrong section: the second edit is under Build & Test, not Common Pitfalls (Claude adversarial) — `.agent/work-plans/issue-11/progress.md:27`
-- [ ] (suggestion) Only the `.py` files of `ais/`, `deltaT/` and `lighting/` are installed (Claude adversarial, Gemini) — `.agents/README.md:64`
-- [ ] (suggestion) With `appdir` set, `-nav` still sources `GeoNav.tcl` from the working directory (Claude adversarial, Codex) — `.agents/README.md:106`
-- [ ] (suggestion) "The header subdirectories are the modules" is stated before the single headers are named; the line after is not wrapped (Gemini, Claude adversarial) — `.agents/README.md:75`
-- [ ] (suggestion) An `appdir` override must hold bitmaps and BWidget as well as the scripts (Gemini) — `.agents/README.md:196`
-- [ ] (suggestion) `README.md` still says "The install step is required" without the qualifier (governance) — `README.md:181`
+- [x] (must-fix) `-cp` does not run from an install: `GeoCoastPilot.tcl` and the five scripts it sources are not installed, so "by default those modes only work installed" is false for it (Claude adversarial, Codex) — `.agents/README.md:101`
+- [x] (must-fix) "By default the install step is required to run the app" is too broad: `-nav` reads `GeoNav.tcl` from the working directory and `-cp` cannot run installed (Claude adversarial) — `.agents/README.md:196`
+- [x] (must-fix) "parts of gz4d/" hides that `gz4d/base` is installed to `gzmod/base`, not under `gzmod/gz4d/` (Claude adversarial; Codex as a suggestion) — `.agents/README.md:63`
+- [x] (suggestion) progress.md names the wrong section: the second edit is under Build & Test, not Common Pitfalls (Claude adversarial) — `.agent/work-plans/issue-11/progress.md:27`
+- [x] (suggestion) Only the `.py` files of `ais/`, `deltaT/` and `lighting/` are installed (Claude adversarial, Gemini) — `.agents/README.md:64`
+- [x] (suggestion) With `appdir` set, `-nav` still sources `GeoNav.tcl` from the working directory (Claude adversarial, Codex) — `.agents/README.md:106`
+- [x] (suggestion) "The header subdirectories are the modules" is stated before the single headers are named; the line after is not wrapped (Gemini, Claude adversarial) — `.agents/README.md:75`
+- [x] (suggestion) An `appdir` override must hold bitmaps and BWidget as well as the scripts (Gemini) — `.agents/README.md:196`
+- [ ] (suggestion) `README.md` still says "The install step is required" without the qualifier (governance) — `README.md:181` — not taken: the user README describes the default mode, where the statement holds
+
+### After the review
+
+The three must-fix findings and five of the six suggestions were fixed in
+`2b432d5`, each new statement checked against the source
+(`visualizer.tcl`, `GeoCoastPilot.tcl`, `GeoNav.tcl`, the `install` rules in
+`GeoZui4D/main/CMakeLists.txt`, `scripts/CMakeLists.txt` and
+`gzmod/gz4d/CMakeLists.txt`). The fixes were not re-reviewed: the owner asked
+for one review and the merge.
+
+What the review changed: the unreviewed version said the `-cp` mode works
+when installed, which is false; all three independent reviewers pointed at
+it. The implementation had recorded "none was looked for" about further
+slips of this kind.
