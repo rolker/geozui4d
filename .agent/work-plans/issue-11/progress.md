@@ -47,3 +47,30 @@ Light-level trial (no review loop), piece of work 3.
   pull request (this file is committed before the merge).
 - **Defects found later**: none recorded yet.
 - **Redone because the first result was not what was meant**: none recorded yet.
+
+## Local Review
+**Status**: complete
+**When**: 2026-11-24 14:58 -05:00
+**By**: Claude Code Agent (claude-fable-5-2)
+**Verdict**: changes-requested
+
+**PR**: #31 at `579231b`
+**Depth**: Standard (reason: 77 changed lines, in the 50 to 199 band)
+**Must-fix**: 3 | **Suggestions**: 6
+
+Review started 14:56:24 and ended 14:58:18 -05:00 (about 2 minutes): a Claude
+adversarial subagent, Gemini and Codex through `cross_model_review.sh`, and the
+lead's governance pass. No linter profile covers Markdown; no work plan exists.
+All three independent reviewers flagged the first finding or its neighbours
+(Gemini without access to the source, as a claim to verify).
+
+### Findings
+- [ ] (must-fix) `-cp` does not run from an install: `GeoCoastPilot.tcl` and the five scripts it sources are not installed, so "by default those modes only work installed" is false for it (Claude adversarial, Codex) — `.agents/README.md:101`
+- [ ] (must-fix) "By default the install step is required to run the app" is too broad: `-nav` reads `GeoNav.tcl` from the working directory and `-cp` cannot run installed (Claude adversarial) — `.agents/README.md:196`
+- [ ] (must-fix) "parts of gz4d/" hides that `gz4d/base` is installed to `gzmod/base`, not under `gzmod/gz4d/` (Claude adversarial; Codex as a suggestion) — `.agents/README.md:63`
+- [ ] (suggestion) progress.md names the wrong section: the second edit is under Build & Test, not Common Pitfalls (Claude adversarial) — `.agent/work-plans/issue-11/progress.md:27`
+- [ ] (suggestion) Only the `.py` files of `ais/`, `deltaT/` and `lighting/` are installed (Claude adversarial, Gemini) — `.agents/README.md:64`
+- [ ] (suggestion) With `appdir` set, `-nav` still sources `GeoNav.tcl` from the working directory (Claude adversarial, Codex) — `.agents/README.md:106`
+- [ ] (suggestion) "The header subdirectories are the modules" is stated before the single headers are named; the line after is not wrapped (Gemini, Claude adversarial) — `.agents/README.md:75`
+- [ ] (suggestion) An `appdir` override must hold bitmaps and BWidget as well as the scripts (Gemini) — `.agents/README.md:196`
+- [ ] (suggestion) `README.md` still says "The install step is required" without the qualifier (governance) — `README.md:181`
