@@ -18,8 +18,9 @@ to set a project up with it. The adapter commands under Build & Test apply
 once that is done.
 
 Every claim here was checked against the source on 2026-11-02, and the
-conventions and layout changes added since on 2026-11-09; when the code and
-this guide disagree, the code wins, and this guide is wrong.
+conventions and layout changes added since on 2026-11-09 and 2026-11-24;
+when the code and this guide disagree, the code wins, and this guide is
+wrong.
 
 ## Package Inventory
 
@@ -111,7 +112,8 @@ the libais API has diverged.
 
 1. `CMakeLists.txt` (top level) -- how the two components are wired together.
 2. `libgz4d/cxx/CMakeLists.txt` -- every optional dependency and the options
-   `GZ4D_PYTHON` (default ON), `GZ4D_OPENCV` (default OFF), `BUILD_GTESTS`
+   `GZ4D_PYTHON` (default ON, but the bindings are built only when the
+   Python found is Python 2), `GZ4D_OPENCV` (default OFF), `BUILD_GTESTS`
    (default OFF), `GZ4D_WITH_KINECT` (default ON; declared in
    `GeoZui4D/main/CMakeLists.txt` too: OFF skips OpenNI, so no Kinect
    object and no `test/gzKinect`, as on a machine without OpenNI).
@@ -176,8 +178,17 @@ What to know:
   the other 38 (for example `audioSignalGenerator`) are unconditional and
   always build.
 - Ubuntu package prerequisites are installed by `scripts/install_deps.sh`,
-  which holds the one package list (`--list` prints it); the README's
-  Building section points to it.
+  which holds the one package list (`--list` prints it for the release it
+  runs on); the README's Building section points to it. Its `RELEASE_ADD`
+  and `RELEASE_DROP` tables hold what a release adds to or drops from the
+  common list, keyed `<ID>:<VERSION_ID>`; the known releases are Ubuntu
+  24.04 and 26.04, with no difference between them today.
+- Ubuntu 26.04 differs from 24.04 in ways the build handles itself: Boost
+  1.90 has no compiled `boost_system` (asked for as an optional component
+  in both `CMakeLists.txt` files), GDAL 3.12 returns const definition
+  pointers (`gz4d/ogr/Feature.h`), and GCC 15 makes the vendored Togl's
+  pointer mismatch an error unless `GeoZui4D/main/CMakeLists.txt` turns it
+  back into a warning for the `gz_togl` target.
 - The install step is required to run the app (see Architecture Overview).
 - The build directory is `build/` at the repository root, which `.gitignore`
   ignores with the rule `/build/` (and `install/` with `/install/`). The

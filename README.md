@@ -99,6 +99,12 @@ It installs only the packages that are missing, through `sudo apt-get`.
 list, which is the project's one list of build dependencies. On another
 system, install the equivalents of the packages `--list` prints.
 
+The script reads the release from `/etc/os-release` and holds what each
+known release adds to or drops from the common list. The known releases
+are Ubuntu 24.04 and Ubuntu 26.04, which today install the same packages.
+On any other release it uses the common list and says that the build has
+not been checked there.
+
 `libgtest-dev` is needed only to build the tests (`-DBUILD_GTESTS=ON`,
 which `scripts/build.sh` turns on) without network access: when GoogleTest
 is not installed, configure fetches GoogleTest v1.14.0 instead.
