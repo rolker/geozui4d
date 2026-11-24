@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 # scripts/install_deps.sh -- install the system packages GeoZui4D needs to
-# build and run its tests, on Debian or Ubuntu. The package list below is
-# the project's single list of build dependencies; the README points here.
+# build and run its tests, on Debian or Ubuntu. The lists below are the
+# project's single list of build dependencies; the README points here.
+#
+# The script knows the platform it runs on (/etc/os-release): the packages
+# are the common list, plus what that release adds, minus what it drops
+# (RELEASE_ADD and RELEASE_DROP below). A release with no entry gets the
+# common list and a note that the build has not been checked there.
 #
 # Usage: scripts/install_deps.sh [--list] [--dry-run] [--update] [--yes]
 #
-#   --list     print the package names, one per line, and exit
+#   --list     print this platform's package names, one per line, and exit
 #   --dry-run  say which packages are missing or unavailable; install nothing
 #   --update   run `apt-get update` first (a fresh container has no lists)
 #   --yes      install without asking (for CI and other unattended use)
@@ -18,6 +23,7 @@
 # or the install failed, 2 usage error or not a Debian/Ubuntu system.
 set -euo pipefail
 
+# Needed on every release.
 PACKAGES=(
     build-essential cmake
     libboost-all-dev
@@ -45,7 +51,24 @@ declare -A ALTERNATIVES=(
     [libjack-dev]=libjack-jackd2-dev
 )
 
-usage() { sed -n '6,11p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
+# Per-release requirements, keyed "<ID>:<VERSION_ID>" as /etc/os-release
+# gives them. A release has an entry in RELEASE_ADD when the build is known
+# to work there, even when it adds nothing.
+#   RELEASE_ADD   packages that release needs on top of the common list
+#   RELEASE_DROP  common packages that release does not have or need
+# Both are space-separated names. Today the two known releases install the
+# same packages: what differs between them (Boost 1.90, GDAL 3.12, GCC 15
+# on 26.04) is handled in the CMake files and the source, not here.
+declare -A RELEASE_ADD=(
+    [ubuntu:24.04]=""
+    [ubuntu:26.04]=""
+)
+declare -A RELEASE_DROP=(
+    [ubuntu:24.04]=""
+    [ubuntu:26.04]=""
+)
+
+usage() { sed -n '11,16p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
 
 LIST=0 DRY_RUN=0 UPDATE=0 YES=0
 for arg in "$@"; do
@@ -59,18 +82,36 @@ for arg in "$@"; do
     esac
 done
 
+OS_ID="" OS_LIKE="" OS_VERSION="" OS_NAME="this system"
+if [ -r /etc/os-release ]; then
+    # shellcheck disable=SC1091
+    . /etc/os-release
+    OS_ID="${ID:-}" OS_LIKE="${ID_LIKE:-}" OS_VERSION="${VERSION_ID:-}" OS_NAME="${PRETTY_NAME:-$OS_ID}"
+fi
+
+# This platform's list: common, minus what the release drops, plus what it
+# adds. An unknown release keeps the common list; the note goes to stderr so
+# that --list still prints package names only.
+RELEASE="$OS_ID:$OS_VERSION"
+if [[ -v RELEASE_ADD[$RELEASE] ]]; then
+    read -r -a ADD <<< "${RELEASE_ADD[$RELEASE]}"
+    read -r -a DROP <<< "${RELEASE_DROP[$RELEASE]:-}"
+    KEPT=()
+    for pkg in "${PACKAGES[@]}"; do
+        case " ${DROP[*]:-} " in *" $pkg "*) ;; *) KEPT+=("$pkg") ;; esac
+    done
+    PACKAGES=("${KEPT[@]}" "${ADD[@]}")
+else
+    known="$(printf '%s\n' "${!RELEASE_ADD[@]}" | sort | tr '\n' ' ')"
+    echo "install_deps.sh: note: the build has not been checked on $OS_NAME (known: ${known% }); using the common package list" >&2
+fi
+
 if [ "$LIST" -eq 1 ]; then
     printf '%s\n' "${PACKAGES[@]}"
     exit 0
 fi
 
 # Debian and its derivatives only: the names above are Debian package names.
-OS_ID="" OS_LIKE="" OS_NAME="this system"
-if [ -r /etc/os-release ]; then
-    # shellcheck disable=SC1091
-    . /etc/os-release
-    OS_ID="${ID:-}" OS_LIKE="${ID_LIKE:-}" OS_NAME="${PRETTY_NAME:-$OS_ID}"
-fi
 case " $OS_ID $OS_LIKE " in
     *" debian "*|*" ubuntu "*) ;;
     *)
