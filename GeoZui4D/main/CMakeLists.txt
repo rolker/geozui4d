@@ -34,14 +34,16 @@ if(NOT CMAKE_CROSSCOMPILING)
     endif()
 endif()
 
-set(boost_components system program_options iostreams)
+# `system` is optional: Boost 1.89 dropped its compiled library (see
+# libgz4d/cxx/CMakeLists.txt).
+set(boost_components program_options iostreams)
 if(CMAKE_CROSSCOMPILING)
     set(boost_components ${boost_components} thread_win32)
 else()
     set(boost_components ${boost_components} thread)
 endif()
 
-find_package(Boost 1.37.0 COMPONENTS ${boost_components} REQUIRED)
+find_package(Boost 1.37.0 REQUIRED COMPONENTS ${boost_components} OPTIONAL_COMPONENTS system)
 if(NOT MSVC)
     set(LIBS ${LIBS} ${Boost_LIBRARIES})
 endif()
@@ -221,6 +223,12 @@ add_subdirectory(interactors)
 add_subdirectory(objects)
 
 add_subdirectory(Togl)
+# Togl is vendored and predates the const-qualified Tk 8.6 signatures. GCC 14
+# and later (Ubuntu 26.04) make that pointer mismatch an error; keep it the
+# warning it is for older compilers, without touching the vendored source.
+if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(gz_togl PRIVATE -Wno-error=incompatible-pointer-types)
+endif()
 set(LIBS ${LIBS} gz_togl ${TCL_STUB_LIBRARY} ${TK_STUB_LIBRARY})
 
 find_package(X11)
