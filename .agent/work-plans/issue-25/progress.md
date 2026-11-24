@@ -6,7 +6,7 @@ issue: 25
 
 ## Implementation
 **Status**: complete
-**When**: 2026-11-24 11:24 to 11:45 -05:00
+**When**: 2026-11-24 11:24 to 11:32 -05:00
 **By**: Claude Code Agent (claude-fable-5-2)
 
 Worked directly in the worktree, without the review loop: no issue review,
@@ -75,7 +75,8 @@ GDAL 3.12.2, Tcl/Tk 8.6.16) until `scripts/build.sh` passed:
 Light-level trial (no review loop), piece of work 1 (the owner counted it, 2026-11-24).
 
 - **Start**: 2026-11-24 11:24 -05:00 (worktree created).
-- **Merge**: not merged yet.
+- **Merge**: 2026-11-24 11:32 -05:00 (pull request 26), about 8 minutes after the start. No review rounds.
+- **Checked afterwards**: the owner reported that GeoZui ran on a second machine after the build (2026-11-24); no defect from it.
 - **Defects found later**: none recorded yet.
 - **Redone because the first result was not what was meant**: none
   recorded yet.
